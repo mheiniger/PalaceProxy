@@ -1,0 +1,24 @@
+{
+  "name": "PalaceProxy",
+  "version": "0.0.0",
+  "description": "A nodeJs proxy between palaceclient and server",
+  "main": "app.js",
+  "dependencies": {
+    "packet": "~0.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mheiniger/PalaceProxy.git"
+  },
+  "keywords": [
+    "palace",
+    "proxy"
+  ],
+  "author": "Michael Heiniger",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}
