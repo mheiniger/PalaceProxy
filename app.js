@@ -26,7 +26,7 @@ net.createServer(function (proxySocket) {
     connected = true;
     if (buffers.length > 0) {
       for (i = 0; i < buffers.length; i++) {
-        console.log(buffers[i]);
+        console.log("-" + buffers[i]);
         serviceSocket.write(buffers[i]);
       }
     }
@@ -45,12 +45,14 @@ net.createServer(function (proxySocket) {
   proxySocket.on("data", function (data) {
     if (connected) {
       serviceSocket.write(data);
+      console.log("sending:" + data.toString().substr(0,68));
     } else {
       buffers[buffers.length] = data;
     }
   });
 
   serviceSocket.on("data", function(data) {
+    console.log("receiving:" + data.toString().substr(0,68));
     proxySocket.write(data);
   });
 
