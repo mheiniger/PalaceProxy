@@ -40,8 +40,8 @@ function PalaceClient() // extends EventDispatcher
 var classScope = this;
 function importClass(namespace){
     var className = namespace.split(".").slice(-1)[0];
-    classScope[className] = require("./" + namespace.replace('.', '/') +'.js');
-
+    classScope[className] = require("./" + namespace.replace(/\./g, '/') +'.js');
+    console.log('> loading ' + className);
 }
 
 //importClass("openpalace.accountserver.rpc.AccountServerClient");
@@ -65,7 +65,7 @@ importClass("palace.message.IncomingMessageTypes");
 //importClass("palace.model.PalaceProp");
 //importClass("palace.model.PalacePropStore");
 //importClass("palace.model.PalaceRoom");
-//importClass("palace.model.PalaceServerInfo");
+importClass("palace.model.PalaceServerInfo");
 //importClass("palace.model.PalaceUser");
 //importClass("palace.record.PalaceChatRecord");
 //importClass("palace.record.PalaceDrawRecord");
@@ -88,7 +88,7 @@ importClass("palace.message.IncomingMessageTypes");
 
     var instance;
     
-    var loaderContext = new LoaderContext();
+//    var loaderContext = new LoaderContext();
 
     /* FLAGS */
     var AUXFLAGS_UNKNOWN_MACHINE = 0;
@@ -124,7 +124,7 @@ importClass("palace.message.IncomingMessageTypes");
 
     var socket = null;
 
-    var accountClient = AccountServerClient.getInstance();
+//    var accountClient = AccountServerClient.getInstance();
 
     var version;
     var id = 0;
@@ -146,7 +146,7 @@ importClass("palace.message.IncomingMessageTypes");
     var connected = false;
     var connecting = false;
     var serverName = "No Server";
-    var serverInfo = new PalaceServerInfo();
+    var serverInfo = new this.PalaceServerInfo();
     var population = 0;
     var mediaServer = "";
     var userList = new ArrayCollection();
@@ -285,6 +285,7 @@ importClass("palace.message.IncomingMessageTypes");
     // ***************************************************************
     // Begin public functions for user interaction
     // ***************************************************************
+    var buffers = new Array();
 
     function connect(userName, host, port, initialRoom) {
         port = (port == null ? '9998' : port);
@@ -312,13 +313,14 @@ importClass("palace.message.IncomingMessageTypes");
         connecting = true;
         dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_START));
 
-        socket = new Socket(this.host, this.port);
+        socket = new net.Socket();
+        socket.connect(this.port, this.host, onConnect);
+
         socket.timeout = 5000;
-        socket.addEventListener(ProgressEvent.SOCKET_DATA, onSocketData);
-        socket.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
-        socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
-        socket.addEventListener(Event.CONNECT, onConnect);
-        socket.addEventListener(Event.CLOSE, onClose);
+
+        socket.on("close", onClose);
+        socket.addEventListener("data", onSocketData);
+        socket.addEventListener("error", onIOError);
     }
 
     function authenticate(username, password) {
@@ -833,6 +835,10 @@ importClass("palace.message.IncomingMessageTypes");
         connected = true;
         state = STATE_HANDSHAKING;
         trace("Connected");
+    }
+
+    function trace(text) {
+        console.log(text);
     }
 
     function onClose(event) {

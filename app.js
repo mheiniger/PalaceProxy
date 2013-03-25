@@ -22,18 +22,20 @@ net.createServer(function (clientSocket) {
     var connected = false;
     var loginPhase = true;
     var buffers = new Array();
-    var serverSocket = new net.Socket();
+//    var serverSocket = new net.Socket();
     var palaceClient = new PalaceClient();
 
-    serverSocket.connect(parseInt(serverPort), serverHost, function () {
-        connected = true;
-        if (buffers.length > 0) {
-            for (i = 0; i < buffers.length; i++) {
-                console.log("-" + buffers[i]);
-                serverSocket.write(buffers[i]);
-            }
-        }
-    });
+//    serverSocket.connect(parseInt(serverPort), serverHost, function () {
+//        connected = true;
+//        if (buffers.length > 0) {
+//            for (i = 0; i < buffers.length; i++) {
+//                console.log("-" + buffers[i]);
+//                serverSocket.write(buffers[i]);
+//            }
+//        }
+//    });
+
+    PalaceClient.connect("TestUser", serverHost, serverPort, 0);
 
     clientSocket.on("error", function (e) {
         serverSocket.end();
