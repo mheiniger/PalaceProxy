@@ -58,7 +58,7 @@ importClass("palace.message.IncomingMessageTypes");
 //importClass("palace.model.AssetManager");
 //importClass("palace.model.PalaceAsset");
 //importClass("palace.model.PalaceConfig");
-//importClass("palace.model.PalaceCurrentRoom");
+importClass("palace.model.PalaceCurrentRoom");
 //importClass("palace.model.PalaceHotspot");
 //importClass("palace.model.PalaceImageOverlay");
 //importClass("palace.model.PalaceLooseProp");
@@ -149,9 +149,9 @@ importClass("palace.model.PalaceServerInfo");
     var serverInfo = new this.PalaceServerInfo();
     var population = 0;
     var mediaServer = "";
-    var userList = new ArrayCollection();
+    var userList = {};
     var currentRoom = new PalaceCurrentRoom();
-    var roomList = new ArrayCollection();
+    var roomList = {};
     var roomById = {};
     var chatstr = "";
     var whochat = 0;
@@ -184,6 +184,10 @@ importClass("palace.model.PalaceServerInfo");
     function getUserName() {
         return _userName;
     }
+
+	function ArrayCollection() {
+		 return {};
+	}
 
     function setUserName(newValue) {
         if (newValue.length > 31) {
@@ -325,7 +329,7 @@ importClass("palace.model.PalaceServerInfo");
 
     function authenticate(username, password) {
         if (socket && socket.connected) {
-//				trace("Sending auth response");
+				trace("Sending auth response");
             var userPass = PalaceEncryption.getInstance().encrypt(username + ":" + password);
             socket.writeInt(OutgoingMessageTypes.AUTHRESPONSE);
             socket.writeInt(userPass.length + 1);
@@ -349,7 +353,11 @@ importClass("palace.model.PalaceServerInfo");
         }
         resetState();
     }
-
+    
+    function trace(text) {
+		console.log(text);
+    }
+    
     function changeName(newName) {
         userName = newName;
         if (socket && socket.connected) {
