@@ -22,7 +22,7 @@ function PalaceServerInfo() {
          _options : 0,
          _uploadCapabilities : 0,
          _downloadCapabilities : 0,
-    
+
         // Permissions
          ALLOW_GUESTS         : 0x0001, //guests may use this server
          ALLOW_CYBORGS        : 0x0002, //clients can use cyborg.ipt scripts
