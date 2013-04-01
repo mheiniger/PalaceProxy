@@ -40,13 +40,13 @@ var ArrayCollection = ( function() {
  
 			// Trigger the collection change to indicate that an
 			// item was added to the collection.
-			this.trigger({
-				type: "collectionChange",
-				kind: Collection.CollectionEventKind.ADD,
-				location: (this.data.length - 1),
-				oldLocation: -1,
-				items: [ item ]
-			});
+//			this.trigger({
+//				type: "collectionChange",
+//				kind: Collection.CollectionEventKind.ADD,
+//				location: (this.data.length - 1),
+//				oldLocation: -1,
+//				items: [ item ]
+//			});
 		},
  
  
@@ -57,13 +57,13 @@ var ArrayCollection = ( function() {
  
 			// Trigger the collection change to indicate that an
 			// item was added to the collection.
-			this.trigger({
-				type: "collectionChange",
-				kind: Collection.CollectionEventKind.ADD,
-				location: index,
-				oldLocation: -1,
-				items: [ item ]
-			});
+//			this.trigger({
+//				type: "collectionChange",
+//				kind: Collection.CollectionEventKind.ADD,
+//				location: index,
+//				oldLocation: -1,
+//				items: [ item ]
+//			});
 		},
  
  
@@ -110,13 +110,13 @@ var ArrayCollection = ( function() {
  
 			// Trigger the collection change to indicate that the
 			// collection has been reset.
-			this.trigger({
-				type: "collectionChange",
-				kind: Collection.CollectionEventKind.RESET,
-				location: -1,
-				oldLocation: -1,
-				items: []
-			});
+//			this.trigger({
+//				type: "collectionChange",
+//				kind: Collection.CollectionEventKind.RESET,
+//				location: -1,
+//				oldLocation: -1,
+//				items: []
+//			});
 		},
  
  
@@ -130,13 +130,13 @@ var ArrayCollection = ( function() {
  
 			// Trigger the collection change to indicate that an
 			// item was removed from the collection.
-			this.trigger({
-				type: "collectionChange",
-				kind: Collection.CollectionEventKind.REMOVE,
-				location: index,
-				oldLocation: -1,
-				items: [ item ]
-			});
+//			this.trigger({
+//				type: "collectionChange",
+//				kind: Collection.CollectionEventKind.REMOVE,
+//				location: index,
+//				oldLocation: -1,
+//				items: [ item ]
+//			});
 		},
  
  
@@ -148,13 +148,13 @@ var ArrayCollection = ( function() {
  
 			// Trigger the collection change to indicate that an
 			// item was updated within the collection.
-			this.trigger({
-				type: "collectionChange",
-				kind: Collection.CollectionEventKind.ADD,
-				location: index,
-				oldLocation: -1,
-				items: [ item ]
-			});
+//			this.trigger({
+//				type: "collectionChange",
+//				kind: Collection.CollectionEventKind.ADD,
+//				location: index,
+//				oldLocation: -1,
+//				items: [ item ]
+//			});
 		},
  
  

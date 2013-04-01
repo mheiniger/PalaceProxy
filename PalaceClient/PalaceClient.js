@@ -16,16 +16,11 @@ along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
 */
 function PalaceClient() // extends EventDispatcher
 {
-    var classScope = this;
     var importClasses = {};
     function importClass(namespace){
         var className = namespace.split(".").slice(-1)[0];
         importClasses[className] = require("./" + namespace.replace(/\./g, '/') +'.js');
         console.log('> loading ' + className);
-    }
-
-    function ns2path(namespace) {
-        return "./" + namespace.replace(/\./g, '/') +'.js';
     }
 
     //import com.adobe.net.URI;
@@ -154,13 +149,14 @@ function PalaceClient() // extends EventDispatcher
     var connecting = false;
     var serverName = "No Server";
     var serverInfo = new PalaceServerInfo();
+
     var population = 0;
     var mediaServer = "";
-    var userList = {};
+    var userList = new ArrayCollection();
 
     var currentRoom = new PalaceCurrentRoom();
 
-    var roomList = {};
+    var roomList = new ArrayCollection();
     var roomById = {};
     var chatstr = "";
     var whochat = 0;
@@ -177,9 +173,8 @@ function PalaceClient() // extends EventDispatcher
     var regCounter = 0xcf07309c;
     var regCRC = 0x5905f923;
 
-    var cyborgHotspot = {} // new PalaceHotspot();
-
     var recentLogonUserIds = new ArrayCollection();
+    var cyborgHotspot = {} // new PalaceHotspot();
     var muteSounds;
     var _userName = "OpenPalace User";
     var sharedObject;
@@ -285,9 +280,10 @@ function PalaceClient() // extends EventDispatcher
         population = 0;
         serverName = "No Server";
         roomList.removeAll();
+        console.log('resetState ok');
         userList.removeAll();
-        socket = null;
 
+        socket = null;
         if (puidChanged) {
             trace("Server changed our puid and needs us to reconnect.");
             puidChanged = false;
@@ -324,16 +320,16 @@ function PalaceClient() // extends EventDispatcher
             resetState();
         }
         connecting = true;
+        console.log('before-connect');
         dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_START));
 
         socket = new net.Socket();
-        socket.connect(this.port, this.host, onConnect);
-
         socket.timeout = 5000;
-
         socket.on("close", onClose);
         socket.addEventListener("data", onSocketData);
         socket.addEventListener("error", onIOError);
+
+        socket.connect(this.port, this.host, onConnect);
     }
     this.connect = connect;
 

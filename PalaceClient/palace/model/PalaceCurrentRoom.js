@@ -15,6 +15,13 @@
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var importClasses = {};
+function importClass(namespace){
+    var className = namespace.split(".").slice(-1)[0];
+    importClasses[className] = require("../../" + namespace.replace(/\./g, '/') +'.js');
+    console.log('> loading ' + className);
+}
+
 //package net.codecomposer.palace.model
 //{
 //import flash.events.Event;
@@ -23,12 +30,17 @@
 //import flash.utils.Dictionary;
 //import flash.utils.Timer;
 
-//import mx.collections.ArrayCollection;
+importClass("mx.collections.ArrayCollection");
 
 //import net.codecomposer.palace.event.ChatEvent;
 //import net.codecomposer.palace.event.PalaceRoomEvent;
 //import net.codecomposer.palace.util.PalaceUtil;
 //import net.codecomposer.palace.view.PalaceRoomView;
+
+// import class-namespaces
+for (var className in importClasses) {
+    eval('var ' + className + ' =  importClasses.' + className);
+}
 
 //    [Event(name="chatLogUpdated")]
 //        [Event(name="chat",type="net.codecomposer.palace.event.ChatEvent")]
@@ -80,6 +92,8 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     // todo: add working timer class
     function Timer() {}
     function PalaceHotspot() {}
+    function PalaceRoomEvent() {}
+    function dispatchEvent(){}
 
     this.PalaceCurrentRoom = function () {
         classVar.lastMessageTimer.addEventListener(TimerEvent.TIMER, handleLastMessageTimer);
@@ -162,10 +176,10 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         prop.crc = crc;
         prop.loadProp();
         if (addToFront) {
-            looseProps.addItem(prop);
+            this.looseProps.addItem(prop);
         }
         else {
-            looseProps.addItemAt(prop, 0);
+            this.looseProps.addItemAt(prop, 0);
         }
         var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_ADDED);
         event.looseProp = prop;
@@ -179,7 +193,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
             clearLooseProps();
         }
         else {
-            looseProps.removeItemAt(index);
+            this.looseProps.removeItemAt(index);
             var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_REMOVED);
             event.propIndex = index;
             dispatchEvent(event);
@@ -189,7 +203,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     /* public */
     this.moveLooseProp = function (index/* :int */, x/* :int */, y/* :int */)/* :void */ {
 //			trace("Moving prop index " + index);
-        var prop/* :PalaceLooseProp */ = PalaceLooseProp(looseProps.getItemAt(index));
+        var prop/* :PalaceLooseProp */ = PalaceLooseProp(this.looseProps.getItemAt(index));
         prop.x = x;
         prop.y = y;
         var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_MOVED);
@@ -199,32 +213,32 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
 
     /* public */
     this.clearLooseProps = function ()/* :void */ {
-        looseProps.removeAll();
+        this.looseProps.removeAll();
         var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROPS_CLEARED);
         dispatchEvent(event);
     }
 
     /* public */
     this.getLoosePropByIndex = function (index/* :int */)/* :PalaceLooseProp */ {
-        return PalaceLooseProp(looseProps.getItemAt(index));
+        return PalaceLooseProp(this.looseProps.getItemAt(index));
     }
 
     /* public */
     this.addUser = function (user/* :PalaceUser */)/* :void */ {
-        usersHash[user.id] = user;
-        users.addItem(user);
+        this.usersHash[user.id] = user;
+        this.users.addItem(user);
         var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.USER_ENTERED, user);
         dispatchEvent(event);
     }
 
     /* public */
     this.getUserById = function (id/* :int */)/* :PalaceUser */ {
-        return PalaceUser(usersHash[id]);
+        return PalaceUser(this.usersHash[id]);
     }
 
     /* public */
     this.getUserByName = function (name/* :String */)/* :PalaceUser */ {
-        for (var user/* :PalaceUser */ in users) {
+        for (var user/* :PalaceUser */ in this.users) {
             if (user.name == name) {
                 return user;
             }
@@ -234,7 +248,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
 
     /* public */
     this.getUserByIndex = function (userIndex/* :int */)/* :PalaceUser */ {
-        return PalaceUser(users.getItemAt(userIndex));
+        return PalaceUser(this.users.getItemAt(userIndex));
     }
 
     /* public */
@@ -250,9 +264,9 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     /* public */
     this.removeUserById = function (id/* :int */)/* :void */ {
         var user/* :PalaceUser */ = getUserById(id);
-        var index/* :int */ = users.getItemIndex(user);
+        var index/* :int */ = this.users.getItemIndex(user);
         if (index != -1) {
-            users.removeItemAt(users.getItemIndex(user));
+            this.users.removeItemAt(this.users.getItemIndex(user));
         }
         var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.USER_LEFT, user);
         dispatchEvent(event);
@@ -260,8 +274,8 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
 
     /* public */
     this.removeAllUsers = function ()/* :void */ {
-        usersHash = {};
-        users.removeAll();
+        this.usersHash = {};
+        this.users.removeAll();
         var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.ROOM_CLEARED);
         dispatchEvent(event);
     }
@@ -379,10 +393,6 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         dispatchEvent(event);
 //			trace("User " + userId + " moved to " + x + "," + y);
 
-    }
-
-    function ArrayCollection() {
-        return {};
     }
 
     function trace(text) {
