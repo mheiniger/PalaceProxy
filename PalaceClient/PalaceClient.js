@@ -16,79 +16,86 @@ along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
 */
 function PalaceClient() // extends EventDispatcher
 {
+    var classScope = this;
+    var importClasses = {};
+    function importClass(namespace){
+        var className = namespace.split(".").slice(-1)[0];
+        importClasses[className] = require("./" + namespace.replace(/\./g, '/') +'.js');
+        console.log('> loading ' + className);
+    }
 
-//import com.adobe.net.URI;
+    function ns2path(namespace) {
+        return "./" + namespace.replace(/\./g, '/') +'.js';
+    }
 
-//import flash.events.Event;
-//import flash.events.EventDispatcher;
-//import flash.events.IOErrorEvent;
-//import flash.events.ProgressEvent;
-//import flash.events.SecurityErrorEvent;
-//import flash.events.TimerEvent;
-//import flash.net.SharedObject;
-//import flash.net.Socket;
-//import flash.net.XMLSocket;
-//import flash.system.LoaderContext;
-//import flash.utils.ByteArray;
-//import flash.utils.Endian;
-//import flash.utils.Timer;
-//import flash.utils.setTimeout;
+    //import com.adobe.net.URI;
 
-//import mx.collections.ArrayCollection;
-//import mx.controls.Alert;
+    //import flash.events.Event;
+    //import flash.events.EventDispatcher;
+    //import flash.events.IOErrorEvent;
+    //import flash.events.ProgressEvent;
+    //import flash.events.SecurityErrorEvent;
+    //import flash.events.TimerEvent;
+    //import flash.net.SharedObject;
+    //import flash.net.Socket;
+    //import flash.net.XMLSocket;
+    //import flash.system.LoaderContext;
+    //import flash.utils.ByteArray;
+    //import flash.utils.Endian;
+    //import flash.utils.Timer;
+    //import flash.utils.setTimeout;
 
-var classScope = this;
-function importClass(namespace){
-    var className = namespace.split(".").slice(-1)[0];
-    classScope[className] = require("./" + namespace.replace(/\./g, '/') +'.js');
-    console.log('> loading ' + className);
-}
+    importClass("mx.collections.ArrayCollection");
+    //import mx.controls.Alert;
+    //importClass("openpalace.accountserver.rpc.AccountServerClient");
+    //importClass("palace.crypto.PalaceEncryption");
+    //importClass("palace.event.PalaceEvent");
+    //importClass("palace.event.PalaceSecurityErrorEvent");
+    //importClass("palace.event.PropEvent");
+    //importClass("palace.iptscrae.DebugData");
+    //importClass("palace.iptscrae.IptEventHandler");
+    //importClass("palace.iptscrae.PalaceController");
+    importClass("palace.message.IncomingMessageTypes");
+    //importClass("palace.message.NavErrorMessage");
+    //importClass("palace.message.OutgoingMessageTypes");
+    //importClass("palace.model.AssetManager");
+    //importClass("palace.model.PalaceAsset");
+    //importClass("palace.model.PalaceConfig");
+    importClass("palace.model.PalaceCurrentRoom");
+    //importClass("palace.model.PalaceHotspot");
+    //importClass("palace.model.PalaceImageOverlay");
+    //importClass("palace.model.PalaceLooseProp");
+    //importClass("palace.model.PalaceProp");
+    //importClass("palace.model.PalacePropStore");
+    //importClass("palace.model.PalaceRoom");
+    importClass("palace.model.PalaceServerInfo");
 
-//importClass("openpalace.accountserver.rpc.AccountServerClient");
-//importClass("palace.crypto.PalaceEncryption");
-//importClass("palace.event.PalaceEvent");
-//importClass("palace.event.PalaceSecurityErrorEvent");
-//importClass("palace.event.PropEvent");
-//importClass("palace.iptscrae.DebugData");
-//importClass("palace.iptscrae.IptEventHandler");
-//importClass("palace.iptscrae.PalaceController");
-importClass("palace.message.IncomingMessageTypes");
-//importClass("palace.message.NavErrorMessage");
-//importClass("palace.message.OutgoingMessageTypes");
-//importClass("palace.model.AssetManager");
-//importClass("palace.model.PalaceAsset");
-//importClass("palace.model.PalaceConfig");
-importClass("palace.model.PalaceCurrentRoom");
-//importClass("palace.model.PalaceHotspot");
-//importClass("palace.model.PalaceImageOverlay");
-//importClass("palace.model.PalaceLooseProp");
-//importClass("palace.model.PalaceProp");
-//importClass("palace.model.PalacePropStore");
-//importClass("palace.model.PalaceRoom");
-importClass("palace.model.PalaceServerInfo");
-//importClass("palace.model.PalaceUser");
-//importClass("palace.record.PalaceChatRecord");
-//importClass("palace.record.PalaceDrawRecord");
-//importClass("palace.view.PalaceSoundPlayer");
-//
-//importClass("org.openpalace.iptscrae.IptEngineEvent");
-//importClass("org.openpalace.iptscrae.IptTokenList");
-//importClass("org.openpalace.registration.RegistrationCode");
+    //importClass("palace.model.PalaceUser");
+    //importClass("palace.record.PalaceChatRecord");
+    //importClass("palace.record.PalaceDrawRecord");
+    //importClass("palace.view.PalaceSoundPlayer");
+    //
+    //importClass("org.openpalace.iptscrae.IptEngineEvent");
+    //importClass("org.openpalace.iptscrae.IptTokenList");
+    //importClass("org.openpalace.registration.RegistrationCode");
 
-//[Event(type="net.codecomposer.event.PalaceEvent",name="connectStart")]
-//[Event(type="net.codecomposer.event.PalaceEvent",name="connectComplete")]
-//[Event(type="net.codecomposer.event.PalaceEvent",name="connectFailed")]
-//[Event(type="net.codecomposer.event.PalaceEvent",name="disconnected")]
-//[Event(type="net.codecomposer.event.PalaceEvent",name="gotoURL")]
-//[Event(type="net.codecomposer.event.PalaceEvent",name="roomChanged")]
-//[Event(type="net.codecomposer.event.PalaceEvent",name="authenticationRequested")]
-//[Event(type="net.codecomposer.event.PalaceSecurityErrorEvent",name="securityError")]
+    //[Event(type="net.codecomposer.event.PalaceEvent",name="connectStart")]
+    //[Event(type="net.codecomposer.event.PalaceEvent",name="connectComplete")]
+    //[Event(type="net.codecomposer.event.PalaceEvent",name="connectFailed")]
+    //[Event(type="net.codecomposer.event.PalaceEvent",name="disconnected")]
+    //[Event(type="net.codecomposer.event.PalaceEvent",name="gotoURL")]
+    //[Event(type="net.codecomposer.event.PalaceEvent",name="roomChanged")]
+    //[Event(type="net.codecomposer.event.PalaceEvent",name="authenticationRequested")]
+    //[Event(type="net.codecomposer.event.PalaceSecurityErrorEvent",name="securityError")]
 
-
+    // import class-namespaces
+    for (var className in importClasses) {
+        eval('var ' + className + ' =  importClasses.' + className);
+    }
 
     var instance;
-    
-//    var loaderContext = new LoaderContext();
+
+    //    var loaderContext = new LoaderContext();
 
     /* FLAGS */
     var AUXFLAGS_UNKNOWN_MACHINE = 0;
@@ -146,11 +153,13 @@ importClass("palace.model.PalaceServerInfo");
     var connected = false;
     var connecting = false;
     var serverName = "No Server";
-    var serverInfo = new this.PalaceServerInfo();
+    var serverInfo = new PalaceServerInfo();
     var population = 0;
     var mediaServer = "";
     var userList = {};
+
     var currentRoom = new PalaceCurrentRoom();
+
     var roomList = {};
     var roomById = {};
     var chatstr = "";
@@ -168,7 +177,7 @@ importClass("palace.model.PalaceServerInfo");
     var regCounter = 0xcf07309c;
     var regCRC = 0x5905f923;
 
-    var cyborgHotspot = new PalaceHotspot();
+    var cyborgHotspot = {} // new PalaceHotspot();
 
     var recentLogonUserIds = new ArrayCollection();
     var muteSounds;
@@ -185,9 +194,9 @@ importClass("palace.model.PalaceServerInfo");
         return _userName;
     }
 
-	function ArrayCollection() {
-		 return {};
-	}
+//	function ArrayCollection() {
+//		 return {};
+//	}
 
     function setUserName(newValue) {
         if (newValue.length > 31) {
@@ -249,8 +258,8 @@ importClass("palace.model.PalaceServerInfo");
     }
 
     function resetState() {
-        palaceController.midiStop();
-        palaceController.clearAlarms();
+        //palaceController.midiStop();
+        //palaceController.clearAlarms();
         needToRunSignonHandlers = true;
         messageID = 0;
         messageSize = 0;
@@ -292,8 +301,8 @@ importClass("palace.model.PalaceServerInfo");
     var buffers = new Array();
 
     function connect(userName, host, port, initialRoom) {
-        port = (port == null ? '9998' : port);
-        initialRoom = (initialRoom == null ? '0' : initialRoom);
+        port = port || '9998';
+        initialRoom = initialRoom || '0';
         
 //        PalaceClient.loaderContext.checkPolicyFile = true;
 
@@ -326,6 +335,7 @@ importClass("palace.model.PalaceServerInfo");
         socket.addEventListener("data", onSocketData);
         socket.addEventListener("error", onIOError);
     }
+    this.connect = connect;
 
     function authenticate(username, password) {
         if (socket && socket.connected) {
@@ -359,13 +369,13 @@ importClass("palace.model.PalaceServerInfo");
     }
     
     function changeName(newName) {
-        userName = newName;
+        this.userName = newName;
         if (socket && socket.connected) {
             socket.writeInt(OutgoingMessageTypes.CHANGE_NAME);
-            socket.writeInt(userName.length + 1);
+            socket.writeInt(this.userName.length + 1);
             socket.writeInt(0);
-            socket.writeByte(userName.length);
-            socket.writeMultiByte(userName, 'Windows-1252');
+            socket.writeByte(this.userName.length);
+            socket.writeMultiByte(this.userName, 'Windows-1252');
             socket.flush();
         }
     }

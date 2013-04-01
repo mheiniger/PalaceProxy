@@ -20,6 +20,6 @@ var serverPort = process.argv[3];
 var palaceClient = new PalaceClient();
 
 
-PalaceClient.connect("TestUser", serverHost, serverPort, 0);
+palaceClient.connect("TestUser", serverHost, serverPort, 0);
 
 
