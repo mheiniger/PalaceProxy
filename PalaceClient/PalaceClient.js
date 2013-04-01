@@ -14,6 +14,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+var net = require('net');
+
 function PalaceClient() // extends EventDispatcher
 {
     var importClasses = {};
@@ -44,7 +47,7 @@ function PalaceClient() // extends EventDispatcher
     //import mx.controls.Alert;
     //importClass("openpalace.accountserver.rpc.AccountServerClient");
     //importClass("palace.crypto.PalaceEncryption");
-    //importClass("palace.event.PalaceEvent");
+    importClass("palace.event.PalaceEvent");
     //importClass("palace.event.PalaceSecurityErrorEvent");
     //importClass("palace.event.PropEvent");
     //importClass("palace.iptscrae.DebugData");
@@ -326,12 +329,16 @@ function PalaceClient() // extends EventDispatcher
         socket = new net.Socket();
         socket.timeout = 5000;
         socket.on("close", onClose);
-        socket.addEventListener("data", onSocketData);
-        socket.addEventListener("error", onIOError);
+        socket.on("data", onSocketData);
+        socket.on("error", onIOError);
 
         socket.connect(this.port, this.host, onConnect);
     }
     this.connect = connect;
+
+    function dispatchEvent(object) {
+        object.emit;
+    }
 
     function authenticate(username, password) {
         if (socket && socket.connected) {
@@ -864,24 +871,24 @@ function PalaceClient() // extends EventDispatcher
         //Alert.show("Connection to server lost.");
     }
 
-    function onSocketData(event) {
-//			trace("Got data: " + socket.bytesAvailable + " bytes available");
+    function onSocketData(socket) {
+		trace("Got data: " + socket.length + " bytes available");
         var size;
         var p;
 
 //			try {
 
-            while (socket.bytesAvailable > 0) {
+            while (socket.length > 0) {
 
                 if (state == STATE_HANDSHAKING) {
-                    handshake();
+                    handshake(socket);
                 }
                 else if (state == STATE_READY) {
                     if (messageID == 0) {
-                        if (socket.bytesAvailable >= 12) { // Header is 12 bytes
-                            messageID = socket.readInt();
-                            messageSize = socket.readInt();
-                            messageP = socket.readInt();
+                        if (socket.length >= 12) { // Header is 12 bytes
+                            messageID = socket.readUInt32LE(0);
+                            messageSize = socket.readUInt32LE(0);
+                            messageP = socket.readUInt32LE(0);
                         }
                         else {
                             return;
@@ -890,9 +897,10 @@ function PalaceClient() // extends EventDispatcher
                     size = messageSize;
                     p = messageP;
 
-                    if (size > socket.bytesAvailable) {
+                    if (size > socket.length) {
                         return;
                     }
+                    console.log(messageID);
 
                     switch (messageID) {
                         case IncomingMessageTypes.ALTERNATE_LOGON_REPLY:
@@ -1106,12 +1114,12 @@ function PalaceClient() // extends EventDispatcher
     }
 
     // Handshake
-    function handshake() {
+    function handshake(socket) {
         var messageID;
         var size;
         var p;
 
-        messageID = socket.readInt();
+        messageID = socket.readUInt32LE(0);
 
         switch (messageID) {
             case IncomingMessageTypes.UNKNOWN_SERVER: //1886610802
@@ -1119,14 +1127,14 @@ function PalaceClient() // extends EventDispatcher
                 break;
             case IncomingMessageTypes.LITTLE_ENDIAN_SERVER: // MSG_DIYIT
                 socket.endian = Endian.LITTLE_ENDIAN;
-                size = socket.readInt();
-                p = socket.readInt();
+                size = socket.readUInt32LE(0);
+                p = socket.readUInt32LE(0);
                 logOn(size, p);
                 break;
             case IncomingMessageTypes.BIG_ENDIAN_SERVER: // MSG_TIYID
                 socket.endian = Endian.BIG_ENDIAN;
-                size = socket.readInt();
-                p = socket.readInt();
+                size = socket.readUInt32BE(0);
+                p = socket.readUInt32BE(0);
                 logOn(size, p);
                 break;
             default:
