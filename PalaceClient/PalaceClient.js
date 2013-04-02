@@ -56,7 +56,7 @@ function PalaceClient() // extends EventDispatcher
     //importClass("palace.iptscrae.PalaceController");
     importClass("palace.message.IncomingMessageTypes");
     //importClass("palace.message.NavErrorMessage");
-    //importClass("palace.message.OutgoingMessageTypes");
+    importClass("palace.message.OutgoingMessageTypes");
     //importClass("palace.model.AssetManager");
     //importClass("palace.model.PalaceAsset");
     //importClass("palace.model.PalaceConfig");
@@ -345,9 +345,19 @@ function PalaceClient() // extends EventDispatcher
     function setupBuffer(){
         Buffer.prototype.readInt = function(){
             if (socket.endian = "littleEndian") {
-                this.readInt
+                return this.readUInt32LE(0);
+            } else if (socket.endian = "bigEndian"){
+                return this.readUInt32BE(0);
             } else {
+                console.log('endianness not set, can\'t read!!');
+            }
+        }
 
+        Buffer.prototype.writeInt = function(data){
+            if (socket.endian = "littleEndian") {
+                return this.writeUInt32LE(0);
+            } else {
+                return this.writeUInt32BE(0);
             }
         }
     }
@@ -1142,14 +1152,14 @@ function PalaceClient() // extends EventDispatcher
                 break;
             case IncomingMessageTypes.LITTLE_ENDIAN_SERVER: // MSG_DIYIT
                 socket.endian = "littleEndian";
-                size = buffer.readUInt32LE(0);
-                p = buffer.readUInt32LE(0);
+                size = buffer.readInt();
+                p = buffer.readInt();
                 logOn(size, p);
                 break;
             case IncomingMessageTypes.BIG_ENDIAN_SERVER: // MSG_TIYID
                 socket.endian = "bigEndian";
-                size = buffer.readUInt32BE(0);
-                p = buffer.readUInt32BE(0);
+                size = buffer.readInt();
+                p = buffer.readInt();
                 logOn(size, p);
                 break;
             default:
