@@ -361,10 +361,13 @@ function PalaceClient() // extends EventDispatcher
             that = this;
             if (socket.endian == "littleEndian") {
                 var data = this.readUInt32LE(0);
-                return this.slice(4)
+                trace(this);
+                that = this.slice(4);
+                return data;
             } else if (socket.endian == "bigEndian"){
                 var data = this.readUInt32BE(0);
-                return this.slice(4);
+                that = this.slice(4);
+                return data;
             } else {
                 console.log('endianness not set, can\'t read!!');
             }
