@@ -25,6 +25,7 @@ var eventEmitter = require('events').EventEmitter;
 			bubbles = bubbles || false;
             cancelable = cancelable || false;
             eventEmitter.emit(type, bubbles, cancelable);
+            console.log('emitted!');
 		}
 	}
 

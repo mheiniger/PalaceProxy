@@ -358,10 +358,13 @@ function PalaceClient() // extends EventDispatcher
 
     function setupBuffer(){
         Buffer.prototype.readInt = function(){
+            that = this;
             if (socket.endian == "littleEndian") {
-                return this.readUInt32LE(0);
+                var data = this.readUInt32LE(0);
+                return this.slice(4)
             } else if (socket.endian == "bigEndian"){
-                return this.readUInt32BE(0);
+                var data = this.readUInt32BE(0);
+                return this.slice(4);
             } else {
                 console.log('endianness not set, can\'t read!!');
             }
@@ -1109,7 +1112,7 @@ function PalaceClient() // extends EventDispatcher
                             trace("Blowthru message.");
                             // fall through to default...
                         default:
-                            trace("Unhandled MessageID: " + messageID.toString() + " (" + messageID.toString(16) + ") - " +
+                            trace("Unhandled MessageID: " + messageID.toString('ascii') + " (" + messageID.toString('hex') + ") - " +
                                   "Size: " + size + " - referenceId: " + p);
                             var dataToDump = [];
                             for (var i = 0; i < size; i++) {
@@ -1154,11 +1157,13 @@ function PalaceClient() // extends EventDispatcher
         var messageID;
         var size;
         var p;
+        var messageBuffer = getBufferCopy(buffer)
 
         messageID = buffer.readUInt32LE(0);
-        tmpBuffer = new Buffer(12);
-        buffer.copy(tmpBuffer, 4);
-        console.log(tmpBuffer.toString());
+        trace(buffer.toString('hex'));
+        buffer = buffer.slice(4);
+        trace(buffer.toString('hex'));
+        console.log(messageBuffer.toString('ascii',0,4));
 
         switch (messageID) {
             case IncomingMessageTypes.UNKNOWN_SERVER: //1886610802
@@ -1172,21 +1177,30 @@ function PalaceClient() // extends EventDispatcher
                 break;
             case IncomingMessageTypes.BIG_ENDIAN_SERVER: // MSG_TIYID
                 socket.endian = "bigEndian";
+                trace(buffer.toString('hex'));
                 size = buffer.readInt();
+                trace(buffer.toString('hex'));
                 p = buffer.readInt();
+                trace(buffer.toString('hex'));
                 logOn(size, p);
                 break;
             default:
-                trace("Unexpected MessageID while logging on: " + messageID.toString());
+                trace("Unexpected MessageID while logging on: " + messageBuffer.toString('ascii',0,4));
                 break;
         }
+    }
+
+    function getBufferCopy(buffer){
+        var bufferCopy = new Buffer(buffer.length);
+        buffer.copy(bufferCopy);
+        return bufferCopy;
     }
 
     // Server Op Handlers
     function logOn(size, referenceId) {
         var i;
 
-//			trace("Logging on.  a: " + size + " - b: " + referenceId);
+    	trace("Logging on.  a: " + size + " - b: " + referenceId);
         // a is validation
         currentRoom.selfUserId = id = referenceId;
 
