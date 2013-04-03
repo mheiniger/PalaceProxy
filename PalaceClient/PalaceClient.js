@@ -329,6 +329,7 @@ function PalaceClient() // extends EventDispatcher
 
         setupBuffer();
         socket = new net.Socket();
+        extendSocket();
         socket.timeout = 5000;
         socket.on("close", onClose);
         socket.on("data", onSocketData);
@@ -342,11 +343,24 @@ function PalaceClient() // extends EventDispatcher
         object.emit;
     }
 
+    function extendSocket() {
+        socket.writeInt = function(data) {
+            console.log('sending',data);
+            var buffer = new Buffer(4);
+            if (socket.endian == "littleEndian") {
+                buffer.writeUInt32LE(0);
+            } else {
+                buffer.writeUInt32BE(0);
+            }
+            socket.write(buffer);
+        }
+    }
+
     function setupBuffer(){
         Buffer.prototype.readInt = function(){
-            if (socket.endian = "littleEndian") {
+            if (socket.endian == "littleEndian") {
                 return this.readUInt32LE(0);
-            } else if (socket.endian = "bigEndian"){
+            } else if (socket.endian == "bigEndian"){
                 return this.readUInt32BE(0);
             } else {
                 console.log('endianness not set, can\'t read!!');
@@ -354,7 +368,7 @@ function PalaceClient() // extends EventDispatcher
         }
 
         Buffer.prototype.writeInt = function(data){
-            if (socket.endian = "littleEndian") {
+            if (socket.endian == "littleEndian") {
                 return this.writeUInt32LE(0);
             } else {
                 return this.writeUInt32BE(0);
@@ -908,9 +922,9 @@ function PalaceClient() // extends EventDispatcher
                 else if (state == STATE_READY) {
                     if (messageID == 0) {
                         if (buffer.length >= 12) { // Header is 12 bytes
-                            messageID = buffer.readUInt32LE(0);
-                            messageSize = buffer.readUInt32LE(0);
-                            messageP = buffer.readUInt32LE(0);
+                            messageID = buffer.readInt32LE(0);
+                            messageSize = buffer.readInt32LE(0);
+                            messageP = buffer.readInt32LE(0);
                         }
                         else {
                             return;
