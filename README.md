@@ -6,8 +6,10 @@ First experiments to write a proxy for ThePalace in NodeJs
 Getting started
 ---------------
 You will need nodejs and npm.
+* how to install most actual nodejs version - http://stackoverflow.com/questions/5123533/how-can-i-uninstall-or-upgrade-my-old-node-js-version
 Clone the project and install dependecies with
 ```
+git clone git://github.com/mheiniger/PalaceProxy.git
 npm install -l
 ```
 
