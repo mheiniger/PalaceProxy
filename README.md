@@ -3,8 +3,26 @@ PalaceProxy
 
 First experiments to write a proxy for ThePalace in NodeJs
 
+Getting started
+---------------
+You will need nodejs and npm.
+Clone the project and install dependecies with
+```
+npm install -l
+```
+
+During first stages of development, use following to start Palaceproxy:
+```
+nodejs app_test.js localhost 9998
+```
+
+Where is this .as stuff coming from?
+------------------------------------
+
+Most of the code comes from https://github.com/theturtle32/OpenPalace.git which is written in Actionscript, which has to be translated to Javascript.
+
 How to setup a local palaceserver for testing
-=============================================
+---------------------------------------------
 
 Linux:
 
