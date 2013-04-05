@@ -1,7 +1,9 @@
 PalaceProxy
 ===========
 
-First experiments to write a proxy for ThePalace in NodeJs
+First experiments to write a proxy for ThePalace in NodeJs.
+Purpose:
+Having a proxy which deals with the (ugly) palace protocol on the server side, we can start building a fully html5 based chat client which connects with Websockets and uses much less ugly json data to communicate.
 
 Getting started
 ---------------
@@ -23,6 +25,26 @@ Where is this .as stuff coming from?
 ------------------------------------
 
 Most of the code comes from https://github.com/theturtle32/OpenPalace.git which is written in Actionscript, which has to be translated to Javascript.
+
+What other sources can help me develop?
+---------------------------------------
+
+There's a protocol description in http://www.palaceaholic.com/downloads/developers/pserver_sdk.zip called PalaceProtocolRef.wri
+
+How to install a client for testing
+-----------------------------------
+
+Windows:
+A fully rewritten client is here: http://pchat.org/
+
+Linux:
+You will have to use the original client and wine:
+```
+sudo apt-get install wine
+wget http://www.palaceaholic.com/downloads/client/windows32/PalaceUserWin.exe
+wine PalaceUserWin.exe
+```
+
 
 How to setup a local palaceserver for testing
 ---------------------------------------------
