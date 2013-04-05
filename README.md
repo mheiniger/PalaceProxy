@@ -44,6 +44,10 @@ sudo apt-get install wine
 wget http://www.palaceaholic.com/downloads/client/windows32/PalaceUserWin.exe
 wine PalaceUserWin.exe
 ```
+After its installed you can start it with:
+```
+~/.wine/drive_c/Program Files/Communities.com/ThePalace/Palace32.exe
+```
 
 
 How to setup a local palaceserver for testing
