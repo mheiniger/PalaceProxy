@@ -20,6 +20,8 @@ var util = require('util');
 
 function PalaceClient() // extends EventDispatcher
 {
+    that = this;
+
     var importClasses = {};
     function importClass(namespace){
         var className = namespace.split(".").slice(-1)[0];
@@ -312,10 +314,10 @@ function PalaceClient() // extends EventDispatcher
             host = match[1];
         }
 
-        this.host = host;
-        this.port = port;
-        this.initialRoom = initialRoom;
-        this.userName = userName;
+        that.host = host;
+        that.port = port;
+        that.initialRoom = initialRoom;
+        that.userName = userName;
 
         if (connected || (socket && socket.connected)) {
             disconnect();
@@ -324,7 +326,6 @@ function PalaceClient() // extends EventDispatcher
             resetState();
         }
         connecting = true;
-        console.log('before-connect');
         dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_START));
 
         setupBuffer();
@@ -335,7 +336,7 @@ function PalaceClient() // extends EventDispatcher
         socket.on("data", onSocketData);
         socket.on("error", onIOError);
 
-        socket.connect(this.port, this.host, onConnect);
+        socket.connect(that.port, that.host, onConnect);
     }
     this.connect = connect;
 
@@ -344,36 +345,47 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function extendSocket() {
+        socket.endian = "bigEndian";
         socket.writeInt = function(data) {
-            console.log('sending',data);
             var buffer = new Buffer(4);
             if (socket.endian == "littleEndian") {
-                buffer.writeUInt32LE(0);
+                buffer.writeUInt32LE(data, 0);
             } else {
-                buffer.writeUInt32BE(0);
+                buffer.writeUInt32BE(data, 0);
             }
+            console.log('sending',buffer.toString('hex'));
             socket.write(buffer);
+        }
+
+        socket.writeByte = function (data) {
+            var buffer = new Buffer(1);
+            buffer.writeInt8(data, 0);
+            console.log('sending',buffer.toString('hex'));
+            socket.write(buffer);
+        }
+
+        socket.writeMultiByte = function (data, encoding) {
+            console.log('sending', data);
+            // temporary write just utf8.. encoding later...
+            socket.write(data);
         }
     }
 
     function setupBuffer(){
+        Buffer.prototype.offset = 0;
         Buffer.prototype.readInt = function(){
-            trace('offset: ' + this.localOffset);
+            trace('offset: ' + this.offset);
             if (socket.endian == "littleEndian") {
-                return this.readUInt32LE(this.localOffset);
+                var value = this.readUInt32LE(this.offset);
+                this.offset = this.offset + 4;
+                return value;
             } else if (socket.endian == "bigEndian"){
-                return this.readUInt32BE(this.localOffset);
+                var value = this.readUInt32BE(this.offset);
+                this.offset = this.offset + 4;
+                return value;
+
             } else {
                 console.log('endianness not set, can\'t read!!');
-            }
-            this.localOffset = this.localOffset + 4;
-        }
-
-        Buffer.prototype.writeInt = function(data){
-            if (socket.endian == "littleEndian") {
-                return this.writeUInt32LE(0);
-            } else {
-                return this.writeUInt32BE(0);
             }
         }
     }
@@ -1156,38 +1168,27 @@ function PalaceClient() // extends EventDispatcher
         var messageID;
         var size;
         var p;
-        var messageBuffer = getBufferCopy(buffer)
 
-        socket.endian = "littleEndian";
-        buffer.localOffset = 0;
         messageID = buffer.readInt();
-        trace('handshake: ' + buffer.toString('hex'));
-        trace('messageId (readInt): ' + messageID);
-        trace('messageId (ascii  ): ' + messageBuffer.toString('ascii',0,4));
 
         switch (messageID) {
             case IncomingMessageTypes.UNKNOWN_SERVER: //1886610802
-                Alert.show("Got MSG_TROPSER.  Don't know how to proceed.","Logon Error");
+                trace("Got MSG_TROPSER.  Don't know how to proceed.","Logon Error");
                 break;
             case IncomingMessageTypes.LITTLE_ENDIAN_SERVER: // MSG_DIYIT
-                trace('chosing: little Endian');
                 socket.endian = "littleEndian";
                 size = buffer.readInt();
                 p = buffer.readInt();
                 logOn(size, p);
                 break;
             case IncomingMessageTypes.BIG_ENDIAN_SERVER: // MSG_TIYID
-                trace('chosing: big Endian');
                 socket.endian = "bigEndian";
-                trace('this should be 4 bytes shorter, but isnt???: ' + buffer.toString('hex'));
                 size = buffer.readInt();
-                trace(size);
                 p = buffer.readInt();
-                trace(p);
                 logOn(size, p);
                 break;
             default:
-                trace("Unexpected MessageID while logging on: " + messageBuffer.toString('ascii',0,4));
+                trace("Unexpected MessageID while logging on: " + buffer.toString('ascii',0,4));
                 break;
         }
     }
@@ -1217,14 +1218,13 @@ function PalaceClient() // extends EventDispatcher
 
         // regCode counter
         socket.writeInt(regCounter);  // Guest regCode counter
-
         // Username has to be Windows-1252 and up to 31 characters
-        if (userName.length > 31) {
-            userName = userName.slice(0,31);
+        if (that.userName.length > 31) {
+            that.userName = that.userName.slice(0,31);
         }
-        socket.writeByte(userName.length);
-        socket.writeMultiByte(userName, 'Windows-1252');
-        i = 31 - (userName.length);
+        socket.writeByte(that.userName.length);
+        socket.writeMultiByte(that.userName, 'Windows-1252');
+        i = 31 - (that.userName.length);
         for(; i > 0; i--) {
             socket.writeByte(0);
         }
