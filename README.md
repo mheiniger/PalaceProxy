@@ -46,7 +46,7 @@ wine PalaceUserWin.exe
 ```
 After its installed you can start it with:
 ```
-~/.wine/drive_c/Program Files/Communities.com/ThePalace/Palace32.exe
+~/.wine/drive_c/Program\ Files/Communities.com/ThePalace/Palace32.exe
 ```
 
 
@@ -59,7 +59,7 @@ Linux:
 wget http://www.palaceaholic.com/downloads/server/linux/PalaceServerLinux.tar.gz
 tar -xvzf PalaceServerLinux.tar.gz
 cd pserver-4.5.1.i686-unknown-linux
-./install
+sudo ./install
 ```
 
 Use standard-answers for any install-questions.

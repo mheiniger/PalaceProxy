@@ -358,19 +358,15 @@ function PalaceClient() // extends EventDispatcher
 
     function setupBuffer(){
         Buffer.prototype.readInt = function(){
-            that = this;
+            trace('offset: ' + this.localOffset);
             if (socket.endian == "littleEndian") {
-                var data = this.readUInt32LE(0);
-                trace(this);
-                that = this.slice(4);
-                return data;
+                return this.readUInt32LE(this.localOffset);
             } else if (socket.endian == "bigEndian"){
-                var data = this.readUInt32BE(0);
-                that = this.slice(4);
-                return data;
+                return this.readUInt32BE(this.localOffset);
             } else {
                 console.log('endianness not set, can\'t read!!');
             }
+            this.localOffset = this.localOffset + 4;
         }
 
         Buffer.prototype.writeInt = function(data){
@@ -928,9 +924,9 @@ function PalaceClient() // extends EventDispatcher
                 else if (state == STATE_READY) {
                     if (messageID == 0) {
                         if (buffer.length >= 12) { // Header is 12 bytes
-                            messageID = buffer.readInt32LE(0);
-                            messageSize = buffer.readInt32LE(0);
-                            messageP = buffer.readInt32LE(0);
+                            messageID = buffer.readInt;
+                            messageSize = buffer.readInt;
+                            messageP = buffer.readInt;
                         }
                         else {
                             return;
@@ -1162,29 +1158,32 @@ function PalaceClient() // extends EventDispatcher
         var p;
         var messageBuffer = getBufferCopy(buffer)
 
-        messageID = buffer.readUInt32LE(0);
-        trace(buffer.toString('hex'));
-        buffer = buffer.slice(4);
-        trace(buffer.toString('hex'));
-        console.log(messageBuffer.toString('ascii',0,4));
+        socket.endian = "littleEndian";
+        buffer.localOffset = 0;
+        messageID = buffer.readInt();
+        trace('handshake: ' + buffer.toString('hex'));
+        trace('messageId (readInt): ' + messageID);
+        trace('messageId (ascii  ): ' + messageBuffer.toString('ascii',0,4));
 
         switch (messageID) {
             case IncomingMessageTypes.UNKNOWN_SERVER: //1886610802
                 Alert.show("Got MSG_TROPSER.  Don't know how to proceed.","Logon Error");
                 break;
             case IncomingMessageTypes.LITTLE_ENDIAN_SERVER: // MSG_DIYIT
+                trace('chosing: little Endian');
                 socket.endian = "littleEndian";
                 size = buffer.readInt();
                 p = buffer.readInt();
                 logOn(size, p);
                 break;
             case IncomingMessageTypes.BIG_ENDIAN_SERVER: // MSG_TIYID
+                trace('chosing: big Endian');
                 socket.endian = "bigEndian";
-                trace(buffer.toString('hex'));
+                trace('this should be 4 bytes shorter, but isnt???: ' + buffer.toString('hex'));
                 size = buffer.readInt();
-                trace(buffer.toString('hex'));
+                trace(size);
                 p = buffer.readInt();
-                trace(buffer.toString('hex'));
+                trace(p);
                 logOn(size, p);
                 break;
             default:
