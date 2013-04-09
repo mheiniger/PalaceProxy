@@ -1233,32 +1233,34 @@ function PalaceClient() // extends EventDispatcher
         if (that.userName.length > 31) {
             that.userName = that.userName.slice(0,31);
         }
+
+        trace ('break 1');
         socket.writeByte(that.userName.length);
         socket.writeMultiByte(that.userName, 'Windows-1252');
         i = 31 - (that.userName.length);
         for(; i > 0; i--) {
             socket.writeByte(0);
         }
-
+trace ('break 2');
         for (i=0; i < 32; i ++) {
             socket.writeByte(0);
         }
-
+trace ('break 3');
         // auxFlags
         socket.writeInt(AUXFLAGS_AUTHENTICATE | AUXFLAGS_WIN32);
-
+trace ('break 4');
         // puidCtr
         socket.writeInt(puidCounter);
-
+trace ('break 5');
         // puidCRC
         socket.writeInt(puidCRC);
-
+trace ('break 6');
         // demoElapsed - no longer used
         socket.writeInt(0);
-
+trace ('break 7');
         // totalElapsed - no longer used
         socket.writeInt(0);
-
+trace ('break 8');
         // demoLimit - no longer used
         socket.writeInt(0);
 
