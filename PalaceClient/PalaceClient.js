@@ -353,21 +353,32 @@ function PalaceClient() // extends EventDispatcher
             } else {
                 buffer.writeUInt32BE(data, 0);
             }
-            console.log('sending',buffer.toString('hex'));
+            console.log('sending Int: ',buffer.toString('hex'));
             socket.write(buffer);
         }
 
         socket.writeByte = function (data) {
             var buffer = new Buffer(1);
             buffer.writeInt8(data, 0);
-            console.log('sending',buffer.toString('hex'));
+            console.log('sending Byte: ',buffer.toString('hex'));
             socket.write(buffer);
         }
 
         socket.writeMultiByte = function (data, encoding) {
-            console.log('sending', data);
+            console.log('sending MultyByte: ', data);
             // temporary write just utf8.. encoding later...
             socket.write(data);
+        }
+
+        socket.writeShort = function (data, encoding) {
+            var buffer = new Buffer(2);
+            if (socket.endian == "littleEndian") {
+                buffer.writeUInt16LE(data, 0);
+            } else {
+                buffer.writeUInt16BE(data, 0);
+            }
+            console.log('sending Short: ', buffer.toString('hex'));
+            socket.write(buffer);
         }
     }
 
