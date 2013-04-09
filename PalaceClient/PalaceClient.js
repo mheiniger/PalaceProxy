@@ -347,6 +347,7 @@ function PalaceClient() // extends EventDispatcher
     function extendSocket() {
         socket.endian = "bigEndian";
         socket.writeInt = function(data) {
+            console.log('writeInt Data: ' + data);
             var buffer = new Buffer(4);
             if (socket.endian == "littleEndian") {
                 buffer.writeUInt32LE(data, 0);
