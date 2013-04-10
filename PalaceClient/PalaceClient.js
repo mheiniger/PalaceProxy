@@ -1248,7 +1248,13 @@ trace ('break 2');
         }
 trace ('break 3');
         // auxFlags
-        socket.writeInt(AUXFLAGS_AUTHENTICATE | AUXFLAGS_WIN32);
+        // var AUXFLAGS_AUTHENTICATE = 0x80000000;
+        trace(AUXFLAGS_AUTHENTICATE.toString(2));
+        // var AUXFLAGS_WIN32 = 4;
+        trace(AUXFLAGS_WIN32.toString(2));
+        trace((~(AUXFLAGS_AUTHENTICATE | AUXFLAGS_WIN32)).toString(2));
+        trace((AUXFLAGS_AUTHENTICATE | AUXFLAGS_WIN32).toString(2));
+        socket.writeInt( (AUXFLAGS_AUTHENTICATE | AUXFLAGS_WIN32));
 trace ('break 4');
         // puidCtr
         socket.writeInt(puidCounter);
