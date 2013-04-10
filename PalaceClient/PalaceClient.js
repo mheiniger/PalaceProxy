@@ -347,14 +347,14 @@ function PalaceClient() // extends EventDispatcher
     function extendSocket() {
         socket.endian = "bigEndian";
         socket.writeInt = function(data) {
-            console.log('writeInt Data: ' + data);
+            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
+            console.log('writeInt Binary: ' + data.toString(2));
             var buffer = new Buffer(4);
             if (socket.endian == "littleEndian") {
                 buffer.writeUInt32LE(data, 0);
             } else {
                 buffer.writeUInt32BE(data, 0);
             }
-            console.log('sending Int: ',buffer.toString('hex'));
             socket.write(buffer);
         }
 
@@ -374,12 +374,15 @@ function PalaceClient() // extends EventDispatcher
         socket.writeShort = function (data, encoding) {
             var buffer = new Buffer(2);
             if (socket.endian == "littleEndian") {
-                buffer.writeUInt16LE(data, 0);
+                buffer.writeInt16LE(data, 0);
             } else {
-                buffer.writeUInt16BE(data, 0);
+                buffer.writeInt16BE(data, 0);
             }
             console.log('sending Short: ', buffer.toString('hex'));
             socket.write(buffer);
+        }
+        socket.flush = function() {
+            // don't know what to do yet
         }
     }
 
@@ -388,18 +391,66 @@ function PalaceClient() // extends EventDispatcher
         Buffer.prototype.readInt = function(){
             trace('offset: ' + this.offset);
             if (socket.endian == "littleEndian") {
+                var value = this.readInt32LE(this.offset);
+            } else if (socket.endian == "bigEndian"){
+                var value = this.readInt32BE(this.offset);
+            }
+            this.offset = this.offset + 4;
+            return value;
+        }
+        Buffer.prototype.readUnsignedInt = function(){
+            trace('offset: ' + this.offset);
+            if (socket.endian == "littleEndian") {
                 var value = this.readUInt32LE(this.offset);
-                this.offset = this.offset + 4;
-                return value;
             } else if (socket.endian == "bigEndian"){
                 var value = this.readUInt32BE(this.offset);
-                this.offset = this.offset + 4;
-                return value;
-
-            } else {
-                console.log('endianness not set, can\'t read!!');
             }
+            this.offset = this.offset + 4;
+            return value;
         }
+        Buffer.prototype.readShort = function(){
+            trace('offset: ' + this.offset);
+            if (socket.endian == "littleEndian") {
+                var value = this.readUInt16LE(this.offset);
+            } else if (socket.endian == "bigEndian"){
+                var value = this.readUInt16BE(this.offset);
+            }
+            this.offset = this.offset + 2;
+            return value;
+        }
+        Buffer.prototype.readUnsignedByte = function(){
+            trace('offset: ' + this.offset);
+            var value = this.readUInt8(this.offset);
+            this.offset = this.offset + 1;
+            return value;
+        }
+        Buffer.prototype.readByte = function(){
+            trace('offset: ' + this.offset);
+            var value = this.readUInt8(this.offset);
+            this.offset = this.offset + 1;
+            return value;
+        }
+        Buffer.prototype.readMultiByte = function(number){
+            trace('offset: ' + this.offset);
+            var value = "";
+            for(var i=0;i>number;i++) {
+                value[i] = this.readUInt8(this.offset);
+                this.offset = this.offset + 1;
+            }
+            return value;
+        }
+
+
+        Buffer.prototype.getLength = function(){
+            trace('getLength: ' + (this.length - this.offset));
+            return (this.length - this.offset);
+        }
+    }
+
+    function intToText(number) {
+        var buffer = new Buffer(4);
+        buffer.writeUInt32BE(number, 0);
+        return(buffer.toString('ascii'));
     }
 
     function authenticate(username, password) {
@@ -935,22 +986,23 @@ function PalaceClient() // extends EventDispatcher
 
     function onSocketData(buffer) {
 		trace("Got data: " + buffer.length + " bytes available");
+        buffer.offset = 0;
         var size;
         var p;
 
 //			try {
 
-            while (buffer.length > 0) {
-
+            while (buffer.getLength() > 0) {
+                trace ('state: ' + state);
                 if (state == STATE_HANDSHAKING) {
                     handshake(buffer);
                 }
                 else if (state == STATE_READY) {
                     if (messageID == 0) {
-                        if (buffer.length >= 12) { // Header is 12 bytes
-                            messageID = buffer.readInt;
-                            messageSize = buffer.readInt;
-                            messageP = buffer.readInt;
+                        if (buffer.getLength() >= 12) { // Header is 12 bytes
+                            messageID = buffer.readInt();
+                            messageSize = buffer.readInt();
+                            messageP = buffer.readInt();
                         }
                         else {
                             return;
@@ -959,176 +1011,176 @@ function PalaceClient() // extends EventDispatcher
                     size = messageSize;
                     p = messageP;
 
-                    if (size > buffer.length) {
+                    if (size > buffer.getLength()) {
                         return;
                     }
-                    console.log(messageID);
+                    console.log('messageID: ' + intToText(messageID));
 
                     switch (messageID) {
                         case IncomingMessageTypes.ALTERNATE_LOGON_REPLY:
-                            alternateLogon(size, p);
+                            alternateLogon(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.SERVER_DOWN:
-                            handleServerDown(size, p);
+                            handleServerDown(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.SERVER_VERSION:
-                            handleReceiveServerVersion(size, p);
+                            handleReceiveServerVersion(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.SERVER_INFO:
-                            handleReceiveServerInfo(size, p);
+                            handleReceiveServerInfo(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.USER_STATUS:
-                            handleReceiveUserStatus(size, p);
+                            handleReceiveUserStatus(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.USER_LOGGED_ON_AND_MAX:
-                            handleReceiveUserLog(size, p);
+                            handleReceiveUserLog(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.GOT_HTTP_SERVER_LOCATION:
-                            handleReceiveMediaServer(size, p);
+                            handleReceiveMediaServer(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.GOT_ROOM_DESCRIPTION:
                         case IncomingMessageTypes.GOT_ROOM_DESCRIPTION_ALT:
-                            handleReceiveRoomDescription(size, p);
+                            handleReceiveRoomDescription(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.GOT_USER_LIST:
-                            handleReceiveUserList(size, p);
+                            handleReceiveUserList(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.GOT_REPLY_OF_ALL_USERS:
-                            handleReceiveFullUserList(size, p);
+                            handleReceiveFullUserList(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.GOT_ROOM_LIST:
-                            handleReceiveRoomList(size, p);
+                            handleReceiveRoomList(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.ROOM_DESCEND: // No idea...
-                            handleReceiveRoomDescend(size, p);
+                            handleReceiveRoomDescend(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.USER_NEW:
-                            handleUserNew(size, p);
+                            handleUserNew(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.PINGED:
-                            handlePing(size, p);
+                            handlePing(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.XTALK:
-                            handleReceiveXTalk(size, p);
+                            handleReceiveXTalk(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.XWHISPER:
-                            handleReceiveXWhisper(size, p);
+                            handleReceiveXWhisper(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.TALK:
-                            handleReceiveTalk(size, p);
+                            handleReceiveTalk(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.WHISPER:
-                            handleReceiveWhisper(size, p);
+                            handleReceiveWhisper(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.ASSET_INCOMING:
-                            handleReceiveAsset(size, p);
+                            handleReceiveAsset(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.ASSET_QUERY:
-                            handleAssetQuery(size, p);
+                            handleAssetQuery(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.MOVEMENT:
-                            handleMovement(size, p);
+                            handleMovement(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.USER_COLOR:
-                            handleUserColor(size, p);
+                            handleUserColor(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.USER_FACE:
-                            handleUserFace(size, p);
+                            handleUserFace(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.USER_PROP:
-                            handleUserProp(size, p);
+                            handleUserProp(buffer, size, p);
                             break;
                         case IncomingMessageTypes.USER_DESCRIPTION: // (prop)
-                            handleUserDescription(size, p);
+                            handleUserDescription(buffer, size, p);
                             break;
 //
 //						case IncomingMessage.USER_PROP:
-//							handleUserProp(size, p);
+//							handleUserProp(buffer, size, p);
 //							break;
 
                         case IncomingMessageTypes.USER_RENAME:
-                            handleUserRename(size, p);
+                            handleUserRename(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.USER_LEAVING:
-                            handleUserLeaving(size, p);
+                            handleUserLeaving(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.USER_EXIT_ROOM:
-                            handleUserExitRoom(size, p);
+                            handleUserExitRoom(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.PROP_MOVE:
-                            handlePropMove(size, p);
+                            handlePropMove(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.PROP_DELETE:
-                            handlePropDelete(size, p);
+                            handlePropDelete(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.PROP_NEW:
-                            handlePropNew(size, p);
+                            handlePropNew(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.DOOR_LOCK:
-                            handleDoorLock(size, p);
+                            handleDoorLock(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.DOOR_UNLOCK:
-                            handleDoorUnlock(size, p);
+                            handleDoorUnlock(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.PICT_MOVE:
-                            handlePictMove(size, p);
+                            handlePictMove(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.SPOT_STATE:
-                            handleSpotState(size, p);
+                            handleSpotState(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.SPOT_MOVE:
-                            handleSpotMove(size, p);
+                            handleSpotMove(buffer, size, p);
                             break;
                         case IncomingMessageTypes.DRAW_CMD:
-                            handleDrawCommand(size, p);
+                            handleDrawCommand(buffer, size, p);
                             break;
 //						case IncomingMessage.CONNECTION_DIED:
-//							handleConnectionDied(size, p);
+//							handleConnectionDied(buffer, size, p);
 //							break;
 //
 //						case IncomingMessage.INCOMING_FILE:
-//							handleIncomingFile(size, p);
+//							handleIncomingFile(buffer, size, p);
 //							break;
 
                         case IncomingMessageTypes.NAV_ERROR:
-                            handleNavError(size, p);
+                            handleNavError(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.AUTHENTICATE:
-                            handleAuthenticate(size, p);
+                            handleAuthenticate(buffer, size, p);
                             break;
 
                         case IncomingMessageTypes.BLOWTHRU:
@@ -1225,10 +1277,10 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(128); // struct AuxRegistrationRec is 128 bytes
         socket.writeInt(0); // RefNum unused in LOGON message
 
-        // regCode crc
+        // regCode crc 0x5905f923;
         socket.writeInt(regCRC);  // Guest regCode crc
 
-        // regCode counter
+        // regCode counter 0xcf07309c;
         socket.writeInt(regCounter);  // Guest regCode counter
         // Username has to be Windows-1252 and up to 31 characters
         if (that.userName.length > 31) {
@@ -1248,14 +1300,8 @@ trace ('break 2');
         }
 trace ('break 3');
         // auxFlags
-        // var AUXFLAGS_AUTHENTICATE = 0x80000000;
-        trace(AUXFLAGS_AUTHENTICATE.toString(2));
-        // var AUXFLAGS_WIN32 = 4;
-        trace(AUXFLAGS_WIN32.toString(2));
-        trace((~(AUXFLAGS_AUTHENTICATE | AUXFLAGS_WIN32)).toString(2));
-        trace((AUXFLAGS_AUTHENTICATE | AUXFLAGS_WIN32).toString(2));
-        socket.writeInt( (AUXFLAGS_AUTHENTICATE | AUXFLAGS_WIN32));
-trace ('break 4');
+        socket.writeInt(AUXFLAGS_AUTHENTICATE + AUXFLAGS_WIN32);
+        trace ('break 4');
         // puidCtr
         socket.writeInt(puidCounter);
 trace ('break 5');
@@ -1305,7 +1351,7 @@ trace ('break 8');
         // ul3DEngineCaps -- Unused
         socket.writeInt(0);
 
-        socket.flush();
+//        socket.flush();
 
         state = STATE_READY;
         connecting = false;
@@ -1315,38 +1361,38 @@ trace ('break 8');
 
     // not fully implemented
     // This is only sent when the server is running in "guests-are-members" mode.
-    function alternateLogon(size, referenceId) {
+    function alternateLogon(buffer, size, referenceId) {
         // This is pointless... it's basically echoing back the logon packet
         // that we sent to the server.
         // the only reason we support this is so that certain silly servers
         // can change our puid and ask us to reconnect "for security
         // reasons"
 
-         var crc = socket.readUnsignedInt();
-         var counter = socket.readUnsignedInt();
-         var userNameLength = socket.readUnsignedByte();
+         var crc = buffer.readUnsignedInt();
+         var counter = buffer.readUnsignedInt();
+         var userNameLength = buffer.readUnsignedByte();
 
-         var userName = socket.readMultiByte(userNameLength, 'Windows-1252');
+         var userName = buffer.readMultiByte(userNameLength, 'Windows-1252');
          for (var i = 0; i<31-userNameLength; i++) {
-            socket.readByte(); // padding on the end of the username
+            buffer.readByte(); // padding on the end of the username
          }
          for (i=0; i<32; i++) {
-            socket.readByte(); // wiz password field
+            buffer.readByte(); // wiz password field
          }
-         var auxFlags = socket.readUnsignedInt();
-         var puidCtr = socket.readUnsignedInt();
-         var puidCRC = socket.readUnsignedInt();
-         var demoElapsed = socket.readUnsignedInt();
-         var totalElapsed = socket.readUnsignedInt();
-         var demoLimit = socket.readUnsignedInt();
-         var desiredRoom = socket.readShort();
-         var reserved = socket.readMultiByte(6,'iso-8859-1');
-         var ulRequestedProtocolVersion = socket.readUnsignedInt();
-         var ulUploadCaps = socket.readUnsignedInt();
-         var ulDownloadCaps = socket.readUnsignedInt();
-         var ul2DEngineCaps = socket.readUnsignedInt();
-         var ul2DGraphicsCaps = socket.readUnsignedInt();
-         var ul3DEngineCaps = socket.readUnsignedInt();
+         var auxFlags = buffer.readUnsignedInt();
+         var puidCtr = buffer.readUnsignedInt();
+         var puidCRC = buffer.readUnsignedInt();
+         var demoElapsed = buffer.readUnsignedInt();
+         var totalElapsed = buffer.readUnsignedInt();
+         var demoLimit = buffer.readUnsignedInt();
+         var desiredRoom = buffer.readShort();
+         var reserved = buffer.readMultiByte(6,'iso-8859-1');
+         var ulRequestedProtocolVersion = buffer.readUnsignedInt();
+         var ulUploadCaps = buffer.readUnsignedInt();
+         var ulDownloadCaps = buffer.readUnsignedInt();
+         var ul2DEngineCaps = buffer.readUnsignedInt();
+         var ul2DGraphicsCaps = buffer.readUnsignedInt();
+         var ul3DEngineCaps = buffer.readUnsignedInt();
 
          if (puidCtr != this.puidCounter || puidCRC != this.puidCRC) {
             trace("PUID Changed by server");
@@ -1356,22 +1402,22 @@ trace ('break 8');
          }
     }
 
-    function handleReceiveServerVersion(size, referenceId) {
+    function handleReceiveServerVersion(buffer, size, referenceId) {
         version = referenceId;
         trace("Server version: " + referenceId);
     }
 
-    function handleReceiveServerInfo(size, referenceId) {
+    function handleReceiveServerInfo(buffer, size, referenceId) {
         serverInfo = new PalaceServerInfo();
-        serverInfo.permissions = socket.readInt();
-        var size = Math.abs(socket.readByte());
-        serverName = serverInfo.name = socket.readMultiByte(size, 'Windows-1252');
+        serverInfo.permissions = buffer.readInt();
+        var size = Math.abs(buffer.readByte());
+        serverName = serverInfo.name = buffer.readMultiByte(size, 'Windows-1252');
 
         // Weird -- this message is supposed to include options,
         // and upload/download capabilities, but doesn't.
-//			serverInfo.options = socket.readUnsignedInt();
-//			serverInfo.uploadCapabilities = socket.readUnsignedInt();
-//			serverInfo.downloadCapabilities = socket.readUnsignedInt();
+//			serverInfo.options = buffer.readUnsignedInt();
+//			serverInfo.uploadCapabilities = buffer.readUnsignedInt();
+//			serverInfo.downloadCapabilities = buffer.readUnsignedInt();
 //			trace("Server name: " + serverName);
     }
 
@@ -1381,17 +1427,17 @@ trace ('break 8');
     }
 
     // not fully implemented
-    function handleReceiveUserStatus(size, referenceId) {
+    function handleReceiveUserStatus(buffer, size, referenceId) {
         if (currentUser) {
-            currentUser.flags = socket.readShort();
+            currentUser.flags = buffer.readShort();
         }
         else {
-            temporaryUserFlags = socket.readShort();
+            temporaryUserFlags = buffer.readShort();
         }
         var array = [];
         var bytesRemaining = size - 2;
         for (var i = 0; i < bytesRemaining; i ++) {
-            array.push(socket.readUnsignedByte());
+            array.push(buffer.readUnsignedByte());
         }
         dispatchEvent(new Event('currentUserChanged'));
         trace("Interesting... there is more to the user status message than just the documented flags:");
@@ -1399,8 +1445,8 @@ trace ('break 8');
     }
 
     //class c2
-    function handleReceiveUserLog(size, referenceId) {
-        population = socket.readInt();
+    function handleReceiveUserLog(buffer, size, referenceId) {
+        population = buffer.readInt();
         recentLogonUserIds.addItem(referenceId);
         var timer = new Timer(15000, 1);
         timer.addEventListener(TimerEvent.TIMER, function(event) {
@@ -1413,8 +1459,8 @@ trace ('break 8');
 //			trace("User ID: " + referenceId + " just logged on.  Population: " + population);
     }
 
-    function handleReceiveMediaServer(size, referenceId) {
-        mediaServer = socket.readMultiByte(size, 'Windows-1252');
+    function handleReceiveMediaServer(buffer, size, referenceId) {
+        mediaServer = buffer.readMultiByte(size, 'Windows-1252');
 //			trace("Got media server: " + mediaServer);
     }
 
@@ -1489,14 +1535,14 @@ trace ('break 8');
         currentRoom.statusMessage("Denied by server.");
     }
 
-    function handleReceiveRoomDescription(size, referenceId) {
+    function handleReceiveRoomDescription(buffer, size, referenceId) {
         currentRoom.clearStatusMessage();
         palaceController.clearAlarms();
         palaceController.midiStop();
 
         var messageBytes = new ByteArray();
         messageBytes.endian = socket.endian;
-        socket.readBytes(messageBytes, 0, size);
+        buffer.readBytes(messageBytes, 0, size);
 
         // FIXME: modularize this... but for now we don't need to decode
         // everything twice.
@@ -1689,11 +1735,11 @@ trace ('break 8');
         dispatchEvent(securityEvent);
     }
 
-    function handleDrawCommand(size, referenceId) {
+    function handleDrawCommand(buffer, size, referenceId) {
 
         var pBytes = [];
         for (var i = 0; i < size; i++) {
-            pBytes[i] = socket.readUnsignedByte();
+            pBytes[i] = buffer.readUnsignedByte();
         }
 
         var drawRecord = new PalaceDrawRecord();
@@ -1735,37 +1781,37 @@ trace ('break 8');
     }
 
     // List of users in current room
-    function handleReceiveUserList(size, referenceId) {
+    function handleReceiveUserList(buffer, size, referenceId) {
         // referenceId is count
         currentRoom.removeAllUsers();
 
         for(var i = 0; i < referenceId; i++){
-            var userId = socket.readInt();
-            var y = socket.readShort();
-            var x = socket.readShort();
+            var userId = buffer.readInt();
+            var y = buffer.readShort();
+            var x = buffer.readShort();
             var propIds = []; // 9 slots
             var propCrcs = []; // 9 slots
 
             // props
             var i1 = 0;
             do {
-                propIds[i1] = socket.readInt();
-                propCrcs[i1] = socket.readInt();
+                propIds[i1] = buffer.readInt();
+                propCrcs[i1] = buffer.readInt();
             }
             while (++i1 < 9);
 
-            var roomId = socket.readShort(); // room
-            var face = socket.readShort(); // face
-            var color = socket.readShort(); // color
-            socket.readShort(); // 0?
-            socket.readShort(); // 0?
-            var propnum = socket.readShort(); // number of props
+            var roomId = buffer.readShort(); // room
+            var face = buffer.readShort(); // face
+            var color = buffer.readShort(); // color
+            buffer.readShort(); // 0?
+            buffer.readShort(); // 0?
+            var propnum = buffer.readShort(); // number of props
             if(propnum < 9) {
                 propIds[propnum] = propCrcs[propnum] = 0;
             }
-            var userNameLength = socket.readByte();
-            var userName = socket.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
-            socket.readMultiByte(31-userNameLength, 'Windows-1252');
+            var userNameLength = buffer.readByte();
+            var userName = buffer.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
+            buffer.readMultiByte(31-userNameLength, 'Windows-1252');
 
             var user = new PalaceUser();
             user.isSelf = Boolean(userId == id);
@@ -1785,47 +1831,47 @@ trace ('break 8');
 //			trace("Got list of users in room.  Count: " + currentRoom.users.length);
     }
 
-    function handleReceiveRoomList(size, referenceId) {
+    function handleReceiveRoomList(buffer, size, referenceId) {
         var numAdded = 0;
         var roomCount = referenceId;
         roomList.removeAll();
         for (var i = 0; i < roomCount; i++) {
             var room = new PalaceRoom();
-            room.id = socket.readInt();
-            room.flags = socket.readShort();
-            room.userCount = socket.readShort();
-            var length = socket.readByte();
+            room.id = buffer.readInt();
+            room.flags = buffer.readShort();
+            room.userCount = buffer.readShort();
+            var length = buffer.readByte();
             var paddedLength = (length + (4 - (length & 3))) - 1;
-            room.name = socket.readMultiByte(paddedLength, 'Windows-1252');
+            room.name = buffer.readMultiByte(paddedLength, 'Windows-1252');
             roomList.addItem(room);
             roomById[room.id] = room;
         }
 //			trace("There are " + roomCount + " rooms in this palace.");
     }
 
-    function handleReceiveFullUserList(size, referenceId) {
+    function handleReceiveFullUserList(buffer, size, referenceId) {
         userList.removeAll();
         var userCount = referenceId;
         for (var i = 0; i < userCount; i++) {
             var user = new PalaceUser();
-            user.id = socket.readInt();
+            user.id = buffer.readInt();
             user.isSelf = Boolean(user.id == id);
-            user.flags = socket.readShort();
-            user.roomID = socket.readShort();
+            user.flags = buffer.readShort();
+            user.roomID = buffer.readShort();
             if (roomById[user.roomID]) {
                 user.roomName = roomById[user.roomID].name;
             }
             else {
                 user.roomName = "(Unknown Room)";
             }
-            var userNameLength = socket.readByte();
+            var userNameLength = buffer.readByte();
             var userNamePaddedLength = (userNameLength + (4 - (userNameLength & 3))) - 1;
 // Can't support UTF-8 usernames yet				
 //				if (utf8) {
-//					user.name = socket.readUTFBytes(userNamePaddedLength);
+//					user.name = buffer.readUTFBytes(userNamePaddedLength);
 //				}
 //				else {
-                user.name = socket.readMultiByte(userNamePaddedLength, 'Windows-1252');
+                user.name = buffer.readMultiByte(userNamePaddedLength, 'Windows-1252');
 //				}
             //trace("User List - got user: " + user.name);
             userList.addItem(user);
@@ -1837,8 +1883,8 @@ trace ('break 8');
         // We're done receiving room description & user list
     }
 
-    function handleUserNew(size, referenceId) {
-        var userId = socket.readInt();
+    function handleUserNew(buffer, size, referenceId) {
+        var userId = buffer.readInt();
         if (recentLogonUserIds.getItemIndex(userId) != -1) {
             // Recently logged on user.
             var index = recentLogonUserIds.getItemIndex(userId);
@@ -1847,38 +1893,38 @@ trace ('break 8');
             }
             PalaceSoundPlayer.getInstance().playConnectionPing();
         }
-        var y = socket.readShort();
-        var x = socket.readShort();
+        var y = buffer.readShort();
+        var x = buffer.readShort();
         var propIds = []; // Props, 9 slots
         var propCrcs = []; // Prop Checksums, 9 slots
 
         var i1 = 0;
         do {
-            propIds[i1] = socket.readInt();
-            propCrcs[i1] = socket.readInt();
+            propIds[i1] = buffer.readInt();
+            propCrcs[i1] = buffer.readInt();
         }
         while (++i1 < 9); // props
 
-        var roomId = socket.readShort(); //room
-        var face = socket.readShort();
-        var color = socket.readShort();
-        socket.readShort(); // zero?
-        socket.readShort(); // zero?
-        var propnum = socket.readShort(); // number of props
+        var roomId = buffer.readShort(); //room
+        var face = buffer.readShort();
+        var color = buffer.readShort();
+        buffer.readShort(); // zero?
+        buffer.readShort(); // zero?
+        var propnum = buffer.readShort(); // number of props
         for (var pc = propnum; pc < 9; pc ++ ) {
             propIds[pc] = propCrcs[pc] = 0;
         }
 
-        var userNameLength = socket.readByte();
+        var userNameLength = buffer.readByte();
         var userName;
 // Can't support UTF-8 usernames yet.
 //			if (utf8) {
-//				userName = socket.readUTFBytes(userNameLength); // Length = 32
+//				userName = buffer.readUTFBytes(userNameLength); // Length = 32
 //			}
 //			else {
-            userName = socket.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
+            userName = buffer.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
 //			}
-        socket.readMultiByte(31-userNameLength, 'Windows-1252');
+        buffer.readMultiByte(31-userNameLength, 'Windows-1252');
         //userName = userName.substring(1);
 
         var user = new PalaceUser();
@@ -1923,7 +1969,7 @@ trace ('break 8');
         }
     }
 
-    function handlePing(size, referenceId) {
+    function handlePing(buffer, size, referenceId) {
         if (referenceId != id) {
 //				trace("ID didn't match during ping, bailing");
             return;
@@ -2035,16 +2081,16 @@ trace ('break 8');
     }
 
     // Unencrypted TALK message
-    function handleReceiveTalk(size, referenceId) {
+    function handleReceiveTalk(buffer, size, referenceId) {
         var messageBytes = new ByteArray();
         var message;
         if (utf8) {
-            message = socket.readUTFBytes(size-1);
+            message = buffer.readUTFBytes(size-1);
         }
         else {
-            message = socket.readMultiByte(size-1, 'Windows-1252');
+            message = buffer.readMultiByte(size-1, 'Windows-1252');
         }
-        socket.readByte();
+        buffer.readByte();
         if (referenceId == 0) {
             currentRoom.roomMessage(message);
 //				trace("Got Room Message: " + message);
@@ -2065,16 +2111,16 @@ trace ('break 8');
         }
     }
 
-    function handleReceiveWhisper(size, referenceId) {
+    function handleReceiveWhisper(buffer, size, referenceId) {
         var messageBytes = new ByteArray();
         var message;
         if (utf8) {
-            message = socket.readUTFBytes(size-1);
+            message = buffer.readUTFBytes(size-1);
         }
         else {
-            message = socket.readMultiByte(size-1, 'Windows-1252');
+            message = buffer.readMultiByte(size-1, 'Windows-1252');
         }
-        socket.readByte();
+        buffer.readByte();
         if (referenceId == 0) {
             currentRoom.roomWhisper(message);
 //				trace("Got ESP: " + message);
@@ -2096,12 +2142,12 @@ trace ('break 8');
         }
     }
 
-    function handleReceiveXTalk(size, referenceId) {
-        var length = socket.readShort();
+    function handleReceiveXTalk(buffer, size, referenceId) {
+        var length = buffer.readShort();
 //			trace("XTALK.  Size: " + size + " Length: " + length);
         var messageBytes = new ByteArray();
-        socket.readBytes(messageBytes, 0, length-3); // Length field lies
-        socket.readByte(); // Last byte is unnecessary?
+        buffer.readBytes(messageBytes, 0, length-3); // Length field lies
+        buffer.readByte(); // Last byte is unnecessary?
         var message = PalaceEncryption.getInstance().decrypt(messageBytes, utf8);
         var chatRecord = new PalaceChatRecord(
             PalaceChatRecord.INCHAT,
@@ -2115,12 +2161,12 @@ trace ('break 8');
 //			trace("Got xtalk from userID " + referenceId + ": " + chatstr);
     }
 
-    function handleReceiveXWhisper(size, referenceId) {
-        var length = socket.readShort();
+    function handleReceiveXWhisper(buffer, size, referenceId) {
+        var length = buffer.readShort();
 //			trace("XWHISPER.  Size: " + size + " Length: " + length);
         var messageBytes = new ByteArray();
-        socket.readBytes(messageBytes, 0, length-3); // Length field lies.
-        socket.readByte(); // Last byte is unnecessary?
+        buffer.readBytes(messageBytes, 0, length-3); // Length field lies.
+        buffer.readByte(); // Last byte is unnecessary?
         var message = PalaceEncryption.getInstance().decrypt(messageBytes, utf8);
         var chatRecord = new PalaceChatRecord(
             PalaceChatRecord.INCHAT,
@@ -2135,47 +2181,47 @@ trace ('break 8');
 //			trace("Got xwhisper from userID " + referenceId + ": " + chatstr);
     }
 
-    function handleMovement(size, referenceId) {
+    function handleMovement(buffer, size, referenceId) {
         // a is four, b is userID
-        var y = socket.readShort();
-        var x = socket.readShort();
+        var y = buffer.readShort();
+        var x = buffer.readShort();
         currentRoom.moveUser(referenceId, x, y);
     }
 
-    function handleUserColor(size, referenceId) {
+    function handleUserColor(buffer, size, referenceId) {
         var user = currentRoom.getUserById(referenceId);
-        user.color = socket.readShort();
+        user.color = buffer.readShort();
 //			trace("User " + referenceId + " changed color to " + user.color); 
     }
 
-    function handleUserFace(size, referenceId) {
+    function handleUserFace(buffer, size, referenceId) {
         var user = currentRoom.getUserById(referenceId);
-        user.face = socket.readShort();
+        user.face = buffer.readShort();
 //			trace("User " + referenceId + " changed face to " + user.face);
     }
 
-    function handleUserRename(size, referenceId) {
+    function handleUserRename(buffer, size, referenceId) {
         var user = currentRoom.getUserById(referenceId);
-        var userNameLength = socket.readByte();
+        var userNameLength = buffer.readByte();
         var userName;
 // Can't support UTF-8 usernames yet
 //			if (utf8) {
-//				userName = socket.readUTFBytes(userNameLength);
+//				userName = buffer.readUTFBytes(userNameLength);
 //			}
 //			else {
-            userName = socket.readMultiByte(userNameLength, 'Windows-1252');
+            userName = buffer.readMultiByte(userNameLength, 'Windows-1252');
 //			}
 //			trace("User " + user.name + " changed their name to " + userName);
         user.name = userName;
     }
 
-    function handleUserExitRoom(size, referenceId) {
+    function handleUserExitRoom(buffer, size, referenceId) {
         currentRoom.removeUserById(referenceId);
 //			trace("User " + referenceId + " left the room");
     }
 
-    function handleUserLeaving(size, referenceId) {
-        population = socket.readInt();
+    function handleUserLeaving(buffer, size, referenceId) {
+        population = buffer.readInt();
         if (currentRoom.getUserById(referenceId) != null) {
             currentRoom.removeUserById(referenceId);
             PalaceSoundPlayer.getInstance().playConnectionPing();
@@ -2188,10 +2234,10 @@ trace ('break 8');
 //			trace("User " + referenceId + " logged off");
     }
 
-    function handleAssetQuery(size, referenceId) {
-        var type = socket.readInt();
-        var assetId = socket.readInt();
-        var assetCrc = socket.readUnsignedInt();
+    function handleAssetQuery(buffer, size, referenceId) {
+        var type = buffer.readInt();
+        var assetId = buffer.readInt();
+        var assetCrc = buffer.readUnsignedInt();
 //			trace("Got asset request for type: " + type + ", assetId: " + assetId + ", assetCrc: " + assetCrc);
         var prop = PalacePropStore.getInstance().getProp(null, assetId, assetCrc);
 
@@ -2207,33 +2253,33 @@ trace ('break 8');
         sendPropToServer(event.prop);
     }
 
-    function handleReceiveAsset(size, referenceId) {
-        var assetType = socket.readInt();
-        var assetId = socket.readInt();
-        var assetCrc = socket.readUnsignedInt();
-        var blockSize = socket.readInt();
-        var blockOffset = socket.readInt();
-        var blockNumber = socket.readShort();
-        var blockCount = socket.readShort();
+    function handleReceiveAsset(buffer, size, referenceId) {
+        var assetType = buffer.readInt();
+        var assetId = buffer.readInt();
+        var assetCrc = buffer.readUnsignedInt();
+        var blockSize = buffer.readInt();
+        var blockOffset = buffer.readInt();
+        var blockNumber = buffer.readShort();
+        var blockCount = buffer.readShort();
         var flags = 0;
         var assetSize = 0;
         var assetName = "";
         var data = [];
         if (blockNumber == 0) {
-            flags = socket.readUnsignedInt();
-            assetSize = socket.readInt();
-            var nameLength = socket.readByte();
-            assetName = socket.readMultiByte(nameLength, 'Windows-1252');
+            flags = buffer.readUnsignedInt();
+            assetSize = buffer.readInt();
+            var nameLength = buffer.readByte();
+            assetName = buffer.readMultiByte(nameLength, 'Windows-1252');
             for (var j = 0; j < 31-nameLength; j++) {
-                socket.readByte();
+                buffer.readByte();
             }
         }
         for (var i = 0; i < blockSize; i ++) {
-            data[i] = socket.readByte();
+            data[i] = buffer.readByte();
         }
         var padding = size - (blockSize + 64);
         for (i=0; i < padding; i++) {
-            socket.readByte();
+            buffer.readByte();
         }
         var asset = new PalaceAsset();
         asset.id = assetId;
@@ -2251,14 +2297,14 @@ trace ('break 8');
         }
     }
 
-    function handleUserProp(size, referenceId) {
+    function handleUserProp(buffer, size, referenceId) {
         var user = currentRoom.getUserById(referenceId);
-        var propCount = socket.readInt();
+        var propCount = buffer.readInt();
         var propIds = [];
         var propCrcs = [];
         for (var i = 0; i < propCount; i++) {
-            propIds[i] = socket.readUnsignedInt();
-            propCrcs[i] = socket.readUnsignedInt();
+            propIds[i] = buffer.readUnsignedInt();
+            propCrcs[i] = buffer.readUnsignedInt();
         }
         user.propCount = propCount;
         user.propIds = propIds;
@@ -2266,16 +2312,16 @@ trace ('break 8');
         user.loadProps();
     }
 
-    function handleUserDescription(size, referenceId) {
+    function handleUserDescription(buffer, size, referenceId) {
         var user = currentRoom.getUserById(referenceId);
-        user.face = socket.readShort();
-        user.color = socket.readShort();
-        var propCount = socket.readInt();
+        user.face = buffer.readShort();
+        user.color = buffer.readShort();
+        var propCount = buffer.readInt();
         var propIds = [];
         var propCrcs = [];
         for (var i = 0; i < propCount; i++) {
-            propIds[i] = socket.readUnsignedInt();
-            propCrcs[i] = socket.readUnsignedInt();
+            propIds[i] = buffer.readUnsignedInt();
+            propCrcs[i] = buffer.readUnsignedInt();
         }
         user.propCount = propCount;
         user.propIds = propIds;
@@ -2283,29 +2329,29 @@ trace ('break 8');
         user.loadProps();
     }
 
-    function handlePropMove(size, referenceId) {
-        var propIndex = socket.readInt();
-        var y = socket.readShort();
-        var x = socket.readShort();
+    function handlePropMove(buffer, size, referenceId) {
+        var propIndex = buffer.readInt();
+        var y = buffer.readShort();
+        var x = buffer.readShort();
         currentRoom.moveLooseProp(propIndex, x, y);
     }
 
-    function handlePropDelete(size, referenceId) {
-        var propIndex = socket.readInt();
+    function handlePropDelete(buffer, size, referenceId) {
+        var propIndex = buffer.readInt();
         currentRoom.removeLooseProp(propIndex);
     }
 
-    function handlePropNew(size, referenceId) {
-        var id = socket.readInt();
-        var crc = socket.readUnsignedInt();
-        var y = socket.readShort();
-        var x = socket.readShort();
+    function handlePropNew(buffer, size, referenceId) {
+        var id = buffer.readInt();
+        var crc = buffer.readUnsignedInt();
+        var y = buffer.readShort();
+        var x = buffer.readShort();
         currentRoom.addLooseProp(id, crc, x, y);
     }
 
-    function handleDoorLock(size, referenceId) {
-        var roomId = socket.readShort();
-        var spotId = socket.readShort();
+    function handleDoorLock(buffer, size, referenceId) {
+        var roomId = buffer.readShort();
+        var spotId = buffer.readShort();
 //			trace("Spot id " + spotId + " in room id " + roomId + " has been locked");
         if (roomId == currentRoom.id) {
             var hs = currentRoom.hotSpotsById[spotId];
@@ -2314,9 +2360,9 @@ trace ('break 8');
         }
     }
 
-    function handleDoorUnlock(size, referenceId) {
-        var roomId = socket.readShort();
-        var spotId = socket.readShort();
+    function handleDoorUnlock(buffer, size, referenceId) {
+        var roomId = buffer.readShort();
+        var spotId = buffer.readShort();
 //			trace("Spot id " + spotId + " in room id " + roomId + " has been unlocked");
         if (roomId == currentRoom.id) {
             var hs = currentRoom.hotSpotsById[spotId];
@@ -2325,10 +2371,10 @@ trace ('break 8');
         }
     }
 
-    function handleSpotState(size, referenceId) {
-        var roomId = socket.readShort();
-        var spotId = socket.readShort();
-        var spotState = socket.readUnsignedShort();
+    function handleSpotState(buffer, size, referenceId) {
+        var roomId = buffer.readShort();
+        var spotId = buffer.readShort();
+        var spotState = buffer.readUnsignedShort();
 //			trace("Spot State Changed: Spot id " + spotId + " in room id " + roomId + " is now in state " + spotState);
         if (roomId == currentRoom.id) {
             var hs = currentRoom.hotSpotsById[spotId];
@@ -2342,11 +2388,11 @@ trace ('break 8');
     }
 
 
-    function handlePictMove(size, referenceId) {
-        var roomId = socket.readShort();
-        var spotId = socket.readShort();
-        var y = socket.readShort();
-        var x = socket.readShort();
+    function handlePictMove(buffer, size, referenceId) {
+        var roomId = buffer.readShort();
+        var spotId = buffer.readShort();
+        var y = buffer.readShort();
+        var x = buffer.readShort();
 //			trace("Picture in HotSpot " + spotId + " in room " + roomId + " moved offset to " + x + "," + y);
         if (roomId != currentRoom.id) { return; }
         var hotSpot = currentRoom.hotSpotsById[spotId];
@@ -2355,11 +2401,11 @@ trace ('break 8');
         }
     }
 
-    function handleSpotMove(size, referenceId) {
-        var roomId = socket.readShort();
-        var spotId = socket.readShort();
-        var y = socket.readShort();
-        var x = socket.readShort();
+    function handleSpotMove(buffer, size, referenceId) {
+        var roomId = buffer.readShort();
+        var spotId = buffer.readShort();
+        var y = buffer.readShort();
+        var x = buffer.readShort();
 //			trace("Hotspot " + spotId + " in room " + roomId + " moved to " + x + "," + y);
         if (roomId != currentRoom.id) { return; }
         var hotSpot = currentRoom.hotSpotsById[spotId];
@@ -2369,7 +2415,7 @@ trace ('break 8');
     }
 
 
-    function handleServerDown(size, referenceId) {
+    function handleServerDown(buffer, size, referenceId) {
         var reason = "The connection to the server has been lost.";
 
         switch (referenceId) {
@@ -2411,7 +2457,7 @@ trace ('break 8');
                 reason = "Your Free Demo has expired.";
                 break;
             case 16:
-                reason = socket.readMultiByte(size, 'Windows-1252');
+                reason = buffer.readMultiByte(size, 'Windows-1252');
                 break;
             case 2:
                 reason = "There has been a communications error.";
