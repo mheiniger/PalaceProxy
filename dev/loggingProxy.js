@@ -17,19 +17,26 @@ var clientPort = process.argv[2];
 var serverHost = process.argv[3];
 var serverPort = process.argv[4];
 
+try {
+    fs.mkdirSync('log');
+} catch (e) { };
+
 net.createServer(function (clientSocket) {
   var connected = false;
   var buffers = new Array();
   var serverSocket = new net.Socket();
   var fileNumber = 0;
   var folder = "log/" + new Date().getTime() + "/";
-  fs.mkdir(folder, function(){});
+
+  try {
+      fs.mkdirSync(folder);
+  } catch (e) { console.log('couldn\'t create folder ' + folder)};
 
   serverSocket.connect(parseInt(serverPort), serverHost, function() {
     connected = true;
     if (buffers.length > 0) {
         fileNumber++;
-      var writeableStream = fs.createWriteStream(folder + fileNumber + "_sent");
+      var writeableStream = fs.createWriteStream(folder + String('00000'+fileNumber).slice(-5) + "_sent");
       for (i = 0; i < buffers.length; i++) {
         console.log(buffers[i]);
         serverSocket.write(buffers[i]);
@@ -49,7 +56,8 @@ net.createServer(function (clientSocket) {
   clientSocket.on("data", function (data) {
     if (connected) {
         fileNumber++;
-        fs.createWriteStream(folder + fileNumber + "_sent").write(data).end();
+        var writeableStream_sent = fs.createWriteStream(folder + String('00000'+fileNumber).slice(-5) + "_sent");
+        writeableStream_sent.end(data);
         serverSocket.write(data);
     } else {
       buffers[buffers.length] = data;
@@ -57,7 +65,8 @@ net.createServer(function (clientSocket) {
   });
   serverSocket.on("data", function(data) {
       fileNumber++;
-      fs.createWriteStream(folder + fileNumber + "_received").write(data).end();
+      var writeableStream_received = fs.createWriteStream(folder + String('00000'+fileNumber).slice(-5) + "_received");
+      writeableStream_received.end(data);
       clientSocket.write(data);
   });
   clientSocket.on("close", function(had_error) {

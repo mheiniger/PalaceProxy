@@ -74,4 +74,16 @@ cd /usr/local/palace/bin
 
 pserver will listen on port 9998 by default.
 
+Dev helper
+----------
+
+There's a loggingProxy to inspect and compare sent and received packets:
+Usage:
+````
+node dev/loggingProxy.js 9997 localhost 9998
+````
+This will make the proxy listen on port 9997 and connect to a local palaceserver on localhost:9998.
+As soon as its connected, it will create a log folder and inside a folder with the timestamp for the current session, so you will have each session in a separate folder.
+You can now see every sent and received packet as a seperate file (i use mc to view them in HEX-mode)
+
 Happy hacking!
