@@ -346,23 +346,37 @@ function PalaceClient() // extends EventDispatcher
 
     function extendSocket() {
         socket.endian = "bigEndian";
+        socket.writeBuffer = new Buffer(0);
+        socket.writeBufferPos = 0;
+
+        socket.extendWriteBuffer = function(num) {
+            var spaceLeft = this.writeBuffer.length - this.writeBufferPos - num;
+            console.log('space left: ' + spaceLeft);
+            if (spaceLeft > 0) {
+                this.writeBuffer = Buffer.concat([this.writeBuffer, new Buffer(spaceLeft * -1)]);
+            }
+            console.log('new space: ' + this.writeBuffer.length);
+        }
+
         socket.writeInt = function(data) {
             console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
             console.log('writeInt Binary: ' + data.toString(2));
-            var buffer = new Buffer(4);
+            this.extendWriteBuffer(4)
+            //var buffer = new Buffer(4);
             if (socket.endian == "littleEndian") {
-                buffer.writeUInt32LE(data, 0);
+                this.writeBuffer.writeUInt32LE(data, 0);
             } else {
-                buffer.writeUInt32BE(data, 0);
+                this.writeBuffer.writeUInt32BE(data, 0);
             }
-            socket.write(buffer);
+            //socket.write(buffer);
         }
 
         socket.writeByte = function (data) {
-            var buffer = new Buffer(1);
-            buffer.writeInt8(data, 0);
+//            var buffer = new Buffer(1);
+            this.extendWriteBuffer(1);
+            this.writeBuffer.writeInt8(data, 0);
             console.log('sending Byte: ',buffer.toString('hex'));
-            socket.write(buffer);
+//            socket.write(buffer);
         }
 
         socket.writeMultiByte = function (data, encoding) {
@@ -372,17 +386,20 @@ function PalaceClient() // extends EventDispatcher
         }
 
         socket.writeShort = function (data, encoding) {
-            var buffer = new Buffer(2);
+//            var buffer = new Buffer(2);
+            this.extendWriteBuffer(2);
             if (socket.endian == "littleEndian") {
-                buffer.writeInt16LE(data, 0);
+                this.writeBuffer.writeInt16LE(data, 0);
             } else {
-                buffer.writeInt16BE(data, 0);
+                this.writeBuffer.writeInt16BE(data, 0);
             }
             console.log('sending Short: ', buffer.toString('hex'));
-            socket.write(buffer);
+//            socket.write(buffer);
         }
         socket.flush = function() {
-            // don't know what to do yet
+            this.write(this.writeBuffer);
+            this.writeBufferPos = 0;
+            this.writeBuffer = new Buffer(0);
         }
     }
 
