@@ -351,16 +351,17 @@ function PalaceClient() // extends EventDispatcher
 
         socket.extendWriteBuffer = function(num) {
             var spaceLeft = this.writeBuffer.length - this.writeBufferPos - num;
-            console.log('space left: ' + spaceLeft);
-            if (spaceLeft > 0) {
-                this.writeBuffer = Buffer.concat([this.writeBuffer, new Buffer(spaceLeft * -1)]);
+            if (spaceLeft < 0) {
+                var newLength = this.writeBuffer.length + (spaceLeft * -1);
+                var newBuffer = new Buffer(newLength);
+                this.writeBuffer.copy(newBuffer);
+                this.writeBuffer = newBuffer;
             }
-            console.log('new space: ' + this.writeBuffer.length);
         }
 
         socket.writeInt = function(data) {
-            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
-            console.log('writeInt Binary: ' + data.toString(2));
+//            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
+//            console.log('writeInt Binary: ' + data.toString(2));
             this.extendWriteBuffer(4)
             //var buffer = new Buffer(4);
             if (socket.endian == "littleEndian") {
@@ -368,6 +369,7 @@ function PalaceClient() // extends EventDispatcher
             } else {
                 this.writeBuffer.writeUInt32BE(data, 0);
             }
+            this.writeBufferPos += 4;
             //socket.write(buffer);
         }
 
@@ -375,17 +377,22 @@ function PalaceClient() // extends EventDispatcher
 //            var buffer = new Buffer(1);
             this.extendWriteBuffer(1);
             this.writeBuffer.writeInt8(data, 0);
-            console.log('sending Byte: ',buffer.toString('hex'));
+            this.writeBufferPos += 1;
+//            console.log('sending Byte: ',buffer.toString('hex'));
 //            socket.write(buffer);
         }
 
         socket.writeMultiByte = function (data, encoding) {
-            console.log('sending MultyByte: ', data);
+            //console.log('sending MultyByte: ', data);
             // temporary write just utf8.. encoding later...
-            socket.write(data);
+            var tmpBuffer = new Buffer(data);
+            this.extendWriteBuffer(tmpBuffer.length);
+            tmpBuffer.copy(this.writeBuffer, this.writeBufferPos);
+            this.writeBufferPos += tmpBuffer.length;
+            //socket.write(data);
         }
 
-        socket.writeShort = function (data, encoding) {
+        socket.writeShort = function (data) {
 //            var buffer = new Buffer(2);
             this.extendWriteBuffer(2);
             if (socket.endian == "littleEndian") {
@@ -393,10 +400,13 @@ function PalaceClient() // extends EventDispatcher
             } else {
                 this.writeBuffer.writeInt16BE(data, 0);
             }
-            console.log('sending Short: ', buffer.toString('hex'));
+            this.writeBufferPos += 2;
+//            console.log('sending Short: ', buffer.toString('hex'));
 //            socket.write(buffer);
         }
         socket.flush = function() {
+            console.log('write Data: 0x' + this.writeBuffer.toString('hex'));
+            console.log('write Bin :   ' + this.writeBuffer.toString('utf8'));
             this.write(this.writeBuffer);
             this.writeBufferPos = 0;
             this.writeBuffer = new Buffer(0);
@@ -1368,7 +1378,7 @@ trace ('break 8');
         // ul3DEngineCaps -- Unused
         socket.writeInt(0);
 
-//        socket.flush();
+        socket.flush();
 
         state = STATE_READY;
         connecting = false;
