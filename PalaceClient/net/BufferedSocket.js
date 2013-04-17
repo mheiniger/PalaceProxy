@@ -73,5 +73,69 @@ function extendSocket(socket) {
     }
 }
 
+
+function extendBuffer(socket){
+    Buffer.prototype.offset = 0;
+    Buffer.prototype.readInt = function(){
+//            trace('offset: ' + this.offset);
+        if (socket.endian == "littleEndian") {
+            var value = this.readInt32LE(this.offset);
+        } else if (socket.endian == "bigEndian"){
+            var value = this.readInt32BE(this.offset);
+        }
+        this.offset = this.offset + 4;
+        return value;
+    }
+    Buffer.prototype.readUnsignedInt = function(){
+//            trace('offset: ' + this.offset);
+        if (socket.endian == "littleEndian") {
+            var value = this.readUInt32LE(this.offset);
+        } else if (socket.endian == "bigEndian"){
+            var value = this.readUInt32BE(this.offset);
+        }
+        this.offset = this.offset + 4;
+        return value;
+    }
+    Buffer.prototype.readShort = function(){
+//            trace('offset: ' + this.offset);
+        if (socket.endian == "littleEndian") {
+            var value = this.readUInt16LE(this.offset);
+        } else if (socket.endian == "bigEndian"){
+            var value = this.readUInt16BE(this.offset);
+        }
+        this.offset = this.offset + 2;
+        return value;
+    }
+    Buffer.prototype.readUnsignedByte = function(){
+//            trace('offset: ' + this.offset);
+        var value = this.readUInt8(this.offset);
+        this.offset = this.offset + 1;
+        return value;
+    }
+    Buffer.prototype.readByte = function(){
+//            trace('offset: ' + this.offset);
+        var value = this.readUInt8(this.offset);
+        this.offset = this.offset + 1;
+        return value;
+    }
+    Buffer.prototype.readMultiByte = function(number){
+//            trace('offset: ' + this.offset);
+        var value = "";
+        for(var i=0;i>number;i++) {
+            value[i] = this.readUInt8(this.offset);
+            this.offset = this.offset + 1;
+        }
+        return value;
+    }
+
+
+    Buffer.prototype.getLength = function(){
+//            trace('getLength: ' + (this.length - this.offset));
+        return (this.length - this.offset);
+    }
+}
+
+
 module.exports = BufferedSocket;
 module.exports.extendSocket = extendSocket;
+module.exports.extendBuffer = extendBuffer;
