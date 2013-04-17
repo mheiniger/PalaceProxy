@@ -29,6 +29,8 @@ function PalaceClient() // extends EventDispatcher
         console.log('> loading ' + className);
     }
 
+    importClass("net.BufferedSocket");
+
     //import com.adobe.net.URI;
 
     //import flash.events.Event;
