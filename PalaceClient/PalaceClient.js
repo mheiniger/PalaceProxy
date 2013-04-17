@@ -52,6 +52,7 @@ function PalaceClient() // extends EventDispatcher
     //import mx.controls.Alert;
     //importClass("openpalace.accountserver.rpc.AccountServerClient");
     //importClass("palace.crypto.PalaceEncryption");
+    importClass("palace.event.Event");
     importClass("palace.event.PalaceEvent");
     //importClass("palace.event.PalaceSecurityErrorEvent");
     //importClass("palace.event.PropEvent");
@@ -134,6 +135,8 @@ function PalaceClient() // extends EventDispatcher
 
     var socket = null;
 
+    var ByteArray = Buffer;
+
 //    var accountClient = AccountServerClient.getInstance();
 
     var version;
@@ -163,6 +166,7 @@ function PalaceClient() // extends EventDispatcher
     var userList = new ArrayCollection();
 
     var currentRoom = new PalaceCurrentRoom();
+    var currentUser = {};
 
     var roomList = new ArrayCollection();
     var roomById = {};
@@ -348,7 +352,7 @@ function PalaceClient() // extends EventDispatcher
 
     function intToText(number) {
         var buffer = new Buffer(4);
-        buffer.writeUInt32BE(number, 0);
+        buffer.writeInt32BE(number, 0);
         return(buffer.toString('ascii'));
     }
 
@@ -884,15 +888,15 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function onSocketData(buffer) {
-		trace("Got data: " + buffer.length + " bytes available");
-        buffer.offset = 0;
+        trace("\nGot data: " + buffer.length + " bytes available");
+        buffer.position = 0;
         var size;
         var p;
 
 //			try {
 
             while (buffer.getLength() > 0) {
-                trace ('state: ' + state);
+//                trace ('state: ' + state);
                 if (state == STATE_HANDSHAKING) {
                     handshake(buffer);
                 }
@@ -911,9 +915,10 @@ function PalaceClient() // extends EventDispatcher
                     p = messageP;
 
                     if (size > buffer.getLength()) {
+                        console.log('packet to big ('+size+'), returning');
                         return;
                     }
-                    console.log('messageID: ' + intToText(messageID));
+                    console.log('Message: ' + messageID + ', messageID: ' + intToText(messageID));
 
                     switch (messageID) {
                         case IncomingMessageTypes.ALTERNATE_LOGON_REPLY:
@@ -1345,15 +1350,15 @@ function PalaceClient() // extends EventDispatcher
     function handleReceiveUserLog(buffer, size, referenceId) {
         population = buffer.readInt();
         recentLogonUserIds.addItem(referenceId);
-        var timer = new Timer(15000, 1);
-        timer.addEventListener(TimerEvent.TIMER, function(event) {
-            var index = recentLogonUserIds.getItemIndex(referenceId);
-            if (index != -1) {
-                recentLogonUserIds.removeItemAt(index);
-            }
-        });
-        timer.start();
-//			trace("User ID: " + referenceId + " just logged on.  Population: " + population);
+//        var timer = new Timer(15000, 1);
+//        timer.addEventListener(TimerEvent.TIMER, function(event) {
+//            var index = recentLogonUserIds.getItemIndex(referenceId);
+//            if (index != -1) {
+//                recentLogonUserIds.removeItemAt(index);
+//            }
+//        });
+//        timer.start();
+  		trace("User ID: " + referenceId + " just logged on.  Population: " + population);
     }
 
     function handleReceiveMediaServer(buffer, size, referenceId) {
@@ -1366,7 +1371,7 @@ function PalaceClient() // extends EventDispatcher
         var outputLineHex = "";
         var outputLineAscii = "";
         for (var byteNum = 0; byteNum < bytes.length; byteNum++) {
-            var hexNum = uint(bytes[byteNum]).toString(16).toUpperCase();
+            var hexNum = (bytes[byteNum]).toString(16).toUpperCase();
             if (hexNum.length == 1) {
                 hexNum = "0" + hexNum;
             }
@@ -1433,20 +1438,23 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function handleReceiveRoomDescription(buffer, size, referenceId) {
+        //palaceController.clearAlarms();
+        //palaceController.midiStop();
         currentRoom.clearStatusMessage();
-        palaceController.clearAlarms();
-        palaceController.midiStop();
 
-        var messageBytes = new ByteArray();
-        messageBytes.endian = socket.endian;
-        buffer.readBytes(messageBytes, 0, size);
+        var messageBytes = new Buffer(buffer.length - buffer.position);
+        messageBytes.position = 0;
+        //messageBytes.endian = socket.endian;
+        buffer.copy(messageBytes, 0, buffer.position);
+
 
         // FIXME: modularize this... but for now we don't need to decode
         // everything twice.
 //			var roomDescription:RoomDescription = new RoomDescription();
 //			roomDescription.read(messageBytes, referenceId);
 
-        messageBytes.position = 0;
+        //messageBytes.position = 0;
+        outputHexView(messageBytes);
 
         var roomFlags = messageBytes.readInt();
         var face = messageBytes.readInt();
@@ -1469,7 +1477,7 @@ function PalaceClient() // extends EventDispatcher
         var roomDataLength = messageBytes.readShort();
         var rb = new Array(roomDataLength);
 
-//			trace("Reading in room description: " + roomDataLength + " bytes to read.");
+			trace("Reading in room description: " + roomDataLength + " bytes to read.");
         for (var i = 0; i < roomDataLength; i++) {
             rb[i] = messageBytes.readUnsignedByte();
         }
@@ -1486,7 +1494,7 @@ function PalaceClient() // extends EventDispatcher
         // Room Name
         var roomNameLength = rb[roomNameOffset];
         var roomName = "";
-        var ba = new ByteArray();
+        var ba = new ByteArray(roomNameLength);
         for (i=0; i < roomNameLength; i++) {
             byte = rb[i+roomNameOffset+1];
             ba.writeByte(byte);
