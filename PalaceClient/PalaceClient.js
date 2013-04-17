@@ -330,7 +330,7 @@ function PalaceClient() // extends EventDispatcher
 
         setupBuffer();
         socket = new net.Socket();
-        extendSocket();
+        extendSocket(socket);
         socket.timeout = 5000;
         socket.on("close", onClose);
         socket.on("data", onSocketData);
@@ -344,12 +344,13 @@ function PalaceClient() // extends EventDispatcher
         object.emit;
     }
 
-    function extendSocket() {
+    function extendSocket(socket) {
         socket.endian = "bigEndian";
         socket.writeBuffer = new Buffer(0);
         socket.writeBufferPos = 0;
 
         socket.extendWriteBuffer = function(num) {
+
             var spaceLeft = this.writeBuffer.length - this.writeBufferPos - num;
             if (spaceLeft < 0) {
                 var newLength = this.writeBuffer.length + (spaceLeft * -1);
@@ -357,6 +358,7 @@ function PalaceClient() // extends EventDispatcher
                 this.writeBuffer.copy(newBuffer);
                 this.writeBuffer = newBuffer;
             }
+//            console.log('buffer length: ' + this.writeBuffer.length + ' buffer pos: ' + this.writeBufferPos);
         }
 
         socket.writeInt = function(data) {
@@ -365,9 +367,9 @@ function PalaceClient() // extends EventDispatcher
             this.extendWriteBuffer(4)
             //var buffer = new Buffer(4);
             if (socket.endian == "littleEndian") {
-                this.writeBuffer.writeUInt32LE(data, 0);
+                this.writeBuffer.writeUInt32LE(data, this.writeBufferPos);
             } else {
-                this.writeBuffer.writeUInt32BE(data, 0);
+                this.writeBuffer.writeUInt32BE(data, this.writeBufferPos);
             }
             this.writeBufferPos += 4;
             //socket.write(buffer);
@@ -376,7 +378,7 @@ function PalaceClient() // extends EventDispatcher
         socket.writeByte = function (data) {
 //            var buffer = new Buffer(1);
             this.extendWriteBuffer(1);
-            this.writeBuffer.writeInt8(data, 0);
+            this.writeBuffer.writeInt8(data, this.writeBufferPos);
             this.writeBufferPos += 1;
 //            console.log('sending Byte: ',buffer.toString('hex'));
 //            socket.write(buffer);
@@ -396,9 +398,9 @@ function PalaceClient() // extends EventDispatcher
 //            var buffer = new Buffer(2);
             this.extendWriteBuffer(2);
             if (socket.endian == "littleEndian") {
-                this.writeBuffer.writeInt16LE(data, 0);
+                this.writeBuffer.writeInt16LE(data, this.writeBufferPos);
             } else {
-                this.writeBuffer.writeInt16BE(data, 0);
+                this.writeBuffer.writeInt16BE(data, this.writeBufferPos);
             }
             this.writeBufferPos += 2;
 //            console.log('sending Short: ', buffer.toString('hex'));
@@ -416,7 +418,7 @@ function PalaceClient() // extends EventDispatcher
     function setupBuffer(){
         Buffer.prototype.offset = 0;
         Buffer.prototype.readInt = function(){
-            trace('offset: ' + this.offset);
+//            trace('offset: ' + this.offset);
             if (socket.endian == "littleEndian") {
                 var value = this.readInt32LE(this.offset);
             } else if (socket.endian == "bigEndian"){
@@ -426,7 +428,7 @@ function PalaceClient() // extends EventDispatcher
             return value;
         }
         Buffer.prototype.readUnsignedInt = function(){
-            trace('offset: ' + this.offset);
+//            trace('offset: ' + this.offset);
             if (socket.endian == "littleEndian") {
                 var value = this.readUInt32LE(this.offset);
             } else if (socket.endian == "bigEndian"){
@@ -436,7 +438,7 @@ function PalaceClient() // extends EventDispatcher
             return value;
         }
         Buffer.prototype.readShort = function(){
-            trace('offset: ' + this.offset);
+//            trace('offset: ' + this.offset);
             if (socket.endian == "littleEndian") {
                 var value = this.readUInt16LE(this.offset);
             } else if (socket.endian == "bigEndian"){
@@ -446,19 +448,19 @@ function PalaceClient() // extends EventDispatcher
             return value;
         }
         Buffer.prototype.readUnsignedByte = function(){
-            trace('offset: ' + this.offset);
+//            trace('offset: ' + this.offset);
             var value = this.readUInt8(this.offset);
             this.offset = this.offset + 1;
             return value;
         }
         Buffer.prototype.readByte = function(){
-            trace('offset: ' + this.offset);
+//            trace('offset: ' + this.offset);
             var value = this.readUInt8(this.offset);
             this.offset = this.offset + 1;
             return value;
         }
         Buffer.prototype.readMultiByte = function(number){
-            trace('offset: ' + this.offset);
+//            trace('offset: ' + this.offset);
             var value = "";
             for(var i=0;i>number;i++) {
                 value[i] = this.readUInt8(this.offset);
@@ -469,7 +471,7 @@ function PalaceClient() // extends EventDispatcher
 
 
         Buffer.prototype.getLength = function(){
-            trace('getLength: ' + (this.length - this.offset));
+//            trace('getLength: ' + (this.length - this.offset));
             return (this.length - this.offset);
         }
     }
@@ -1314,33 +1316,30 @@ function PalaceClient() // extends EventDispatcher
             that.userName = that.userName.slice(0,31);
         }
 
-        trace ('break 1');
         socket.writeByte(that.userName.length);
         socket.writeMultiByte(that.userName, 'Windows-1252');
         i = 31 - (that.userName.length);
         for(; i > 0; i--) {
             socket.writeByte(0);
         }
-trace ('break 2');
         for (i=0; i < 32; i ++) {
             socket.writeByte(0);
         }
-trace ('break 3');
         // auxFlags
         socket.writeInt(AUXFLAGS_AUTHENTICATE + AUXFLAGS_WIN32);
-        trace ('break 4');
+
         // puidCtr
         socket.writeInt(puidCounter);
-trace ('break 5');
+
         // puidCRC
         socket.writeInt(puidCRC);
-trace ('break 6');
+
         // demoElapsed - no longer used
         socket.writeInt(0);
-trace ('break 7');
+
         // totalElapsed - no longer used
         socket.writeInt(0);
-trace ('break 8');
+
         // demoLimit - no longer used
         socket.writeInt(0);
 
@@ -1381,6 +1380,7 @@ trace ('break 8');
         socket.flush();
 
         state = STATE_READY;
+        console.log('logon finished');
         connecting = false;
         dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_COMPLETE));
     }
@@ -1998,7 +1998,7 @@ trace ('break 8');
 
     function handlePing(buffer, size, referenceId) {
         if (referenceId != id) {
-//				trace("ID didn't match during ping, bailing");
+				trace("ID didn't match during ping, bailing");
             return;
         }
 
@@ -2007,7 +2007,7 @@ trace ('break 8');
         socket.writeInt(0);
         socket.flush();
 
-//			trace("Pinged.");
+			trace("Pinged.");
     }
 
     /*
