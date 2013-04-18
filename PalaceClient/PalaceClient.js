@@ -64,7 +64,7 @@ function PalaceClient() // extends EventDispatcher
     importClass("palace.message.OutgoingMessageTypes");
     //importClass("palace.model.AssetManager");
     //importClass("palace.model.PalaceAsset");
-    //importClass("palace.model.PalaceConfig");
+    importClass("palace.model.PalaceConfig");
     importClass("palace.model.PalaceCurrentRoom");
     //importClass("palace.model.PalaceHotspot");
     //importClass("palace.model.PalaceImageOverlay");

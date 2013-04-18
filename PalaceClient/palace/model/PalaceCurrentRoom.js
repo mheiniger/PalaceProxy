@@ -151,7 +151,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
 
     /* public */
     this.clearSpotImages = function ()/* :void */ {
-        spotImages = new Dictionary();
+        spotImages = {}; //new Dictionary();
     }
 
     /* public */
