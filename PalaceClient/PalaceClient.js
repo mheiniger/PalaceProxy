@@ -1461,6 +1461,7 @@ function PalaceClient() // extends EventDispatcher
         var roomID = messageBytes.readShort();
         currentRoom.id = roomID;
         var roomNameOffset = messageBytes.readShort();
+        trace("roomnameOffset: " + roomNameOffset);
         var imageNameOffset = messageBytes.readShort();
         var artistNameOffset = messageBytes.readShort();
         var passwordOffset = messageBytes.readShort();
@@ -1482,9 +1483,10 @@ function PalaceClient() // extends EventDispatcher
             rb[i] = messageBytes.readUnsignedByte();
         }
 
-        //outputHexView(roomBytes);
+        outputHexView(rb);
 
         var padding = size - roomDataLength - 40;
+        trace("padding: " + padding);
         for (i=0; i < padding; i++) {
             messageBytes.readByte();
         }
@@ -1501,7 +1503,7 @@ function PalaceClient() // extends EventDispatcher
         }
         ba.position = 0;
         roomName = ba.readMultiByte(roomNameLength, 'Windows-1252');
-
+        trace('roomname: ' + roomName);
         // Image Name
         var imageNameLength = rb[imageNameOffset];
         var imageName = "";
