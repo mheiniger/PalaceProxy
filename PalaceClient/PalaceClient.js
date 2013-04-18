@@ -1441,11 +1441,12 @@ function PalaceClient() // extends EventDispatcher
         //palaceController.clearAlarms();
         //palaceController.midiStop();
         currentRoom.clearStatusMessage();
-
-        var messageBytes = new Buffer(buffer.length - buffer.position);
+trace('size: ' + size);
+        trace('bufferlength' + buffer.length + 'bufferrest ' + (buffer.length - buffer.position));
+        var messageBytes = new Buffer(size);
         messageBytes.position = 0;
         //messageBytes.endian = socket.endian;
-        buffer.copy(messageBytes, 0, buffer.position);
+        buffer.copy(messageBytes, 0, buffer.position, buffer.position + size);
 
 
         // FIXME: modularize this... but for now we don't need to decode
@@ -1495,6 +1496,7 @@ function PalaceClient() // extends EventDispatcher
 
         // Room Name
         var roomNameLength = rb[roomNameOffset];
+        trace("roomnamelength: " + roomNameLength);
         var roomName = "";
         var ba = new ByteArray(roomNameLength);
         for (i=0; i < roomNameLength; i++) {
