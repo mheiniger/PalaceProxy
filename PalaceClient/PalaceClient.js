@@ -20,7 +20,7 @@ var util = require('util');
 
 function PalaceClient() // extends EventDispatcher
 {
-    that = this;
+    var that = this;
 
     var importClasses = {};
     function importClass(namespace){
@@ -491,7 +491,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function roomMessage(message) {
-        if (!connected || message == null || message.length == 0) {
+        if (!connected || message == null || message.length === 0) {
             return;
         }
 //			trace("ROOMMSG");
@@ -901,7 +901,7 @@ function PalaceClient() // extends EventDispatcher
                     handshake(buffer);
                 }
                 else if (state == STATE_READY) {
-                    if (messageID == 0) {
+                    if (messageID === 0) {
                         if (buffer.getLength() >= 12) { // Header is 12 bytes
                             messageID = buffer.readInt();
                             messageSize = buffer.readInt();

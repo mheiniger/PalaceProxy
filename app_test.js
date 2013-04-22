@@ -1,6 +1,6 @@
 var util = require('util');
 var net = require("net");
-var packet = require("packet");
+// var packet = require("packet"); // not needed for now
 var PalaceClient = require("./PalaceClient/PalaceClient");
 
 process.on("uncaughtException", function (e) {
