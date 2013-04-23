@@ -889,6 +889,12 @@ function PalaceClient() // extends EventDispatcher
 
     function onSocketData(buffer) {
         trace("\nGot data: " + buffer.length + " bytes available");
+        if (socket.bufferedReadData) {
+            var newBuffer = new Buffer(buffer.length + socket.bufferedReadData.length);
+            socket.bufferedReadData.copy(newBuffer, 0);
+            buffer.copy(newBuffer, socket.bufferedReadData.length);
+            buffer = newBuffer;
+        }
         buffer.position = 0;
         var size;
         var p;
@@ -915,9 +921,11 @@ function PalaceClient() // extends EventDispatcher
                     p = messageP;
 
                     if (size > buffer.getLength()) {
+                        socket.bufferedReadData = buffer;
                         console.log('packet to big ('+size+'), returning');
                         return;
                     }
+                    socket.bufferedReadData = null;
                     console.log('Message: ' + messageID + ', messageID: ' + intToText(messageID));
 
                     switch (messageID) {
