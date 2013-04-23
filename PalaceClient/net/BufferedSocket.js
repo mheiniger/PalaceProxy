@@ -135,7 +135,7 @@ function extendBuffer(socket){
         }
 
         Buffer.prototype.writeByte = function(byte){
-            this.writeInt8(byte, this.position);
+            this.writeUInt8(byte, this.position);
             this.position++;
         }
     }

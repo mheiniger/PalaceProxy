@@ -13,8 +13,6 @@ for(var i = 0;i<array.length;i++) {
     // add new variable scopes
     if (line.search("public class") > -1) {
         array[i+1] = array[i+1] + "\n" +
-            "    this.publicFunctions = {};\n" +
-            "    this.publicVars = {};\n" +
             "    this.constants = {};";
         classname = line.match(/public class (\w+)/)[1];
     }
@@ -38,13 +36,15 @@ for(var i = 0;i<array.length;i++) {
     line = comment(line, ":Error");
     line = comment(line, ":Object");
     line = comment(line, ":Number");
+    line = comment(line, ":HotSpotImage");
+
 
 
 
     line = line.replace(/extends (\w+)/, '\/\/extends $1');
-    line = line.replace(/public function set (\w+)/, 'var set_$1 = this.publicFunctions.set_$1 = function');
-    line = line.replace(/public function get (\w+)/, 'var get_$1 = this.publicFunctions.get_$1 = function');
-    line = line.replace(/public function (\w+)/, 'var $1 = this.publicFunctions.$1 = function');
+    line = line.replace(/public function set (\w+)/, 'var set_$1 = this.set_$1 = function');
+    line = line.replace(/public function get (\w+)/, 'var get_$1 = this.get_$1 = function');
+    line = line.replace(/public function (\w+)/, 'var $1 = this.$1 = function');
 
 
     line = line.replace(/public static const (\w+)/, 'var $1 = this.constants.$1');
@@ -53,7 +53,7 @@ for(var i = 0;i<array.length;i++) {
     line = line.replace(":Vector.<IptEventHandler> = new Vector.<IptEventHandler>()", "= {}");
 
 
-    line = line.replace(/public var (\w+)/, "var $1 = this.publicVars");
+    line = line.replace(/public var (\w+)/, "var $1 = this.$1");
     line = line.replace("private var ", "var ");
 
     //line = line.replace(/public class (.*)/, );
@@ -75,15 +75,10 @@ for(var i = 0;i<array.length;i++) {
 array[array.length-1] = "//" + array[array.length-1];
 array[array.length] = array[array.length]||'' + "\n" +
     "module.exports = " + classname + ";\n" +
-    "for (name in " + classname + ".constants) {\n" +
-    "   module.exports[name] = " + classname + ".constants[name];\n" +
-    "}\n" +
-    "for (name in " + classname + ".publicFunctions) {\n" +
-    "   module.exports[name] = " + classname + ".publicFunctions[name];\n" +
-    "}\n" +
-    "for (name in " + classname + ".publicVars) {\n" +
-    "   module.exports[name] = " + classname + ".publicVars[name];\n" +
-    "}\n"
+    "var " + classname + "Var = new " + classname + "();\n" +
+    "for (name in " + classname + "Var.constants) {\n" +
+    "   module.exports[name] = " + classname + "Var.constants[name];\n" +
+    "}"
 
 function comment(line, word){
     var re = new RegExp(word,"g");

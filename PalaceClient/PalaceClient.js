@@ -66,7 +66,7 @@ function PalaceClient() // extends EventDispatcher
     //importClass("palace.model.PalaceAsset");
     importClass("palace.model.PalaceConfig");
     importClass("palace.model.PalaceCurrentRoom");
-    //importClass("palace.model.PalaceHotspot");
+    var PalaceHotspot = require("./palace/model/PalaceHotspot");
     //importClass("palace.model.PalaceImageOverlay");
     //importClass("palace.model.PalaceLooseProp");
     //importClass("palace.model.PalaceProp");
@@ -186,7 +186,7 @@ function PalaceClient() // extends EventDispatcher
     var regCRC = 0x5905f923;
 
     var recentLogonUserIds = new ArrayCollection();
-    var cyborgHotspot = {} // new PalaceHotspot();
+    var cyborgHotspot =  new PalaceHotspot();
     var muteSounds;
     var _userName = "OpenPalace User";
     var sharedObject;
@@ -922,7 +922,7 @@ function PalaceClient() // extends EventDispatcher
 
                     if (size > buffer.getLength()) {
                         socket.bufferedReadData = buffer;
-                        console.log('packet to big ('+size+'), returning');
+                        console.log('packet for ' + intToText(messageID) + ' to big ('+size+'), collecting');
                         return;
                     }
                     socket.bufferedReadData = null;
@@ -1099,8 +1099,8 @@ function PalaceClient() // extends EventDispatcher
                             trace("Blowthru message.");
                             // fall through to default...
                         default:
-                            trace("Unhandled MessageID: " + messageID.toString('ascii') + " (" + messageID.toString('hex') + ") - " +
-                                  "Size: " + size + " - referenceId: " + p);
+                            trace("Unhandled MessageID: \"" + intToText(messageID)  +
+                                  "\", Size: " + size + " - referenceId: " + p);
                             var dataToDump = [];
                             for (var i = 0; i < size; i++) {
                                 dataToDump[i] = buffer.readUnsignedByte();
@@ -1449,8 +1449,8 @@ function PalaceClient() // extends EventDispatcher
         //palaceController.clearAlarms();
         //palaceController.midiStop();
         currentRoom.clearStatusMessage();
-trace('size: ' + size);
-        trace('bufferlength' + buffer.length + 'bufferrest ' + (buffer.length - buffer.position));
+//        trace('size: ' + size);
+//        trace('bufferlength' + buffer.length + 'bufferrest ' + (buffer.length - buffer.position));
         var messageBytes = new Buffer(size);
         messageBytes.position = 0;
         //messageBytes.endian = socket.endian;
@@ -1470,7 +1470,7 @@ trace('size: ' + size);
         var roomID = messageBytes.readShort();
         currentRoom.id = roomID;
         var roomNameOffset = messageBytes.readShort();
-        trace("roomnameOffset: " + roomNameOffset);
+//        trace("roomnameOffset: " + roomNameOffset);
         var imageNameOffset = messageBytes.readShort();
         var artistNameOffset = messageBytes.readShort();
         var passwordOffset = messageBytes.readShort();
@@ -1495,7 +1495,7 @@ trace('size: ' + size);
         outputHexView(rb);
 
         var padding = size - roomDataLength - 40;
-        trace("padding: " + padding);
+//        trace("padding: " + padding);
         for (i=0; i < padding; i++) {
             messageBytes.readByte();
         }
@@ -1526,6 +1526,7 @@ trace('size: ' + size);
         }
 
         // Images
+        trace("Images:");
         var images = {};
         currentRoom.clearSpotImages();
         for (i=0; i < imageCount; i++) {
@@ -1571,6 +1572,7 @@ trace('size: ' + size);
 
         currentRoom.hotSpotsById = {};
         for (i=0; i < hotSpotCount; i++) {
+            trace("Hotspot " + i);
             var hs = new PalaceHotspot();
             hs.readData(socket.endian, rb, hotSpotOffset);
             hotSpotOffset += hs.size;
@@ -1598,6 +1600,7 @@ trace('size: ' + size);
             }
         }
 
+        trace("Loose Props:");
         // Loose Props
         currentRoom.looseProps.removeAll();
         var tempPropArray = [];
@@ -1610,6 +1613,7 @@ trace('size: ' + size);
             currentRoom.addLooseProp(looseProp.id, looseProp.crc, looseProp.x, looseProp.y, true);
         }
 
+        trace("Draw Commands:");
         // Draw Commands
         currentRoom.drawFrontCommands.removeAll();
         currentRoom.drawBackCommands.removeAll();
