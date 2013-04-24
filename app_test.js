@@ -17,7 +17,7 @@ if (process.argv.length != 4) {
 var serverHost = process.argv[2];
 var serverPort = process.argv[3];
 
-var palaceClient = new PalaceClient();
+var palaceClient = PalaceClient.getInstance();
 
 
 palaceClient.connect("TestUser", serverHost, serverPort, 0);

@@ -25,6 +25,7 @@ var ByteArray = Buffer;
 var	ArrayCollection = require("../../mx/collections/ArrayCollection");
 var PalaceHotspotState = require("./PalaceHotspotState");
 var FlexPoint = require("./FlexPoint");
+var PalaceClient = require("../../PalaceClient");
 
 
 //	import net.codecomposer.palace.event.HotspotEvent;
@@ -265,6 +266,7 @@ function PalaceHotspot() //extends EventDispatcher
 //			trace("Hotspot offset " + offset);
         location = new FlexPoint();
 
+        trace("size:" + size);
         var ba/* :ByteArray */ = new ByteArray(size+1);
         for (var j/* :int */=offset; j < offset+size+1; j++) {
             ba.writeByte(roomBytes[j]);
@@ -297,7 +299,8 @@ function PalaceHotspot() //extends EventDispatcher
         var scriptTextOffset/* :int */ = ba.readShort();
         ba.readShort();
         if (nameOffset > 0) {
-            var nameLength/* :int */ = roomBytes[nameOffset];
+            var nameLength/* :int */ = roomBytes[nameOffset] || 0;
+            trace("nameLength:" + nameLength);
             var nameByteArray/* :ByteArray */ = new ByteArray(nameLength);
             for (var a/* :int */ = nameOffset+1; a < nameOffset+nameLength+1; a++) {
                 nameByteArray.writeByte(roomBytes[a]);
@@ -314,6 +317,7 @@ function PalaceHotspot() //extends EventDispatcher
             var currentByte/* :int */ = -1;
             var counter/* :int */ = scriptTextOffset;
             var maxLength/* :int */ = roomBytes.length;
+            trace("scriptTextOffset:" + (maxLength - scriptTextOffset));
             var scriptByteArray/* :ByteArray */ = new ByteArray(maxLength - scriptTextOffset);
             var scriptChars/* :int */ = 0;
             while (currentByte != 0 && counter < maxLength) {
@@ -326,6 +330,7 @@ function PalaceHotspot() //extends EventDispatcher
 //			trace("Script: " + scriptString);
         loadScripts();
         var endPos/* :int */ = pointsOffset+(numPoints*4);
+        trace("pointsOffset:" + (endPos + 1 - pointsOffset));
         ba = new ByteArray(endPos + 1 - pointsOffset);
         for (j=pointsOffset; j < endPos+1; j++) {
             ba.writeByte(roomBytes[j]);

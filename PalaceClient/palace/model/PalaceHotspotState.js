@@ -40,6 +40,7 @@ function PalaceHotspotState() {
     }
 
     var readData = this.readData = function (endian/* :String */, roomBytes/* :Array */, offset/* :int */)/* :void */ {
+        console.log("PalaceHotspotState size:" + size);
         var ba/* :ByteArray */ = new ByteArray(size + 1);
         for (var j/* :int */ = offset; j < offset + size + 1; j++) {
             ba.writeByte(roomBytes[j]);

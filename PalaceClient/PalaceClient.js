@@ -97,7 +97,7 @@ function PalaceClient() // extends EventDispatcher
         eval('var ' + className + ' =  importClasses.' + className);
     }
 
-    var instance;
+
 
     //    var loaderContext = new LoaderContext();
 
@@ -218,22 +218,22 @@ function PalaceClient() // extends EventDispatcher
     var STATE_HANDSHAKING = 1;
     var STATE_READY = 2;
 
-    function getInstance() {
-        if (PalaceClient.instance == null) {
-            PalaceClient.instance = new PalaceClient();
-        }
-        return PalaceClient.instance;
-    }
+//    var getInstance = this.getInstance = function() {
+//        if (PalaceClient.instance == null) {
+//            PalaceClient.instance = new PalaceClient();
+//        }
+//        return PalaceClient.instance;
+//    }
 
-    function PalaceClient()
+    var PalaceClientConstructor = function()
     {
         if (PalaceClient.instance != null) {
             throw new Error("Cannot create more than one instance of a singleton.");
         }
-
+console.log('initiating constructor');
         palaceController = new PalaceController();
         palaceController.client = this;
-    }
+    }();
 
     function setCyborg(cyborgScript) {
         cyborgHotspot = new PalaceHotspot();
@@ -2402,4 +2402,15 @@ function PalaceClient() // extends EventDispatcher
     }
 
 }
+
+var instance;
+function getInstance() {
+    if (instance == null) {
+        instance = new PalaceClient();
+    }
+    return instance;
+}
+
+
 module.exports = PalaceClient;
+module.exports.getInstance = getInstance;
