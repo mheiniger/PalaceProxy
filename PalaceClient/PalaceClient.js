@@ -230,7 +230,7 @@ function PalaceClient() // extends EventDispatcher
         if (PalaceClient.instance != null) {
             throw new Error("Cannot create more than one instance of a singleton.");
         }
-console.log('initiating constructor');
+        return; // Todo: client should do scripting
         palaceController = new PalaceController();
         palaceController.client = this;
     }();

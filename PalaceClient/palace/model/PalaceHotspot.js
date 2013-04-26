@@ -381,6 +381,7 @@ function PalaceHotspot() //extends EventDispatcher
     }
 
     var loadScripts = this.loadScripts = function()/* :void */ {
+        return; // TODO: send scripts to client
         nbrScripts = 0;
         scriptEventMask = 0;
         if(scriptString)
