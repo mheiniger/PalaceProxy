@@ -900,8 +900,8 @@ function PalaceClient() // extends EventDispatcher
         var p;
 
 //			try {
-
-            while (buffer.getLength() > 0) {
+            var bufferLength = buffer.getLength();
+            while (bufferLength > 0) {
 //                trace ('state: ' + state);
                 if (state == STATE_HANDSHAKING) {
                     handshake(buffer);
@@ -926,7 +926,8 @@ function PalaceClient() // extends EventDispatcher
                         return;
                     }
                     socket.bufferedReadData = null;
-                    console.log('Message: ' + messageID + ', messageID: ' + intToText(messageID));
+                    var messageID_txt = intToText(messageID)
+                    console.log('Message: ' + messageID + ', messageID: ' + messageID_txt);
 
                     switch (messageID) {
                         case IncomingMessageTypes.ALTERNATE_LOGON_REPLY:
@@ -957,10 +958,11 @@ function PalaceClient() // extends EventDispatcher
                             handleReceiveMediaServer(buffer, size, p);
                             break;
 
-                        case IncomingMessageTypes.GOT_ROOM_DESCRIPTION:
-                        case IncomingMessageTypes.GOT_ROOM_DESCRIPTION_ALT:
-                            handleReceiveRoomDescription(buffer, size, p);
-                            break;
+                        // TODO: mhe: do it later
+//                        case IncomingMessageTypes.GOT_ROOM_DESCRIPTION:
+//                        case IncomingMessageTypes.GOT_ROOM_DESCRIPTION_ALT:
+//                            handleReceiveRoomDescription(buffer, size, p);
+//                            break;
 
                         case IncomingMessageTypes.GOT_USER_LIST:
                             handleReceiveUserList(buffer, size, p);

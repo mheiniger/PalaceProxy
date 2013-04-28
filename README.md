@@ -86,4 +86,8 @@ This will make the proxy listen on port 9997 and connect to a local palaceserver
 As soon as its connected, it will create a log folder and inside a folder with the timestamp for the current session, so you will have each session in a separate folder.
 You can now see every sent and received packet as a seperate file (i use mc to view them in HEX-mode)
 
+This can help debugging:
+
+https://github.com/dannycoates/node-inspector
+
 Happy hacking!
