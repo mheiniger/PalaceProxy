@@ -19,9 +19,9 @@ along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
 //{
 //	import flash.events.Event;
 //	import flash.events.EventDispatcher;
-	
-//	import mx.collections.ArrayCollection;
-	
+
+var	ArrayCollection = require("../../mx/collections/ArrayCollection");
+
 //	import net.codecomposer.palace.event.PropEvent;
 //	import net.codecomposer.palace.rpc.PalaceClient;
 
@@ -85,8 +85,8 @@ along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
 		var props = this.props/* :Array Collection */ = new ArrayCollection();
 		
 		var showFace = this.showFace/* :Boolean */ = true;
-		
-		var propStore/* :PalaceProp Store */ = PalacePropStore.getInstance();
+// todo: mhe: implement propstore
+//		var propStore/* :PalaceProp Store */ = PalacePropStore.getInstance();
 		
 //		[Bindable(event="faceChanged")]
 		var set_face = this.set_face = function(newValue/* :int */)/* :void */ {
@@ -196,21 +196,22 @@ along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
 		}
 		
 		var loadProps = this.loadProps = function()/* :void */ {
-			var i/* :int */ = 0;
-			var prop/* :PalaceProp */;
-			for (i=0; i < props.length; i++) {
-				prop = PalaceProp(props.getItemAt(i));
-				prop.removeEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
-			}
-			props.removeAll();
-			for (i = 0; i < propCount; i ++) {
-				prop = propStore.getProp(null, propIds[i], propCrcs[i]);
-				if (!prop.ready) {
-					prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
-				}
-				props.addItem(prop);
-			}
-			checkFaceProps();
+// todo mhe: later
+//			var i/* :int */ = 0;
+//			var prop/* :PalaceProp */;
+//			for (i=0; i < props.length; i++) {
+//				prop = PalaceProp(props.getItemAt(i));
+//				prop.removeEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
+//			}
+//			props.removeAll();
+//			for (i = 0; i < propCount; i ++) {
+//				prop = propStore.getProp(null, propIds[i], propCrcs[i]);
+//				if (!prop.ready) {
+//					prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
+//				}
+//				props.addItem(prop);
+//			}
+//			checkFaceProps();
 		}
 		
 		function handlePropLoaded(event/* :PropEvent */)/* :void */ {

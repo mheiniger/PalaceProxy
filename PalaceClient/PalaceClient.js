@@ -463,7 +463,8 @@ function PalaceClient() // extends EventDispatcher
             message,
             currentRoom.selectedUser ? true : false
         );
-        chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_OUTCHAT);
+        // todo:
+        // chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_OUTCHAT);
         chatQueue.push(chatRecord);
         processChatQueue();
     }
@@ -646,12 +647,14 @@ function PalaceClient() // extends EventDispatcher
 
         requestedRoomId = roomId;
 
-        leaveEventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_LEAVE);
+        // todo:
+        // leaveEventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_LEAVE);
         if (leaveEventHandlers) {
             for (var handler in leaveEventHandlers) {
                 handler.addEventListener(IptEngineEvent.FINISH, handleLeaveEventHandlersFinish);
             }
-            palaceController.triggerHotspotEvents(IptEventHandler.TYPE_LEAVE);
+            // todo:
+            // palaceController.triggerHotspotEvents(IptEventHandler.TYPE_LEAVE);
         }
         else {
             actuallyGotoRoom(roomId);
@@ -1878,12 +1881,14 @@ function PalaceClient() // extends EventDispatcher
                     requestRoomList();
                     requestUserList();
 
-                    palaceController.triggerHotspotEvents(IptEventHandler.TYPE_SIGNON);
+                    // todo:
+                    // palaceController.triggerHotspotEvents(IptEventHandler.TYPE_SIGNON);
                     needToRunSignonHandlers = false;
                 }
 
                 // Enter handlers
-                palaceController.triggerHotspotEvents(IptEventHandler.TYPE_ENTER);
+                // todo:
+                // palaceController.triggerHotspotEvents(IptEventHandler.TYPE_ENTER);
             }, 20);
         }
         else if (currentRoom.selectedUser && user.id == currentRoom.selectedUser.id) {
