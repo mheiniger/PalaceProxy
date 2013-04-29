@@ -71,11 +71,11 @@ function PalaceClient() // extends EventDispatcher
     //importClass("palace.model.PalaceLooseProp");
     //importClass("palace.model.PalaceProp");
     //importClass("palace.model.PalacePropStore");
-    //importClass("palace.model.PalaceRoom");
+    var PalaceRoom = require("./palace/model/PalaceRoom");
     importClass("palace.model.PalaceServerInfo");
 
     var PalaceUser = require("./palace/model/PalaceUser");
-    //importClass("palace.record.PalaceChatRecord");
+    var PalaceChatRecord = require("./palace/record/PalaceChatRecord");
     //importClass("palace.record.PalaceDrawRecord");
     //importClass("palace.view.PalaceSoundPlayer");
     //
@@ -1030,9 +1030,10 @@ function PalaceClient() // extends EventDispatcher
                         case IncomingMessageTypes.USER_PROP:
                             handleUserProp(buffer, size, p);
                             break;
-                        case IncomingMessageTypes.USER_DESCRIPTION: // (prop)
-                            handleUserDescription(buffer, size, p);
-                            break;
+//  todo mhe: later
+//                      case IncomingMessageTypes.USER_DESCRIPTION: // (prop) usrD
+//                            handleUserDescription(buffer, size, p);
+//                            break;
 //
 //						case IncomingMessage.USER_PROP:
 //							handleUserProp(buffer, size, p);
@@ -2010,7 +2011,7 @@ function PalaceClient() // extends EventDispatcher
 
     // Unencrypted TALK message
     function handleReceiveTalk(buffer, size, referenceId) {
-        var messageBytes = new ByteArray();
+        // var messageBytes = new ByteArray();
         var message;
         if (utf8) {
             message = buffer.readUTFBytes(size-1);
@@ -2021,7 +2022,7 @@ function PalaceClient() // extends EventDispatcher
         buffer.readByte();
         if (referenceId == 0) {
             currentRoom.roomMessage(message);
-//				trace("Got Room Message: " + message);
+				trace("Got Room Message: " + message);
         }
         else {
             if (message.length > 0) {
@@ -2031,11 +2032,11 @@ function PalaceClient() // extends EventDispatcher
                     0,
                     message
                 );
-                chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
-                chatQueue.push(chatRecord);
+                //chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
+                //chatQueue.push(chatRecord);
                 processChatQueue();
             }
-//				trace("Got talk from userID " + referenceId + ": " + message);
+				trace("Got talk from userID " + referenceId + ": " + message);
         }
     }
 
@@ -2072,8 +2073,8 @@ function PalaceClient() // extends EventDispatcher
 
     function handleReceiveXTalk(buffer, size, referenceId) {
         var length = buffer.readShort();
-//			trace("XTALK.  Size: " + size + " Length: " + length);
-        var messageBytes = new ByteArray();
+			trace("XTALK.  Size: " + size + " Length: " + length);
+        var messageBytes = new ByteArray(length-3);
         buffer.readBytes(messageBytes, 0, length-3); // Length field lies
         buffer.readByte(); // Last byte is unnecessary?
         var message = PalaceEncryption.getInstance().decrypt(messageBytes, utf8);
