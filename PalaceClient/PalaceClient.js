@@ -1031,9 +1031,9 @@ function PalaceClient() // extends EventDispatcher
                             handleUserProp(buffer, size, p);
                             break;
 //  todo mhe: later
-//                      case IncomingMessageTypes.USER_DESCRIPTION: // (prop) usrD
-//                            handleUserDescription(buffer, size, p);
-//                            break;
+                      case IncomingMessageTypes.USER_DESCRIPTION: // (prop) usrD
+                            handleUserDescription(buffer, size, p);
+                            break;
 //
 //						case IncomingMessage.USER_PROP:
 //							handleUserProp(buffer, size, p);
@@ -2242,6 +2242,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function handleUserDescription(buffer, size, referenceId) {
+        trace('userID: '+ referenceId);
         var user = currentRoom.getUserById(referenceId);
         user.face = buffer.readShort();
         user.color = buffer.readShort();

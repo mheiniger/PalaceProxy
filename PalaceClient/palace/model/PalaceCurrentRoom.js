@@ -15,13 +15,6 @@
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var importClasses = {};
-function importClass(namespace){
-    var className = namespace.split(".").slice(-1)[0];
-    importClasses[className] = require("../../" + namespace.replace(/\./g, '/') +'.js');
-    console.log('> loading ' + className);
-}
-
 //package net.codecomposer.palace.model
 //{
 //import flash.events.Event;
@@ -30,17 +23,14 @@ function importClass(namespace){
 //import flash.utils.Dictionary;
 //import flash.utils.Timer;
 
-importClass("mx.collections.ArrayCollection");
+var	ArrayCollection = require("../../mx/collections/ArrayCollection");
 
 //import net.codecomposer.palace.event.ChatEvent;
 //import net.codecomposer.palace.event.PalaceRoomEvent;
 //import net.codecomposer.palace.util.PalaceUtil;
 //import net.codecomposer.palace.view.PalaceRoomView;
 
-// import class-namespaces
-for (var className in importClasses) {
-    eval('var ' + className + ' =  importClasses.' + className);
-}
+var PalaceUser = require("./PalaceUser");
 
 //    [Event(name="chatLogUpdated")]
 //        [Event(name="chat",type="net.codecomposer.palace.event.ChatEvent")]
