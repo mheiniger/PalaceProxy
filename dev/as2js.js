@@ -21,6 +21,7 @@ for(var i = 0;i<array.length;i++) {
     // comment not possible elements
     line = comment(line, ":int");
     line = comment(line, ":Array");
+    line = comment(line, ": Array");
     line = line.replace("Array */Collection", "Array Collection */");
     line = comment(line, ":FlexPoint");
     line = comment(line, ":Boolean");
@@ -37,8 +38,17 @@ for(var i = 0;i<array.length;i++) {
     line = comment(line, ":Object");
     line = comment(line, ":Number");
     line = comment(line, ":HotSpotImage");
+    line = comment(line, ":uint");
+    line = comment(line, ":PalacePropStore");
+    line = comment(line, ":PalaceProp");
+    line = line.replace("PalaceProp */Store", "PalaceProp Store */");
+    line = comment(line, ":PropEvent");
 
 
+    line = line.replace("/* /*", "/*");
+    line = line.replace("*/ */", "*/");
+    line = line.replace(/\:Vector\.<(\w+)\>/, "/* :Vector.<$1> */");
+    line = line.replace("for each", "for");
 
 
     line = line.replace(/extends (\w+)/, '\/\/extends $1');
@@ -55,6 +65,8 @@ for(var i = 0;i<array.length;i++) {
 
     line = line.replace(/public var (\w+)/, "var $1 = this.$1");
     line = line.replace("private var ", "var ");
+    line = line.replace("private static function ", "function ");
+    line = line.replace("private function ", "function ");
 
     //line = line.replace(/public class (.*)/, );
 

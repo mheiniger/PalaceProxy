@@ -74,7 +74,7 @@ function PalaceClient() // extends EventDispatcher
     //importClass("palace.model.PalaceRoom");
     importClass("palace.model.PalaceServerInfo");
 
-    //importClass("palace.model.PalaceUser");
+    var PalaceUser = require("./palace/model/PalaceUser");
     //importClass("palace.record.PalaceChatRecord");
     //importClass("palace.record.PalaceDrawRecord");
     //importClass("palace.view.PalaceSoundPlayer");
@@ -980,7 +980,7 @@ function PalaceClient() // extends EventDispatcher
                             handleReceiveRoomDescend(buffer, size, p);
                             break;
 
-                        case IncomingMessageTypes.USER_NEW:
+                        case IncomingMessageTypes.USER_NEW: // nprs
                             handleUserNew(buffer, size, p);
                             break;
 
@@ -1814,7 +1814,7 @@ function PalaceClient() // extends EventDispatcher
             if (index != -1) {
                 recentLogonUserIds.removeItemAt(index);
             }
-            PalaceSoundPlayer.getInstance().playConnectionPing();
+            // PalaceSoundPlayer.getInstance().playConnectionPing();
         }
         var y = buffer.readShort();
         var x = buffer.readShort();
