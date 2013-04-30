@@ -219,7 +219,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     }
 
     var getUserById = this.getUserById = function (id/* :int */)/* :PalaceUser */ {
-        return users[usersHash[id]];
+        return usersHash[id];
     }
 
     var getUserByName = this.getUserByName = function (name/* :String */)/* :PalaceUser */ {

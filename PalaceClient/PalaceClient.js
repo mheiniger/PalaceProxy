@@ -355,7 +355,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function disconnect() {
-        palaceController.midiStop();
+//        palaceController.midiStop();
         if (socket && socket.connected) {
             palaceController.triggerHotspotEvents(IptEventHandler.TYPE_LEAVE);
             palaceController.triggerHotspotEvents(IptEventHandler.TYPE_SIGNOFF);
@@ -1019,7 +1019,7 @@ function PalaceClient() // extends EventDispatcher
                         case IncomingMessageTypes.USER_PROP:
                             handleUserProp(buffer, size, p);
                             break;
-//  todo mhe: later
+
                         case IncomingMessageTypes.USER_DESCRIPTION: // (prop) usrD
                             handleUserDescription(buffer, size, p);
                             break;
@@ -2149,7 +2149,7 @@ function PalaceClient() // extends EventDispatcher
         population = buffer.readInt();
         if (currentRoom.getUserById(referenceId) != null) {
             currentRoom.removeUserById(referenceId);
-            PalaceSoundPlayer.getInstance().playConnectionPing();
+//            PalaceSoundPlayer.getInstance().playConnectionPing();
         }
         //if user left room and ESP is active when they sign off
         if (currentRoom.selectedUser && currentRoom.selectedUser.id == referenceId) {
