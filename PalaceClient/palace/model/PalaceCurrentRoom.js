@@ -23,7 +23,7 @@
 //import flash.utils.Dictionary;
 //import flash.utils.Timer;
 
-var	ArrayCollection = require("../../mx/collections/ArrayCollection");
+var ArrayCollection = require("../../mx/collections/ArrayCollection");
 
 //import net.codecomposer.palace.event.ChatEvent;
 //import net.codecomposer.palace.event.PalaceRoomEvent;
@@ -42,69 +42,77 @@ var PalaceUser = require("./PalaceUser");
 //        [Bindable]
 
 function PalaceCurrentRoom() /* extends EventDispatcher */ {
-    this.id/* :int */;
-    this.name/* :String */ = "Not Connected";
-    this.backgroundFile/* :String */;
-    this.users/* :ArrayCollection */ = new ArrayCollection();
-    this.usersHash/* :Object */ = {};
-    this.roomFlags/* :int */;
-    this.images/* :Object */ = {};
-    this.spotImages/* :Object */ = {};
-    this.hotSpots/* :ArrayCollection */ = new ArrayCollection();
-    this.hotSpotsAboveNothing/* :ArrayCollection */ = new ArrayCollection();
-    this.hotSpotsAboveAvatars/* :ArrayCollection */ = new ArrayCollection();
-    this.hotSpotsAboveNametags/* :ArrayCollection */ = new ArrayCollection();
-    this.hotSpotsAboveEverything/* :ArrayCollection */ = new ArrayCollection();
-    this.hotSpotsById/* :Object */ = {};
-    this.looseProps/* :ArrayCollection */ = new ArrayCollection();
-    this.drawFrontCommands/* :ArrayCollection */ = new ArrayCollection();
-    this.drawBackCommands/* :ArrayCollection */ = new ArrayCollection();
-    this.drawLayerHistory = {};
-    this._selectedUser/* :PalaceUser */;
-    this.selfUserId/* :int */ = -1;
-    this.roomView/* :PalaceRoomView */;
-    this.dimLevel/* :Number */ = 1;
-    this.showAvatars/* :Boolean */ = true;
 
-    this.chatLog/* :String */ = "";
+    this.constants = {};
+    var id = this.id/* :int */;
+    var name = this.name/* :String */ = "Not Connected";
+    var backgroundFile = this.backgroundFile/* :String */;
+    var users = this.users/* :Array Collection */ = new ArrayCollection();
+    var usersHash = this.usersHash/* :Object */ = {};
+    var roomFlags = this.roomFlags/* :int */;
+    var images = this.images/* :Object */ = {};
+    var spotImages = this.spotImages/* :Object */ = {};
+    var hotSpots = this.hotSpots/* :Array Collection */ = new ArrayCollection();
+    var hotSpotsAboveNothing = this.hotSpotsAboveNothing/* :Array Collection */ = new ArrayCollection();
+    var hotSpotsAboveAvatars = this.hotSpotsAboveAvatars/* :Array Collection */ = new ArrayCollection();
+    var hotSpotsAboveNametags = this.hotSpotsAboveNametags/* :Array Collection */ = new ArrayCollection();
+    var hotSpotsAboveEverything = this.hotSpotsAboveEverything/* :Array Collection */ = new ArrayCollection();
+    var hotSpotsById = this.hotSpotsById/* :Object */ = {};
+    var looseProps = this.looseProps/* :Array Collection */ = new ArrayCollection();
+    var drawFrontCommands = this.drawFrontCommands/* :Array Collection */ = new ArrayCollection();
+    var drawBackCommands = this.drawBackCommands/* :Array Collection */ = new ArrayCollection();
+    var drawLayerHistory = this.drawLayerHistory/* :Vector.<uint> */ = {};
+    var _selectedUser = this._selectedUser/* :PalaceUser */;
+    var selfUserId = this.selfUserId/* :int */ = -1;
+    var roomView = this.roomView/* :PalaceRoom View */;
+    var dimLevel = this.dimLevel/* :Number */ = 1;
+    var showAvatars = this.showAvatars/* :Boolean */ = true;
 
-    this.lastMessage/* :String */;
-    this.lastMessageCount/* :int */ = 0;
-    this.lastMessageReceived/* :Number */ = 0;
-    this.lastMessageTimer/* :Timer */ = new Timer(250, 1);
+    var chatLog = this.chatLog/* :String */ = "";
 
-    this.statusMessageString/* :String */ = "";
+    var lastMessage = this.lastMessage/* :String */;
+    var lastMessageCount = this.lastMessageCount/* :int */ = 0;
+    var lastMessageReceived = this.lastMessageReceived/* :Number */ = 0;
+    var lastMessageTimer = this.lastMessageTimer/* :Timer */ = new Timer(250, 1);
 
-    /* private */
+    var statusMessageString = this.statusMessageString/* :String */ = "";
+
     var statusDisappearTimer/* :Timer */ = new Timer(30000, 1);
-    var classVar = this;
 
     // todo: add working timer class
-    function Timer() {}
-    function PalaceHotspot() {}
-    function PalaceRoomEvent() {}
-    function dispatchEvent(){}
+    function Timer() {
+    }
 
-    this.PalaceCurrentRoom = function () {
-        classVar.lastMessageTimer.addEventListener(TimerEvent.TIMER, handleLastMessageTimer);
+    function PalaceHotspot() {
+    }
+
+    function PalaceRoomEvent() {
+    }
+
+    function dispatchEvent() {
+    }
+
+
+    var PalaceCurrentRoom = this.PalaceCurrentRoom = function () {
+        lastMessageTimer.addEventListener(TimerEvent.TIMER, handleLastMessageTimer);
         statusDisappearTimer.addEventListener(TimerEvent.TIMER, handleStatusDisappearTimer);
     }
 
-//        [Bindable(event="selectedUserChanged")]
-    this["set selectedUser"] = /* public */ function (newValue/* :PalaceUser */) {
+//		[Bindable(event="selectedUserChanged")]
+    var set_selectedUser = this.set_selectedUser = function (newValue/* :PalaceUser */)/* :void */ {
         if (_selectedUser !== newValue) {
             _selectedUser = newValue;
             dispatchEvent(new Event("selectedUserChanged"));
         }
     }
 
-    this["get selectedUser"] = /* public */ function ()/* :PalaceUser */ {
+    var get_selectedUser = this.get_selectedUser = function ()/* :PalaceUser */ {
         return _selectedUser;
     }
 
     /* private */
-    function handleLastMessageTimer(event/* :Timer Event */) /* :void */ {
-        this.logMessage("(Last message received " + lastMessageCount.toString() + ((lastMessageCount == 1) ? " time.)" : " times.)"));
+    function handleLastMessageTimer(event/* :Timer Event */)/* :void */ {
+        logMessage("(Last message received " + lastMessageCount.toString() + ((lastMessageCount == 1) ? " time.)" : " times.)"));
         lastMessage = "";
         lastMessageCount = 0;
         lastMessageReceived = 0;
@@ -128,36 +136,30 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         return retValue;
     }
 
-    /* public */
-    this.getSpotImageById = function (imageId/* :int */)/* :PalaceImageOverlay */ {
+    var getSpotImageById = this.getSpotImageById = function (imageId/* :int */)/* :PalaceImageOverlay */ {
         var imageOverlay/* :PalaceImageOverlay */ = PalaceImageOverlay(spotImages[imageId]);
         return imageOverlay;
     }
 
-    /* public */
-    this.addSpotImage = function (imageOverlay/* :PalaceImageOverlay */)/* :void */ {
+    var addSpotImage = this.addSpotImage = function (imageOverlay/* :PalaceImageOverlay */)/* :void */ {
         spotImages[imageOverlay.id] = imageOverlay;
     }
 
-    /* public */
-    this.clearSpotImages = function ()/* :void */ {
+    var clearSpotImages = this.clearSpotImages = function ()/* :void */ {
         spotImages = {}; //new Dictionary();
     }
 
-    /* public */
-    this.getHotspotById = function (spotId/* :int */)/* :PalaceHotspot */ {
+    var getHotspotById = this.getHotspotById = function (spotId/* :int */)/* :PalaceHotspot */ {
         return PalaceHotspot(hotSpotsById[spotId]);
     }
 
-    /* public */
-    this.dimRoom = function (level/* :int */)/* :void */ {
+    var dimRoom = this.dimRoom = function (level/* :int */)/* :void */ {
         level = Math.max(0, level);
         level = Math.min(100, level);
         dimLevel = level / 100;
     }
 
-    /* public */
-    this.addLooseProp = function (id/* :int */, crc/* :uint */, x/* :int */, y/* :int */, addToFront/* :Boolean */)/* :void */ {
+    var addLooseProp = this.addLooseProp = function (id/* :int */, crc/* :uint */, x/* :int */, y/* :int */, addToFront/* :Boolean */)/* :void */ {
         addToFront = addToFront || false;
         var prop/* :PalaceLooseProp */ = new PalaceLooseProp();
         prop.x = x;
@@ -166,69 +168,62 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         prop.crc = crc;
         prop.loadProp();
         if (addToFront) {
-            this.looseProps.addItem(prop);
+            looseProps.addItem(prop);
         }
         else {
-            this.looseProps.addItemAt(prop, 0);
+            looseProps.addItemAt(prop, 0);
         }
-        var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_ADDED);
+        var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_ADDED);
         event.looseProp = prop;
         event.addToFront = addToFront;
         dispatchEvent(event);
     }
 
-    /* public */
-    this.removeLooseProp = function (index/* :int */)/* :void */ {
+    var removeLooseProp = this.removeLooseProp = function (index/* :int */)/* :void */ {
         if (index == -1) {
             clearLooseProps();
         }
         else {
-            this.looseProps.removeItemAt(index);
-            var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_REMOVED);
+            looseProps.removeItemAt(index);
+            var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_REMOVED);
             event.propIndex = index;
             dispatchEvent(event);
         }
     }
 
-    /* public */
-    this.moveLooseProp = function (index/* :int */, x/* :int */, y/* :int */)/* :void */ {
+    var moveLooseProp = this.moveLooseProp = function (index/* :int */, x/* :int */, y/* :int */)/* :void */ {
 //			trace("Moving prop index " + index);
-        var prop/* :PalaceLooseProp */ = PalaceLooseProp(this.looseProps.getItemAt(index));
+        var prop/* :PalaceLooseProp */ = PalaceLooseProp(looseProps.getItemAt(index));
         prop.x = x;
         prop.y = y;
-        var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_MOVED);
+        var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROP_MOVED);
         event.looseProp = prop;
         dispatchEvent(event);
     }
 
-    /* public */
-    this.clearLooseProps = function ()/* :void */ {
-        this.looseProps.removeAll();
-        var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROPS_CLEARED);
+    var clearLooseProps = this.clearLooseProps = function ()/* :void */ {
+        looseProps.removeAll();
+        var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.LOOSE_PROPS_CLEARED);
         dispatchEvent(event);
     }
 
-    /* public */
-    this.getLoosePropByIndex = function (index/* :int */)/* :PalaceLooseProp */ {
-        return PalaceLooseProp(this.looseProps.getItemAt(index));
+    var getLoosePropByIndex = this.getLoosePropByIndex = function (index/* :int */)/* :PalaceLooseProp */ {
+        return PalaceLooseProp(looseProps.getItemAt(index));
     }
 
-    /* public */
-    this.addUser = function (user/* :PalaceUser */)/* :void */ {
-        this.usersHash[user.id] = user;
-        this.users.addItem(user);
-        var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.USER_ENTERED, user);
+    var addUser = this.addUser = function (user/* :PalaceUser */)/* :void */ {
+        usersHash[user.id] = user;
+        users.addItem(user);
+        var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.USER_ENTERED, user);
         dispatchEvent(event);
     }
 
-    /* public */
-    this.getUserById = function (id/* :int */)/* :PalaceUser */ {
-        return PalaceUser(this.usersHash[id]);
+    var getUserById = this.getUserById = function (id/* :int */)/* :PalaceUser */ {
+        return PalaceUser(usersHash[id]);
     }
 
-    /* public */
-    this.getUserByName = function (name/* :String */)/* :PalaceUser */ {
-        for (var user/* :PalaceUser */ in this.users) {
+    var getUserByName = this.getUserByName = function (name/* :String */)/* :PalaceUser */ {
+        for (var user/* :PalaceUser */ in users) {
             if (user.name == name) {
                 return user;
             }
@@ -236,44 +231,37 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         return null;
     }
 
-    /* public */
-    this.getUserByIndex = function (userIndex/* :int */)/* :PalaceUser */ {
-        return PalaceUser(this.users.getItemAt(userIndex));
+    var getUserByIndex = this.getUserByIndex = function (userIndex/* :int */)/* :PalaceUser */ {
+        return PalaceUser(users.getItemAt(userIndex));
     }
 
-    /* public */
-    this.getSelfUser = function ()/* :PalaceUser */ {
+    var getSelfUser = this.getSelfUser = function ()/* :PalaceUser */ {
         return getUserById(selfUserId);
     }
 
-    /* public */
-    this.removeUser = function (user/* :PalaceUser */)/* :void */ {
+    var removeUser = this.removeUser = function (user/* :PalaceUser */)/* :void */ {
         removeUserById(user.id);
     }
 
-    /* public */
-    this.removeUserById = function (id/* :int */)/* :void */ {
+    var removeUserById = this.removeUserById = function (id/* :int */)/* :void */ {
         var user/* :PalaceUser */ = getUserById(id);
-        var index/* :int */ = this.users.getItemIndex(user);
+        var index/* :int */ = users.getItemIndex(user);
         if (index != -1) {
-            this.users.removeItemAt(this.users.getItemIndex(user));
+            users.removeItemAt(users.getItemIndex(user));
         }
-        var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.USER_LEFT, user);
+        var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.USER_LEFT, user);
         dispatchEvent(event);
     }
 
-    /* public */
-    this.removeAllUsers = function ()/* :void */ {
-        this.usersHash = {};
-        this.users.removeAll();
-        var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.ROOM_CLEARED);
+    var removeAllUsers = this.removeAllUsers = function ()/* :void */ {
+        usersHash = {};
+        users.removeAll();
+        var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.ROOM_CLEARED);
         dispatchEvent(event);
     }
 
-    /* public */
-    this.chat = function (userId/* :int */, message/* :String */, logMessage/* :String */)/* :void */ {
+    var chat = this.chat = function (userId/* :int */, message/* :String */, logMessage/* :String  = null*/)/* :void */ {
         logMessage = logMessage || null;
-
         var user/* :PalaceUser */ = getUserById(userId);
 
         if (logMessage == null) {
@@ -289,8 +277,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         }
     }
 
-    /* public */
-    this.whisper = function (userId/* :int */, message/* :String */, logMessage/* :String */)/* :void */ {
+    var whisper = this.whisper = function (userId/* :int */, message/* :String */, logMessage/* :String */)/* :void */ {
         logMessage = logMessage || null;
         var user/* :PalaceUser */ = getUserById(userId);
         if (logMessage == null) {
@@ -306,13 +293,11 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         }
     }
 
-    /* public */
-    this.localMessage = function (message/* :String */)/* :void */ {
+    var localMessage = this.localMessage = function (message/* :String */)/* :void */ {
         roomMessage(message);
     }
 
-    /* public */
-    this.roomMessage = function (message/* :String */)/* :void */ {
+    var roomMessage = this.roomMessage = function (message/* :String */)/* :void */ {
         if (shouldDisplayMessage(message) && message.length > 0) {
             recordChat("<b>*** " + PalaceUtil.htmlEscape(message), "</b>\n");
             dispatchEvent(new Event('chatLogUpdated'));
@@ -321,18 +306,15 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         }
     }
 
-    /* private */
     function handleStatusDisappearTimer(event/* :Timer Event */)/* :void */ {
         clearStatusMessage();
     }
 
-    /* public */
-    this.clearStatusMessage = function ()/* :void */ {
+    var clearStatusMessage = this.clearStatusMessage = function ()/* :void */ {
         statusMessageString = "";
     }
 
-    /* public */
-    this.statusMessage = function (message/* :String */)/* :void */ {
+    var statusMessage = this.statusMessage = function (message/* :String */)/* :void */ {
         recordChat("<i>" + message + "</i>\n");
         statusMessageString = message;
         statusDisappearTimer.reset();
@@ -340,20 +322,17 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         dispatchEvent(new Event('chatLogUpdated'));
     }
 
-    /* public */
-     this.logMessage = function(message/* :String */)/* :void */ {
+    var logMessage = this.logMessage = function (message/* :String */)/* :void */ {
         recordChat("<i>" + message + "</i>\n");
         dispatchEvent(new Event('chatLogUpdated'));
     }
 
-    /* public */
-    this.logScript = function (message/* :String */)/* :void */ {
+    var logScript = this.logScript = function (message/* :String */)/* :void */ {
         recordChat("<font face=\"Courier New\">" + PalaceUtil.htmlEscape(message) + "</font>\n")
         dispatchEvent(new Event('chatLogUpdated'));
     }
 
-    /* public */
-    this.roomWhisper = function (message/* :String */)/* :void */ {
+    var roomWhisper = this.roomWhisper = function (message/* :String */)/* :void */ {
         if (shouldDisplayMessage(message) && message.length > 0) {
             recordChat("<b><i>*** " + PalaceUtil.htmlEscape(message), "</i></b>\n");
             dispatchEvent(new Event('chatLogUpdated'));
@@ -374,12 +353,11 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
         chatLog = temp + "\n";
     }
 
-    /* public */
-    this.moveUser = function (userId/* :int */, x/* :int */, y/* :int */)/* :void */ {
+    var moveUser = this.moveUser = function (userId/* :int */, x/* :int */, y/* :int */)/* :void */ {
         var user/* :PalaceUser */ = getUserById(userId);
         user.x = x;
         user.y = y;
-        var event/* :PalaceRoomEvent */ = new PalaceRoomEvent(PalaceRoomEvent.USER_MOVED, user);
+        var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.USER_MOVED, user);
         dispatchEvent(event);
 //			trace("User " + userId + " moved to " + x + "," + y);
 
@@ -391,3 +369,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
 }
 
 module.exports = PalaceCurrentRoom;
+var PalaceCurrentRoomVar = new PalaceCurrentRoom();
+for (name in PalaceCurrentRoomVar.constants) {
+    module.exports[name] = PalaceCurrentRoomVar.constants[name];
+}
