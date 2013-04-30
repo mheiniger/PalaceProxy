@@ -43,7 +43,7 @@ function PalaceClient() // extends EventDispatcher
     var ArrayCollection = require("./mx/collections/ArrayCollection");
     // var Alert = require("./mx/controls/Alert");
     // var AccountServerClient = require("./openpalace/accountserver/rpc/AccountServerClient");
-    // var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
+    var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
     var Event =  require("./palace/event/Event");
     var PalaceEvent =  require("./palace/event/PalaceEvent");
     // var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
@@ -2239,7 +2239,6 @@ function PalaceClient() // extends EventDispatcher
     function handleUserDescription(buffer, size, referenceId) {
         trace('userID: ' + referenceId);
         var user = currentRoom.getUserById(referenceId);
-        console.trace(user);
         user.face = buffer.readShort();
         user.color = buffer.readShort();
         var propCount = buffer.readInt();
