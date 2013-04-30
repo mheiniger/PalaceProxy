@@ -219,7 +219,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     }
 
     var getUserById = this.getUserById = function (id/* :int */)/* :PalaceUser */ {
-        return PalaceUser(usersHash[id]);
+        return users[usersHash[id]];
     }
 
     var getUserByName = this.getUserByName = function (name/* :String */)/* :PalaceUser */ {
@@ -232,7 +232,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     }
 
     var getUserByIndex = this.getUserByIndex = function (userIndex/* :int */)/* :PalaceUser */ {
-        return PalaceUser(users.getItemAt(userIndex));
+        return users.getItemAt(userIndex);
     }
 
     var getSelfUser = this.getSelfUser = function ()/* :PalaceUser */ {

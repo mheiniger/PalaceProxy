@@ -2239,6 +2239,7 @@ function PalaceClient() // extends EventDispatcher
     function handleUserDescription(buffer, size, referenceId) {
         trace('userID: ' + referenceId);
         var user = currentRoom.getUserById(referenceId);
+        console.trace(user);
         user.face = buffer.readShort();
         user.color = buffer.readShort();
         var propCount = buffer.readInt();
