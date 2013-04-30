@@ -74,12 +74,16 @@ for(var i = 0;i<array.length;i++) {
     line = comment(line, ":NavErrorMessage");
     line = comment(line, ":PalaceLooseProp");
     line = comment(line, ":PalaceRoom");
+    line = comment(line, ":ChatEvent");
+    line = line.replace("PalaceRoom */View", "PalaceRoom View */");
+    line = line.replace("PalaceRoom */Event", "PalaceRoom Event */");
     line = comment(line, "as Array");
 
 
     line = line.replace("/* /*", "/*");
     line = line.replace("*/ */", "*/");
     line = line.replace(/\:Vector\.<(\w+)\>/, "/* :Vector.<$1> */");
+    line = line.replace("new Vector.<uint>()", "{}");
     line = line.replace("for each", "for");
 
 

@@ -15,22 +15,13 @@
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var net = require('net');
-var util = require('util');
-
 function PalaceClient() // extends EventDispatcher
 {
     var that = this;
 
-    var importClasses = {};
-
-    function importClass(namespace) {
-        var className = namespace.split(".").slice(-1)[0];
-        importClasses[className] = require("./" + namespace.replace(/\./g, '/') + '.js');
-        console.log('> loading ' + className);
-    }
-
-    importClass("net.BufferedSocket");
+    var net = require('net');
+    var util = require('util');
+    var BufferedSocket = require("./net/BufferedSocket");
 
     //import com.adobe.net.URI;
 
@@ -49,40 +40,40 @@ function PalaceClient() // extends EventDispatcher
     //import flash.utils.Timer;
     //import flash.utils.setTimeout;
 
-    importClass("mx.collections.ArrayCollection");
-    //import mx.controls.Alert;
-    //importClass("openpalace.accountserver.rpc.AccountServerClient");
-    //importClass("palace.crypto.PalaceEncryption");
-    importClass("palace.event.Event");
-    importClass("palace.event.PalaceEvent");
-    //importClass("palace.event.PalaceSecurityErrorEvent");
-    //importClass("palace.event.PropEvent");
-    //importClass("palace.iptscrae.DebugData");
-    //importClass("palace.iptscrae.IptEventHandler");
-    //importClass("palace.iptscrae.PalaceController");
-    importClass("palace.message.IncomingMessageTypes");
-    //importClass("palace.message.NavErrorMessage");
-    importClass("palace.message.OutgoingMessageTypes");
-    //importClass("palace.model.AssetManager");
-    //importClass("palace.model.PalaceAsset");
-    importClass("palace.model.PalaceConfig");
-    importClass("palace.model.PalaceCurrentRoom");
+    var ArrayCollection = require("./mx/collections/ArrayCollection");
+    // var Alert = require("./mx/controls/Alert");
+    // var AccountServerClient = require("./openpalace/accountserver/rpc/AccountServerClient");
+    // var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
+    var Event =  require("./palace/event/Event");
+    var PalaceEvent =  require("./palace/event/PalaceEvent");
+    // var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
+    // var PropEvent = require("./palace/event/PropEvent");
+    // var DebugData = require("./palace/iptscrae/DebugData");
+    // var IptEventHandler = require("./palace/iptscrae/IptEventHandler");
+    // var PalaceController = require("./palace/iptscrae/PalaceController");
+    var IncomingMessageTypes =  require("./palace/message/IncomingMessageTypes");
+    // var NavErrorMessage = require("./palace/message/NavErrorMessage");
+    var OutgoingMessageTypes =  require("./palace/message/OutgoingMessageTypes");
+    // var AssetManager = require("./palace/model/AssetManager");
+    // var PalaceAsset = require("./palace/model/PalaceAsset");
+    var PalaceConfig =  require("./palace/model/PalaceConfig");
+    var PalaceCurrentRoom = require("./palace/model/PalaceCurrentRoom");
     var PalaceHotspot = require("./palace/model/PalaceHotspot");
-    //importClass("palace.model.PalaceImageOverlay");
-    //importClass("palace.model.PalaceLooseProp");
-    //importClass("palace.model.PalaceProp");
-    //importClass("palace.model.PalacePropStore");
+    // var PalaceImageOverlay = require("./palace/model/PalaceImageOverlay");
+    // var PalaceLooseProp = require("./palace/model/PalaceLooseProp");
+    // var PalaceProp = require("./palace/model/PalaceProp");
+    // var PalacePropStore = require("./palace/model/PalacePropStore");
     var PalaceRoom = require("./palace/model/PalaceRoom");
-    importClass("palace.model.PalaceServerInfo");
+    var PalaceServerInfo =  require("./palace/model/PalaceServerInfo");
 
     var PalaceUser = require("./palace/model/PalaceUser");
     var PalaceChatRecord = require("./palace/record/PalaceChatRecord");
-    //importClass("palace.record.PalaceDrawRecord");
-    //importClass("palace.view.PalaceSoundPlayer");
+    // var PalaceDrawRecord = require("./palace/record/PalaceDrawRecord");
+    // var PalaceSoundPlayer = require("./palace/view/PalaceSoundPlayer");
     //
-    //importClass("org.openpalace.iptscrae.IptEngineEvent");
-    //importClass("org.openpalace.iptscrae.IptTokenList");
-    //importClass("org.openpalace.registration.RegistrationCode");
+    // var IptEngineEvent = require("./org/openpalace/iptscrae/IptEngineEvent");
+    // var IptTokenList = require("./org/openpalace/iptscrae/IptTokenList");
+    // var RegistrationCode = require("./org/openpalace/registration/RegistrationCode");
 
     //[Event(type="net.codecomposer.event.PalaceEvent",name="connectStart")]
     //[Event(type="net.codecomposer.event.PalaceEvent",name="connectComplete")]
@@ -92,12 +83,6 @@ function PalaceClient() // extends EventDispatcher
     //[Event(type="net.codecomposer.event.PalaceEvent",name="roomChanged")]
     //[Event(type="net.codecomposer.event.PalaceEvent",name="authenticationRequested")]
     //[Event(type="net.codecomposer.event.PalaceSecurityErrorEvent",name="securityError")]
-
-    // import class-namespaces
-    for (var className in importClasses) {
-        eval('var ' + className + ' =  importClasses.' + className);
-    }
-
 
     //    var loaderContext = new LoaderContext();
 
