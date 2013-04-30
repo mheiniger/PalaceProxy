@@ -1,19 +1,19 @@
 /*
-This file is part of OpenPalace.
+ This file is part of OpenPalace.
 
-OpenPalace is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+ OpenPalace is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-OpenPalace is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ OpenPalace is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ You should have received a copy of the GNU General Public License
+ along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 var net = require('net');
 var util = require('util');
@@ -23,9 +23,10 @@ function PalaceClient() // extends EventDispatcher
     var that = this;
 
     var importClasses = {};
-    function importClass(namespace){
+
+    function importClass(namespace) {
         var className = namespace.split(".").slice(-1)[0];
-        importClasses[className] = require("./" + namespace.replace(/\./g, '/') +'.js');
+        importClasses[className] = require("./" + namespace.replace(/\./g, '/') + '.js');
         console.log('> loading ' + className);
     }
 
@@ -98,7 +99,6 @@ function PalaceClient() // extends EventDispatcher
     }
 
 
-
     //    var loaderContext = new LoaderContext();
 
     /* FLAGS */
@@ -128,7 +128,7 @@ function PalaceClient() // extends EventDispatcher
     var DLCAPS_ASSETS_OTHER = 0x00000008;
     var DLCAPS_FILES_PALACE = 0x00000010;
     var DLCAPS_FILES_FTP = 0x00000020;
-    var DLCAPS_FILES_HTTP =  0x00000040;
+    var DLCAPS_FILES_HTTP = 0x00000040;
     var DLCAPS_FILES_OTHER = 0x00000080;
     var DLCAPS_FILES_HTTPSRVR = 0x00000100;
     var DLCAPS_EXTEND_PKT = 0x00000200;
@@ -149,7 +149,7 @@ function PalaceClient() // extends EventDispatcher
     var messageP = 0;
     var waitingForMore = false;
 
-    
+
     var debugData;
     var utf8 = false;
     var port = 0;
@@ -186,12 +186,12 @@ function PalaceClient() // extends EventDispatcher
     var regCRC = 0x5905f923;
 
     var recentLogonUserIds = new ArrayCollection();
-    var cyborgHotspot =  new PalaceHotspot();
+    var cyborgHotspot = new PalaceHotspot();
     var muteSounds;
     var _userName = "OpenPalace User";
     var sharedObject;
 
-    
+
     var palaceController;
 
     var temporaryUserFlags;
@@ -225,8 +225,7 @@ function PalaceClient() // extends EventDispatcher
 //        return PalaceClient.instance;
 //    }
 
-    var PalaceClientConstructor = function()
-    {
+    var PalaceClientConstructor = function () {
         if (PalaceClient.instance != null) {
             throw new Error("Cannot create more than one instance of a singleton.");
         }
@@ -311,7 +310,7 @@ function PalaceClient() // extends EventDispatcher
     function connect(userName, host, port, initialRoom) {
         port = port || '9998';
         initialRoom = initialRoom || '0';
-        
+
 //        PalaceClient.loaderContext.checkPolicyFile = true;
 
         host = host.toLowerCase();
@@ -344,6 +343,7 @@ function PalaceClient() // extends EventDispatcher
 
         socket.connect(that.port, that.host, onConnect);
     }
+
     this.connect = connect;
 
     function dispatchEvent(object) {
@@ -358,7 +358,7 @@ function PalaceClient() // extends EventDispatcher
 
     function authenticate(username, password) {
         if (socket && socket.connected) {
-				trace("Sending auth response");
+            trace("Sending auth response");
             var userPass = PalaceEncryption.getInstance().encrypt(username + ":" + password);
             socket.writeInt(OutgoingMessageTypes.AUTHRESPONSE);
             socket.writeInt(userPass.length + 1);
@@ -382,11 +382,11 @@ function PalaceClient() // extends EventDispatcher
         }
         resetState();
     }
-    
+
     function trace(text) {
-		console.log(text);
+        console.log(text);
     }
-    
+
     function changeName(newName) {
         this.userName = newName;
         if (socket && socket.connected) {
@@ -439,7 +439,9 @@ function PalaceClient() // extends EventDispatcher
             return;
         }
 
-        if (handleClientCommand(message)) { return; }
+        if (handleClientCommand(message)) {
+            return;
+        }
 
         if (message.charAt(0) == "/") {
             // Run iptscrae
@@ -855,7 +857,7 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(user.props.length * 8 + 4);
         socket.writeInt(id);
         socket.writeInt(user.props.length);
-        for (var i = 0; i < numProps; i ++) {
+        for (var i = 0; i < numProps; i++) {
             var prop = PalaceProp(user.props.getItemAt(i));
             socket.writeInt(prop.asset.id);
             //socket.writeUnsignedInt(prop.asset.crc);
@@ -863,7 +865,6 @@ function PalaceClient() // extends EventDispatcher
         }
         socket.flush();
     }
-
 
 
     // ***************************************************************
@@ -903,34 +904,37 @@ function PalaceClient() // extends EventDispatcher
         var p;
 
 //			try {
-            var bufferLength = buffer.getLength();
-            while (bufferLength > 0) {
+        var bufferLength = buffer.getLength();
+        while (bufferLength > 0) {
 //                trace ('state: ' + state);
-                if (state == STATE_HANDSHAKING) {
-                    handshake(buffer);
-                }
-                else if (state == STATE_READY) {
-                    if (messageID === 0) {
-                        if (buffer.getLength() >= 12) { // Header is 12 bytes
-                            messageID = buffer.readInt();
-                            messageSize = buffer.readInt();
-                            messageP = buffer.readInt();
-                        }
-                        else {
-                            return;
-                        }
+            if (state == STATE_HANDSHAKING) {
+                handshake(buffer);
+            }
+            else if (state == STATE_READY) {
+                if (messageID === 0) {
+                    if (buffer.getLength() >= 12) { // Header is 12 bytes
+                        messageID = buffer.readInt();
+                        messageSize = buffer.readInt();
+                        messageP = buffer.readInt();
                     }
-                    size = messageSize;
-                    p = messageP;
-
-                    if (size > buffer.getLength()) {
-                        socket.bufferedReadData = buffer;
-                        console.log('packet for ' + intToText(messageID) + ' to big ('+size+'), collecting');
+                    else {
                         return;
                     }
-                    socket.bufferedReadData = null;
-                    var messageID_txt = intToText(messageID)
-                    console.log('Message: ' + messageID + ', messageID: ' + messageID_txt);
+                }
+                size = messageSize;
+                p = messageP;
+
+                if (size > buffer.getLength()) {
+                    socket.bufferedReadData = buffer;
+                    console.log('packet for ' + intToText(messageID) + ' to big (' + size + '), collecting');
+                    return;
+                }
+                socket.bufferedReadData = null;
+                var messageID_txt = intToText(messageID);
+                var bufferPosBefore = buffer.position;
+                console.log('Message: ' + messageID + ', messageID: ' + messageID_txt);
+                try {
+
 
                     switch (messageID) {
                         case IncomingMessageTypes.ALTERNATE_LOGON_REPLY:
@@ -1031,7 +1035,7 @@ function PalaceClient() // extends EventDispatcher
                             handleUserProp(buffer, size, p);
                             break;
 //  todo mhe: later
-                      case IncomingMessageTypes.USER_DESCRIPTION: // (prop) usrD
+                        case IncomingMessageTypes.USER_DESCRIPTION: // (prop) usrD
                             handleUserDescription(buffer, size, p);
                             break;
 //
@@ -1103,10 +1107,10 @@ function PalaceClient() // extends EventDispatcher
 
                         case IncomingMessageTypes.BLOWTHRU:
                             trace("Blowthru message.");
-                            // fall through to default...
+                        // fall through to default...
                         default:
-                            trace("Unhandled MessageID: \"" + intToText(messageID)  +
-                                  "\", Size: " + size + " - referenceId: " + p);
+                            trace("Unhandled MessageID: \"" + intToText(messageID) +
+                                "\", Size: " + size + " - referenceId: " + p);
                             var dataToDump = [];
                             for (var i = 0; i < size; i++) {
                                 dataToDump[i] = buffer.readUnsignedByte();
@@ -1115,9 +1119,16 @@ function PalaceClient() // extends EventDispatcher
                             //_throwAwayData(size, p);
                             break;
                     }
-                    messageID = 0;
                 }
+                catch (e) {
+                    trace("error in  main switch");
+                    console.trace(e);
+                    // in case of an error in main loop, adjust buffer position, so we can continue with the next packet
+                    buffer.position = bufferPosBefore + size;
+                }
+                messageID = 0;
             }
+        }
 //			}	
 //			catch (error:EOFError) {
 //				Alert.show("There was a problem reading data from the server.  You have been disconnected.");
@@ -1155,7 +1166,7 @@ function PalaceClient() // extends EventDispatcher
 
         switch (messageID) {
             case IncomingMessageTypes.UNKNOWN_SERVER: //1886610802
-                trace("Got MSG_TROPSER.  Don't know how to proceed.","Logon Error");
+                trace("Got MSG_TROPSER.  Don't know how to proceed.", "Logon Error");
                 break;
             case IncomingMessageTypes.LITTLE_ENDIAN_SERVER: // MSG_DIYIT
                 socket.endian = "littleEndian";
@@ -1170,12 +1181,12 @@ function PalaceClient() // extends EventDispatcher
                 logOn(size, p);
                 break;
             default:
-                trace("Unexpected MessageID while logging on: " + buffer.toString('ascii',0,4));
+                trace("Unexpected MessageID while logging on: " + buffer.toString('ascii', 0, 4));
                 break;
         }
     }
 
-    function getBufferCopy(buffer){
+    function getBufferCopy(buffer) {
         var bufferCopy = new Buffer(buffer.length);
         buffer.copy(bufferCopy);
         return bufferCopy;
@@ -1185,7 +1196,7 @@ function PalaceClient() // extends EventDispatcher
     function logOn(size, referenceId) {
         var i;
 
-    	trace("Logging on.  a: " + size + " - b: " + referenceId);
+        trace("Logging on.  a: " + size + " - b: " + referenceId);
         // a is validation
         currentRoom.selfUserId = id = referenceId;
 
@@ -1202,16 +1213,16 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(regCounter);  // Guest regCode counter
         // Username has to be Windows-1252 and up to 31 characters
         if (that.userName.length > 31) {
-            that.userName = that.userName.slice(0,31);
+            that.userName = that.userName.slice(0, 31);
         }
 
         socket.writeByte(that.userName.length);
         socket.writeMultiByte(that.userName, 'Windows-1252');
         i = 31 - (that.userName.length);
-        for(; i > 0; i--) {
+        for (; i > 0; i--) {
             socket.writeByte(0);
         }
-        for (i=0; i < 32; i ++) {
+        for (i = 0; i < 32; i++) {
             socket.writeByte(0);
         }
         // auxFlags
@@ -1238,7 +1249,7 @@ function PalaceClient() // extends EventDispatcher
         // Protocol spec lists these as reserved, and says there shouldn't
         // be anything put in them... but the server records these 6 bytes
         // in the log file.  So I'll exploit that.
-        socket.writeMultiByte("OPNPAL", "iso-8859-1");
+        socket.writeMultiByte("NJSPAL", "iso-8859-1");
 
         // ulRequestedProtocolVersion -- ignored on server
         socket.writeInt(0);
@@ -1253,8 +1264,8 @@ function PalaceClient() // extends EventDispatcher
         // reject OpenPalace as a Hacked client.
         socket.writeInt(
             DLCAPS_ASSETS_PALACE |
-            DLCAPS_FILES_PALACE |  // This is a lie...
-            DLCAPS_FILES_HTTPSRVR
+                DLCAPS_FILES_PALACE |  // This is a lie...
+                DLCAPS_FILES_HTTPSRVR
         );
 
         // ul2DEngineCaps -- Unused
@@ -1284,38 +1295,38 @@ function PalaceClient() // extends EventDispatcher
         // can change our puid and ask us to reconnect "for security
         // reasons"
 
-         var crc = buffer.readUnsignedInt();
-         var counter = buffer.readUnsignedInt();
-         var userNameLength = buffer.readUnsignedByte();
+        var crc = buffer.readUnsignedInt();
+        var counter = buffer.readUnsignedInt();
+        var userNameLength = buffer.readUnsignedByte();
 
-         var userName = buffer.readMultiByte(userNameLength, 'Windows-1252');
-         for (var i = 0; i<31-userNameLength; i++) {
+        var userName = buffer.readMultiByte(userNameLength, 'Windows-1252');
+        for (var i = 0; i < 31 - userNameLength; i++) {
             buffer.readByte(); // padding on the end of the username
-         }
-         for (i=0; i<32; i++) {
+        }
+        for (i = 0; i < 32; i++) {
             buffer.readByte(); // wiz password field
-         }
-         var auxFlags = buffer.readUnsignedInt();
-         var puidCtr = buffer.readUnsignedInt();
-         var puidCRC = buffer.readUnsignedInt();
-         var demoElapsed = buffer.readUnsignedInt();
-         var totalElapsed = buffer.readUnsignedInt();
-         var demoLimit = buffer.readUnsignedInt();
-         var desiredRoom = buffer.readShort();
-         var reserved = buffer.readMultiByte(6,'iso-8859-1');
-         var ulRequestedProtocolVersion = buffer.readUnsignedInt();
-         var ulUploadCaps = buffer.readUnsignedInt();
-         var ulDownloadCaps = buffer.readUnsignedInt();
-         var ul2DEngineCaps = buffer.readUnsignedInt();
-         var ul2DGraphicsCaps = buffer.readUnsignedInt();
-         var ul3DEngineCaps = buffer.readUnsignedInt();
+        }
+        var auxFlags = buffer.readUnsignedInt();
+        var puidCtr = buffer.readUnsignedInt();
+        var puidCRC = buffer.readUnsignedInt();
+        var demoElapsed = buffer.readUnsignedInt();
+        var totalElapsed = buffer.readUnsignedInt();
+        var demoLimit = buffer.readUnsignedInt();
+        var desiredRoom = buffer.readShort();
+        var reserved = buffer.readMultiByte(6, 'iso-8859-1');
+        var ulRequestedProtocolVersion = buffer.readUnsignedInt();
+        var ulUploadCaps = buffer.readUnsignedInt();
+        var ulDownloadCaps = buffer.readUnsignedInt();
+        var ul2DEngineCaps = buffer.readUnsignedInt();
+        var ul2DGraphicsCaps = buffer.readUnsignedInt();
+        var ul3DEngineCaps = buffer.readUnsignedInt();
 
-         if (puidCtr != this.puidCounter || puidCRC != this.puidCRC) {
+        if (puidCtr != this.puidCounter || puidCRC != this.puidCRC) {
             trace("PUID Changed by server");
             this.puidCRC = puidCRC;
             this.puidCounter = puidCtr;
             puidChanged = true;
-         }
+        }
     }
 
     function handleReceiveServerVersion(buffer, size, referenceId) {
@@ -1352,7 +1363,7 @@ function PalaceClient() // extends EventDispatcher
         }
         var array = [];
         var bytesRemaining = size - 2;
-        for (var i = 0; i < bytesRemaining; i ++) {
+        for (var i = 0; i < bytesRemaining; i++) {
             array.push(buffer.readUnsignedByte());
         }
         dispatchEvent(new Event('currentUserChanged'));
@@ -1372,7 +1383,7 @@ function PalaceClient() // extends EventDispatcher
 //            }
 //        });
 //        timer.start();
-  		trace("User ID: " + referenceId + " just logged on.  Population: " + population);
+        trace("User ID: " + referenceId + " just logged on.  Population: " + population);
     }
 
     function handleReceiveMediaServer(buffer, size, referenceId) {
@@ -1410,7 +1421,7 @@ function PalaceClient() // extends EventDispatcher
 
         var bufferLength = 57 - outputLineHex.length;
         var bufferString = "";
-        for (var i = 0; i < bufferLength; i ++) {
+        for (var i = 0; i < bufferLength; i++) {
             bufferString += " ";
         }
 
@@ -1493,7 +1504,7 @@ function PalaceClient() // extends EventDispatcher
         var roomDataLength = messageBytes.readShort();
         var rb = new Array(roomDataLength);
 
-			trace("Reading in room description: " + roomDataLength + " bytes to read.");
+        trace("Reading in room description: " + roomDataLength + " bytes to read.");
         for (var i = 0; i < roomDataLength; i++) {
             rb[i] = messageBytes.readUnsignedByte();
         }
@@ -1502,7 +1513,7 @@ function PalaceClient() // extends EventDispatcher
 
         var padding = size - roomDataLength - 40;
 //        trace("padding: " + padding);
-        for (i=0; i < padding; i++) {
+        for (i = 0; i < padding; i++) {
             messageBytes.readByte();
         }
 
@@ -1513,8 +1524,8 @@ function PalaceClient() // extends EventDispatcher
         trace("roomnamelength: " + roomNameLength);
         var roomName = "";
         var ba = new ByteArray(roomNameLength);
-        for (i=0; i < roomNameLength; i++) {
-            byte = rb[i+roomNameOffset+1];
+        for (i = 0; i < roomNameLength; i++) {
+            byte = rb[i + roomNameOffset + 1];
             ba.writeByte(byte);
         }
         ba.position = 0;
@@ -1523,8 +1534,8 @@ function PalaceClient() // extends EventDispatcher
         // Image Name
         var imageNameLength = rb[imageNameOffset];
         var imageName = "";
-        for (i=0; i < imageNameLength; i++) {
-            byte = rb[i+imageNameOffset+1];
+        for (i = 0; i < imageNameLength; i++) {
+            byte = rb[i + imageNameOffset + 1];
             imageName += String.fromCharCode(byte);
         }
         if (PalaceConfig.URIEncodeImageNames) {
@@ -1535,12 +1546,12 @@ function PalaceClient() // extends EventDispatcher
         trace("Images:");
         var images = {};
         currentRoom.clearSpotImages();
-        for (i=0; i < imageCount; i++) {
+        for (i = 0; i < imageCount; i++) {
             var imageOverlay = new PalaceImageOverlay();
             imageOverlay.addEventListener(PalaceSecurityErrorEvent.SECURITY_ERROR, handleImageOverlaySecurityError);
             imageOverlay.mediaServer = mediaServer;
             var imageBA = new ByteArray();
-            for (var j=imageOffset; j < imageOffset+12; j++) {
+            for (var j = imageOffset; j < imageOffset + 12; j++) {
                 imageBA.writeByte(rb[j]);
             }
             imageBA.endian = socket.endian;
@@ -1553,8 +1564,8 @@ function PalaceClient() // extends EventDispatcher
             imageBA.readShort(); // Reserved.  Padding.. field alignment
             var picNameLength = rb[picNameOffset];
             var picName = "";
-            for (j=0; j < picNameLength; j++) {
-                var imageNameByte = rb[picNameOffset+j+1];
+            for (j = 0; j < picNameLength; j++) {
+                var imageNameByte = rb[picNameOffset + j + 1];
                 picName += String.fromCharCode(imageNameByte);
             }
             if (PalaceConfig.URIEncodeImageNames) {
@@ -1577,7 +1588,7 @@ function PalaceClient() // extends EventDispatcher
         currentRoom.hotSpotsAboveNothing.removeAll();
 
         currentRoom.hotSpotsById = {};
-        for (i=0; i < hotSpotCount; i++) {
+        for (i = 0; i < hotSpotCount; i++) {
             trace("Hotspot " + i);
             var hs = new PalaceHotspot();
             hs.readData(socket.endian, rb, hotSpotOffset);
@@ -1612,7 +1623,7 @@ function PalaceClient() // extends EventDispatcher
         var tempPropArray = [];
         var propOffset = firstLooseProp;
         currentRoom.clearLooseProps();
-        for (i=0; i < loosePropCount; i++) {
+        for (i = 0; i < loosePropCount; i++) {
             var looseProp = new PalaceLooseProp();
             looseProp.loadData(socket.endian, rb, propOffset);
             propOffset = looseProp.nextOffset;
@@ -1624,7 +1635,7 @@ function PalaceClient() // extends EventDispatcher
         currentRoom.drawFrontCommands.removeAll();
         currentRoom.drawBackCommands.removeAll();
         var drawCommandOffset = firstDrawCommand;
-        for (i=0; i < drawCommandsCount; i++) {
+        for (i = 0; i < drawCommandsCount; i++) {
             var drawRecord = new PalaceDrawRecord();
             drawRecord.readData(socket.endian, rb, drawCommandOffset);
             drawCommandOffset = drawRecord.nextOffset;
@@ -1633,7 +1644,7 @@ function PalaceClient() // extends EventDispatcher
                 currentRoom.drawFrontCommands.addItem(drawRecord);
                 currentRoom.drawLayerHistory.push(PalaceDrawRecord.LAYER_FRONT);
             }
-            else{
+            else {
 //					trace("Draw back layer command at offset: " + drawCommandOffset);
                 currentRoom.drawBackCommands.addItem(drawRecord);
                 currentRoom.drawLayerHistory.push(PalaceDrawRecord.LAYER_BACK);
@@ -1680,10 +1691,10 @@ function PalaceClient() // extends EventDispatcher
                 return;
             }
             if (currentRoom.drawLayerHistory.pop() == PalaceDrawRecord.LAYER_FRONT) {
-                currentRoom.drawFrontCommands.removeItemAt(currentRoom.drawFrontCommands.length-1);
+                currentRoom.drawFrontCommands.removeItemAt(currentRoom.drawFrontCommands.length - 1);
             }
             else {
-                currentRoom.drawBackCommands.removeItemAt(currentRoom.drawBackCommands.length-1);
+                currentRoom.drawBackCommands.removeItemAt(currentRoom.drawBackCommands.length - 1);
             }
             return;
         }
@@ -1712,7 +1723,7 @@ function PalaceClient() // extends EventDispatcher
         // referenceId is count
         currentRoom.removeAllUsers();
 
-        for(var i = 0; i < referenceId; i++){
+        for (var i = 0; i < referenceId; i++) {
             var userId = buffer.readInt();
             var y = buffer.readShort();
             var x = buffer.readShort();
@@ -1733,12 +1744,12 @@ function PalaceClient() // extends EventDispatcher
             buffer.readShort(); // 0?
             buffer.readShort(); // 0?
             var propnum = buffer.readShort(); // number of props
-            if(propnum < 9) {
+            if (propnum < 9) {
                 propIds[propnum] = propCrcs[propnum] = 0;
             }
             var userNameLength = buffer.readByte();
             var userName = buffer.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
-            buffer.readMultiByte(31-userNameLength, 'Windows-1252');
+            buffer.readMultiByte(31 - userNameLength, 'Windows-1252');
 
             var user = new PalaceUser();
             user.isSelf = Boolean(userId == id);
@@ -1798,7 +1809,7 @@ function PalaceClient() // extends EventDispatcher
 //					user.name = buffer.readUTFBytes(userNamePaddedLength);
 //				}
 //				else {
-                user.name = buffer.readMultiByte(userNamePaddedLength, 'Windows-1252');
+            user.name = buffer.readMultiByte(userNamePaddedLength, 'Windows-1252');
 //				}
             //trace("User List - got user: " + user.name);
             userList.addItem(user);
@@ -1838,7 +1849,7 @@ function PalaceClient() // extends EventDispatcher
         buffer.readShort(); // zero?
         buffer.readShort(); // zero?
         var propnum = buffer.readShort(); // number of props
-        for (var pc = propnum; pc < 9; pc ++ ) {
+        for (var pc = propnum; pc < 9; pc++) {
             propIds[pc] = propCrcs[pc] = 0;
         }
 
@@ -1849,9 +1860,9 @@ function PalaceClient() // extends EventDispatcher
 //				userName = buffer.readUTFBytes(userNameLength); // Length = 32
 //			}
 //			else {
-            userName = buffer.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
+        userName = buffer.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
 //			}
-        buffer.readMultiByte(31-userNameLength, 'Windows-1252');
+        buffer.readMultiByte(31 - userNameLength, 'Windows-1252');
         //userName = userName.substring(1);
 
         var user = new PalaceUser();
@@ -1875,7 +1886,7 @@ function PalaceClient() // extends EventDispatcher
         if (user.id == id) {
             // Self entered
             // Signon handlers
-            setTimeout(function() {
+            setTimeout(function () {
                 if (needToRunSignonHandlers) {
 
                     // download the room/user lists when you first log on.
@@ -1900,7 +1911,7 @@ function PalaceClient() // extends EventDispatcher
 
     function handlePing(buffer, size, referenceId) {
         if (referenceId != id) {
-				trace("ID didn't match during ping, bailing");
+            trace("ID didn't match during ping, bailing");
             return;
         }
 
@@ -1909,15 +1920,15 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(0);
         socket.flush();
 
-			trace("Pinged.");
+        trace("Pinged.");
     }
 
     /*
-        Iptscrae event handlers have to process chat one piece at a time.
-        Since iptscrae is run asynchronously, we have to wait for all event
-        handlers for one chat event to complete before we process the next
-        one.
-    */
+     Iptscrae event handlers have to process chat one piece at a time.
+     Since iptscrae is run asynchronously, we have to wait for all event
+     handlers for one chat event to complete before we process the next
+     one.
+     */
     function processChatQueue() {
         if (chatQueue.length > 0) {
             if (currentChatItem) {
@@ -1975,8 +1986,8 @@ function PalaceClient() // extends EventDispatcher
             }
             else if (currentChatItem.eventHandlers != null) {
                 throw new Error("There are event handlers to run for this " +
-                                "chat record, but processing was attempted " +
-                                "without an event triggering it!");
+                    "chat record, but processing was attempted " +
+                    "without an event triggering it!");
             }
 
             currentChatItem.chatstr = chatstr;
@@ -2014,15 +2025,15 @@ function PalaceClient() // extends EventDispatcher
         // var messageBytes = new ByteArray();
         var message;
         if (utf8) {
-            message = buffer.readUTFBytes(size-1);
+            message = buffer.readUTFBytes(size - 1);
         }
         else {
-            message = buffer.readMultiByte(size-1, 'Windows-1252');
+            message = buffer.readMultiByte(size - 1, 'Windows-1252');
         }
         buffer.readByte();
         if (referenceId == 0) {
             currentRoom.roomMessage(message);
-				trace("Got Room Message: " + message);
+            trace("Got Room Message: " + message);
         }
         else {
             if (message.length > 0) {
@@ -2036,7 +2047,7 @@ function PalaceClient() // extends EventDispatcher
                 //chatQueue.push(chatRecord);
                 processChatQueue();
             }
-				trace("Got talk from userID " + referenceId + ": " + message);
+            trace("Got talk from userID " + referenceId + ": " + message);
         }
     }
 
@@ -2044,10 +2055,10 @@ function PalaceClient() // extends EventDispatcher
         var messageBytes = new ByteArray();
         var message;
         if (utf8) {
-            message = buffer.readUTFBytes(size-1);
+            message = buffer.readUTFBytes(size - 1);
         }
         else {
-            message = buffer.readMultiByte(size-1, 'Windows-1252');
+            message = buffer.readMultiByte(size - 1, 'Windows-1252');
         }
         buffer.readByte();
         if (referenceId == 0) {
@@ -2073,9 +2084,9 @@ function PalaceClient() // extends EventDispatcher
 
     function handleReceiveXTalk(buffer, size, referenceId) {
         var length = buffer.readShort();
-			trace("XTALK.  Size: " + size + " Length: " + length);
-        var messageBytes = new ByteArray(length-3);
-        buffer.readBytes(messageBytes, 0, length-3); // Length field lies
+        trace("XTALK.  Size: " + size + " Length: " + length);
+        var messageBytes = new ByteArray(length - 3);
+        buffer.readBytes(messageBytes, 0, length - 3); // Length field lies
         buffer.readByte(); // Last byte is unnecessary?
         var message = PalaceEncryption.getInstance().decrypt(messageBytes, utf8);
         var chatRecord = new PalaceChatRecord(
@@ -2094,7 +2105,7 @@ function PalaceClient() // extends EventDispatcher
         var length = buffer.readShort();
 //			trace("XWHISPER.  Size: " + size + " Length: " + length);
         var messageBytes = new ByteArray();
-        buffer.readBytes(messageBytes, 0, length-3); // Length field lies.
+        buffer.readBytes(messageBytes, 0, length - 3); // Length field lies.
         buffer.readByte(); // Last byte is unnecessary?
         var message = PalaceEncryption.getInstance().decrypt(messageBytes, utf8);
         var chatRecord = new PalaceChatRecord(
@@ -2138,7 +2149,7 @@ function PalaceClient() // extends EventDispatcher
 //				userName = buffer.readUTFBytes(userNameLength);
 //			}
 //			else {
-            userName = buffer.readMultiByte(userNameLength, 'Windows-1252');
+        userName = buffer.readMultiByte(userNameLength, 'Windows-1252');
 //			}
 //			trace("User " + user.name + " changed their name to " + userName);
         user.name = userName;
@@ -2156,8 +2167,7 @@ function PalaceClient() // extends EventDispatcher
             PalaceSoundPlayer.getInstance().playConnectionPing();
         }
         //if user left room and ESP is active when they sign off
-        if (currentRoom.selectedUser && currentRoom.selectedUser.id == referenceId)
-        {
+        if (currentRoom.selectedUser && currentRoom.selectedUser.id == referenceId) {
             currentRoom.selectedUser = null;
         }
 //			trace("User " + referenceId + " logged off");
@@ -2199,15 +2209,15 @@ function PalaceClient() // extends EventDispatcher
             assetSize = buffer.readInt();
             var nameLength = buffer.readByte();
             assetName = buffer.readMultiByte(nameLength, 'Windows-1252');
-            for (var j = 0; j < 31-nameLength; j++) {
+            for (var j = 0; j < 31 - nameLength; j++) {
                 buffer.readByte();
             }
         }
-        for (var i = 0; i < blockSize; i ++) {
+        for (var i = 0; i < blockSize; i++) {
             data[i] = buffer.readByte();
         }
         var padding = size - (blockSize + 64);
-        for (i=0; i < padding; i++) {
+        for (i = 0; i < padding; i++) {
             buffer.readByte();
         }
         var asset = new PalaceAsset();
@@ -2242,7 +2252,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function handleUserDescription(buffer, size, referenceId) {
-        trace('userID: '+ referenceId);
+        trace('userID: ' + referenceId);
         var user = currentRoom.getUserById(referenceId);
         user.face = buffer.readShort();
         user.color = buffer.readShort();
@@ -2324,7 +2334,9 @@ function PalaceClient() // extends EventDispatcher
         var y = buffer.readShort();
         var x = buffer.readShort();
 //			trace("Picture in HotSpot " + spotId + " in room " + roomId + " moved offset to " + x + "," + y);
-        if (roomId != currentRoom.id) { return; }
+        if (roomId != currentRoom.id) {
+            return;
+        }
         var hotSpot = currentRoom.hotSpotsById[spotId];
         if (hotSpot != null) {
             hotSpot.movePicTo(x, y);
@@ -2337,7 +2349,9 @@ function PalaceClient() // extends EventDispatcher
         var y = buffer.readShort();
         var x = buffer.readShort();
 //			trace("Hotspot " + spotId + " in room " + roomId + " moved to " + x + "," + y);
-        if (roomId != currentRoom.id) { return; }
+        if (roomId != currentRoom.id) {
+            return;
+        }
         var hotSpot = currentRoom.hotSpotsById[spotId];
         if (hotSpot != null) {
             hotSpot.moveTo(x, y);
