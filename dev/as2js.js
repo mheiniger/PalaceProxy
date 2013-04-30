@@ -43,6 +43,38 @@ for(var i = 0;i<array.length;i++) {
     line = comment(line, ":PalaceProp");
     line = line.replace("PalaceProp */Store", "PalaceProp Store */");
     line = comment(line, ":PropEvent");
+    line = comment(line, ":PalaceClient");
+    line = comment(line, ":LoaderContext");
+    line = comment(line, ":AccountServerClient");
+    line = comment(line, ":Socket");
+    line = comment(line, ":DebugData");
+    line = comment(line, ":PalaceServerInfo");
+    line = comment(line, ":PalaceCurrentRoom");
+    line = comment(line, ":Timer");
+    line = line.replace("Timer */Event", "Timer Event */");
+    line = line.replace("Timer Event */=null", "Timer Event =null */");
+    line = comment(line, ":PalaceChatRecord");
+    line = comment(line, ":Date");
+    line = comment(line, ":PalaceController");
+    line = comment(line, ":PalaceHotspot");
+    line = comment(line, ":SharedObject");
+    line = comment(line, ":PalaceUser");
+    line = comment(line, ":RegistrationCode");
+    line = comment(line, ":PalaceEvent");
+    line = comment(line, ":SecurityErrorEvent");
+    line = comment(line, ":PalaceSecurityErrorEvent");
+    line = comment(line, ":IOErrorEvent");
+    line = comment(line, ":Event");
+    line = comment(line, ":ProgressEvent=null");
+    line = comment(line, ":PalaceDrawRecord");
+    line = comment(line, ":PalaceAsset");
+    line = comment(line, ":PalaceImageOverlay");
+    line = comment(line, ":IptEngineEvent");
+    line = line.replace("IptEngineEvent */=null", "IptEngineEvent=null */");
+    line = comment(line, ":NavErrorMessage");
+    line = comment(line, ":PalaceLooseProp");
+    line = comment(line, ":PalaceRoom");
+    line = comment(line, "as Array");
 
 
     line = line.replace("/* /*", "/*");
@@ -57,6 +89,7 @@ for(var i = 0;i<array.length;i++) {
     line = line.replace(/public function (\w+)/, 'var $1 = this.$1 = function');
 
 
+
     line = line.replace(/public static const (\w+)/, 'var $1 = this.constants.$1');
     line = line.replace(/public const (\w+)/, 'var $1 = this.constants.$1');
 
@@ -67,8 +100,12 @@ for(var i = 0;i<array.length;i++) {
     line = line.replace("private var ", "var ");
     line = line.replace("private static function ", "function ");
     line = line.replace("private function ", "function ");
+    line = line.replace("private static var ", "");
+    line = line.replace("public static var ", "");
+    line = line.replace("public static function ", "function ");
 
-    //line = line.replace(/public class (.*)/, );
+
+        //line = line.replace(/public class (.*)/, );
 
     line = commentLine(line, /\[Event\(/);
     line = commentLine(line, "import");
