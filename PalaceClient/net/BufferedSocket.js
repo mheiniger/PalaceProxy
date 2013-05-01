@@ -122,14 +122,22 @@ function extendBuffer(socket){
         }
         Buffer.prototype.readBytes = function(outBuffer, start, end){
 //            trace('position: ' + this.position);
-            outBuffer = new Buffer(end - start);
-            this.copy(outBuffer, 0, start, end);
+            //outBuffer = new Buffer(end - start);
+            this.copy(outBuffer, 0, this.position + start, this.position + end);
+            console.log(outBuffer);
         }
 
         Buffer.prototype.readMultiByte = function(number, charset){
 //            trace('position: ' + this.position);
             charset = 'utf-8'; // for now
             var value = this.toString(charset, this.position, this.position + number);
+            this.position = this.position + number;
+            return value;
+        }
+
+        Buffer.prototype.readUTFBytes = function(number){
+//            trace('position: ' + this.position);
+            var value = this.toString('utf-8', this.position, this.position + number);
             this.position = this.position + number;
             return value;
         }
@@ -144,6 +152,19 @@ function extendBuffer(socket){
             this.writeUInt8(byte, this.position);
             this.position++;
         }
+
+        Buffer.prototype.writeUTFBytes = function(string){
+            var bytesWritten = this.write(string, this.position);
+            this.position = this.position + bytesWritten;
+        }
+
+        Buffer.prototype.writeMultiByte = function (data, encoding) {
+            //console.log('sending MultyByte: ', data);
+            // temporary write just utf8.. encoding later...
+            var bytesWritten = this.write(data, this.position);
+            this.position = this.position + bytesWritten;
+        }
+
     }
 
 }

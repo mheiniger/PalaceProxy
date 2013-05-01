@@ -2071,7 +2071,9 @@ function PalaceClient() // extends EventDispatcher
         var length = buffer.readShort();
         trace("XTALK.  Size: " + size + " Length: " + length);
         var messageBytes = new ByteArray(length - 3);
+        console.log(buffer);
         buffer.readBytes(messageBytes, 0, length - 3); // Length field lies
+        console.log(messageBytes);
         buffer.readByte(); // Last byte is unnecessary?
         var message = PalaceEncryption.getInstance().decrypt(messageBytes, utf8);
         var chatRecord = new PalaceChatRecord(
@@ -2080,10 +2082,10 @@ function PalaceClient() // extends EventDispatcher
             0,
             message
         );
-        chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
-        chatQueue.push(chatRecord);
+        //chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
+        //chatQueue.push(chatRecord);
         processChatQueue();
-//			trace("Got xtalk from userID " + referenceId + ": " + chatstr);
+		trace("Got xtalk from userID " + referenceId + ": " + message);
     }
 
     function handleReceiveXWhisper(buffer, size, referenceId) {

@@ -21,25 +21,25 @@
 var _instance;
 
 function PalaceEncryption() {
-
+    var ByteArray = Buffer;
     var seed/* :int */;
-    var lut/* :Array */;
+    var lut/* :Array */; // look up table
 
     var encrypt = this.encrypt = function (message/* :String */, utf8Output/* :Boolean  = false */, byteLimit/* :int  = 254*/)/* :ByteArray */ {
         utf8Output = utf8Output || false;
         byteLimit = byteLimit || 254;
 
         var i/* :int */ = 0;
-        var bytesIn/* :ByteArray */ = new ByteArray();
+        var bytesIn/* :ByteArray */ = new ByteArray(1024);
         if (utf8Output) {
             bytesIn.writeUTFBytes(message);
         }
         else {
             bytesIn.writeMultiByte(message, 'Windows-1252');
         }
-        if (bytesIn.length > byteLimit) {
+        if (bytesIn.getLength() > byteLimit) {
             var temp/* :ByteArray */ = bytesIn;
-            bytesIn = new ByteArray();
+            bytesIn = new ByteArray(byteLimit);
             temp.position = 0;
             for (i = 0; i < byteLimit; i++) {
                 bytesIn.writeByte(temp.readByte());
@@ -48,7 +48,7 @@ function PalaceEncryption() {
         bytesIn.position = 0;
 
         var original/* :Array */ = [];
-        while (bytesIn.bytesAvailable > 0) {
+        while (bytesIn.getLength() > 0) {
             original.push(bytesIn.readByte());
         }
 
@@ -57,11 +57,11 @@ function PalaceEncryption() {
         var rc/* :int */ = 0;
         for (i = original.length - 1; i >= 0; i--) {
             var b/* :int */ = original[i];
-            bs[i] = int(b ^ lut[rc++] ^ lastChar) & 0xff; // truncate to byte...
-            lastChar = int(bs[i] ^ lut[rc++]) & 0xff; // truncate to byte...
+            bs[i] = (b ^ lut[rc++] ^ lastChar) & 0xff; // truncate to byte...
+            lastChar = (bs[i] ^ lut[rc++]) & 0xff; // truncate to byte...
         }
 
-        var bytesOut/* :ByteArray */ = new ByteArray();
+        var bytesOut/* :ByteArray */ = new ByteArray(bs.length);
 
         for (i = 0; i < bs.length; i++) {
             bytesOut.writeByte(bs[i]);
@@ -75,18 +75,20 @@ function PalaceEncryption() {
         var i/* :int */ = 0;
 
         var original/* :Array */ = [];
-        while (bytesIn.bytesAvailable > 0) {
+        while (bytesIn.getLength() > 0) {
             original.push(bytesIn.readByte());
         }
+        console.log(original);
         var bs/* :Array */ = new Array(original.length);
         var rc/* :int */ = 0;
         for (i = bs.length - 1; i >= 0; i--) {
+            console.log('lookuptableposition: ' + rc);
             var tmp/* :int */ = original[i];
-            bs[i] = int(tmp ^ lut[rc++] ^ lastChar) & 0xff;
-            lastChar = int(tmp ^ lut[rc++]) & 0xff;
+            bs[i] = (tmp ^ lut[rc++] ^ lastChar) & 0xff;
+            lastChar = (tmp ^ lut[rc++]) & 0xff;
         }
 
-        var bytesOut/* :ByteArray */ = new ByteArray();
+        var bytesOut/* :ByteArray */ = new ByteArray(bs.length);
         for (i = 0; i < bs.length; i++) {
             bytesOut.writeByte(bs[i]);
         }
@@ -117,7 +119,7 @@ function PalaceEncryption() {
     }
 
     function random()/* :int */ {
-        var quotient/* :int */ = seed / 0x1f31d;
+        var quotient/* :int */ = Math.floor(seed / 0x1f31d);
         var remainder/* :int */ = seed % 0x1f31d;
         var a/* :int */ = 16807 * remainder - 2836 * quotient;
         if (a > 0) {
@@ -141,7 +143,7 @@ function PalaceEncryption() {
     }
 
     function shortRandom(max/* :int */)/* :int */ {
-        var a/* :int */ = int(doubleRandom() * (max * 1.0));
+        var a/* :int */ = (doubleRandom() * (max * 1.0));
         // truncate to short, AS3 only has 32-bit integers.
         a = a & 0x0000ffff;
         return a;
