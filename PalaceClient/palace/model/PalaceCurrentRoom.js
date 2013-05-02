@@ -17,14 +17,14 @@
 
 //package net.codecomposer.palace.model
 //{
-//import flash.events.Event;
+var Event = require("../event/Event");
 //import flash.events.EventDispatcher;
 //import flash.events.TimerEvent;
 //import flash.utils.Dictionary;
 //import flash.utils.Timer;
 
 var ArrayCollection = require("../../mx/collections/ArrayCollection");
-
+var PalaceRoomEvent = require("../event/PalaceRoomEvent");
 //import net.codecomposer.palace.event.ChatEvent;
 //import net.codecomposer.palace.event.PalaceRoomEvent;
 //import net.codecomposer.palace.util.PalaceUtil;
@@ -81,12 +81,6 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
 
     // todo: add working timer class
     function Timer() {
-    }
-
-    function PalaceHotspot() {
-    }
-
-    function PalaceRoomEvent() {
     }
 
     function dispatchEvent() {
@@ -150,7 +144,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     }
 
     var getHotspotById = this.getHotspotById = function (spotId/* :int */)/* :PalaceHotspot */ {
-        return PalaceHotspot(hotSpotsById[spotId]);
+        return hotSpotsById[spotId];
     }
 
     var dimRoom = this.dimRoom = function (level/* :int */)/* :void */ {

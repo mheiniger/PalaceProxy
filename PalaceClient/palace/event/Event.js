@@ -1,15 +1,12 @@
 var eventEmitter = require('events').EventEmitter;
 
-function Event() // extends Event
+function Event(name) // extends Event
 {
+    this.name = name;
+
     this.emit = function(){
         console.log('emitted!');
-    }
-
-    this.Event = function ()
-    {
         eventEmitter.emit();
-        console.log('emitted!');
     }
 }
 
