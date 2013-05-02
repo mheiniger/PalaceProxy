@@ -124,7 +124,8 @@ function extendBuffer(socket){
 //            trace('position: ' + this.position);
             //outBuffer = new Buffer(end - start);
             this.copy(outBuffer, 0, this.position + start, this.position + end);
-            console.log(outBuffer);
+            this.position = this.position + end;
+            //console.log(outBuffer);
         }
 
         Buffer.prototype.readMultiByte = function(number, charset){

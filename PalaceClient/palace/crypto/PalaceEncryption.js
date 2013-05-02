@@ -78,11 +78,10 @@ function PalaceEncryption() {
         while (bytesIn.getLength() > 0) {
             original.push(bytesIn.readByte());
         }
-        console.log(original);
+
         var bs/* :Array */ = new Array(original.length);
         var rc/* :int */ = 0;
         for (i = bs.length - 1; i >= 0; i--) {
-            console.log('lookuptableposition: ' + rc);
             var tmp/* :int */ = original[i];
             bs[i] = (tmp ^ lut[rc++] ^ lastChar) & 0xff;
             lastChar = (tmp ^ lut[rc++]) & 0xff;
