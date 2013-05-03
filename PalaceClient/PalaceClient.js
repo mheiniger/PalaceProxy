@@ -214,9 +214,9 @@ function PalaceClient() // extends EventDispatcher
         if (PalaceClient.instance != null) {
             throw new Error("Cannot create more than one instance of a singleton.");
         }
-        return; // Todo: client should do scripting
-        palaceController = new PalaceController();
-        palaceController.client = this;
+        // Todo: client should do scripting
+//        palaceController = new PalaceController();
+//        palaceController.client = this;
     }();
 
     function setCyborg(cyborgScript) {
@@ -357,8 +357,8 @@ function PalaceClient() // extends EventDispatcher
     function disconnect() {
 //        palaceController.midiStop();
         if (socket && socket.connected) {
-            palaceController.triggerHotspotEvents(IptEventHandler.TYPE_LEAVE);
-            palaceController.triggerHotspotEvents(IptEventHandler.TYPE_SIGNOFF);
+//            palaceController.triggerHotspotEvents(IptEventHandler.TYPE_LEAVE);
+//            palaceController.triggerHotspotEvents(IptEventHandler.TYPE_SIGNOFF);
             socket.writeInt(OutgoingMessageTypes.BYE);
             socket.writeInt(0);
             socket.writeInt(id);
@@ -430,13 +430,13 @@ function PalaceClient() // extends EventDispatcher
 
         if (message.charAt(0) == "/") {
             // Run iptscrae
-            palaceController.executeScript(message.substr(1));
+//            palaceController.executeScript(message.substr(1));
             return;
         }
 
         if (message.toLocaleLowerCase() == "clean") {
             deleteLooseProp(-1); // clear loose props
-            palaceController.paintClear();
+//            palaceController.paintClear();
             return;
         }
 
@@ -950,11 +950,10 @@ function PalaceClient() // extends EventDispatcher
                             handleReceiveMediaServer(buffer, size, p);
                             break;
 
-                        // TODO: mhe: do it later
-//                        case IncomingMessageTypes.GOT_ROOM_DESCRIPTION:
-//                        case IncomingMessageTypes.GOT_ROOM_DESCRIPTION_ALT:
-//                            handleReceiveRoomDescription(buffer, size, p);
-//                            break;
+                        case IncomingMessageTypes.GOT_ROOM_DESCRIPTION:
+                        case IncomingMessageTypes.GOT_ROOM_DESCRIPTION_ALT:
+                            handleReceiveRoomDescription(buffer, size, p);
+                            break;
 
                         case IncomingMessageTypes.GOT_USER_LIST:
                             handleReceiveUserList(buffer, size, p);
@@ -1456,8 +1455,7 @@ function PalaceClient() // extends EventDispatcher
         var messageBytes = new Buffer(size);
         messageBytes.position = 0;
         //messageBytes.endian = socket.endian;
-        buffer.copy(messageBytes, 0, buffer.position, buffer.position + size);
-
+        buffer.readBytes(messageBytes, 0, size);
 
         // FIXME: modularize this... but for now we don't need to decode
         // everything twice.
@@ -1465,7 +1463,6 @@ function PalaceClient() // extends EventDispatcher
 //			roomDescription.read(messageBytes, referenceId);
 
         //messageBytes.position = 0;
-        outputHexView(messageBytes);
 
         var roomFlags = messageBytes.readInt();
         var face = messageBytes.readInt();
@@ -1487,14 +1484,14 @@ function PalaceClient() // extends EventDispatcher
         var firstLooseProp = messageBytes.readShort();
         messageBytes.readShort();
         var roomDataLength = messageBytes.readShort();
-        var rb = new Array(roomDataLength);
+        var rb = new ByteArray(roomDataLength);
 
         trace("Reading in room description: " + roomDataLength + " bytes to read.");
         for (var i = 0; i < roomDataLength; i++) {
             rb[i] = messageBytes.readUnsignedByte();
         }
 
-        outputHexView(rb);
+//        outputHexView(rb);
 
         var padding = size - roomDataLength - 40;
 //        trace("padding: " + padding);
@@ -1506,7 +1503,7 @@ function PalaceClient() // extends EventDispatcher
 
         // Room Name
         var roomNameLength = rb[roomNameOffset];
-        trace("roomnamelength: " + roomNameLength);
+//        trace("roomnamelength: " + roomNameLength);
         var roomName = "";
         var ba = new ByteArray(roomNameLength);
         for (i = 0; i < roomNameLength; i++) {
@@ -1523,6 +1520,7 @@ function PalaceClient() // extends EventDispatcher
             byte = rb[i + imageNameOffset + 1];
             imageName += String.fromCharCode(byte);
         }
+        trace('imageName: ' + imageName);
         if (PalaceConfig.URIEncodeImageNames) {
             imageName = URI.escapeChars(imageName);
         }
@@ -1643,7 +1641,7 @@ function PalaceClient() // extends EventDispatcher
         currentRoom.name = roomName;
 //			trace("Room name: " + currentRoom.name);
 
-        debugData = new DebugData(currentRoom);
+        //debugData = new DebugData(currentRoom);
 
         currentRoom.dimRoom(100);
         currentRoom.showAvatars = true;
@@ -1933,11 +1931,11 @@ function PalaceClient() // extends EventDispatcher
                 for (var handler in currentItem.eventHandlers) {
                     handler.addEventListener(IptEngineEvent.FINISH, handleChatEventFinish);
                 }
-                palaceController.triggerHotspotEvents(
-                    (currentItem.direction == PalaceChatRecord.INCHAT) ?
-                        IptEventHandler.TYPE_INCHAT :
-                        IptEventHandler.TYPE_OUTCHAT
-                );
+//                palaceController.triggerHotspotEvents(
+//                    (currentItem.direction == PalaceChatRecord.INCHAT) ?
+//                        IptEventHandler.TYPE_INCHAT :
+//                        IptEventHandler.TYPE_OUTCHAT
+//                );
             }
             else {
                 // If there aren't any event handlers, skip directly to
@@ -2059,7 +2057,7 @@ function PalaceClient() // extends EventDispatcher
                     message,
                     true
                 );
-                chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
+//                chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
                 chatQueue.push(chatRecord);
                 processChatQueue();
             }
@@ -2281,7 +2279,7 @@ function PalaceClient() // extends EventDispatcher
         if (roomId == currentRoom.id) {
             var hs = currentRoom.hotSpotsById[spotId];
             hs.changeState(1);
-            palaceController.triggerHotspotEvent(hs, IptEventHandler.TYPE_LOCK);
+//            palaceController.triggerHotspotEvent(hs, IptEventHandler.TYPE_LOCK);
         }
     }
 
@@ -2292,7 +2290,7 @@ function PalaceClient() // extends EventDispatcher
         if (roomId == currentRoom.id) {
             var hs = currentRoom.hotSpotsById[spotId];
             hs.changeState(0);
-            palaceController.triggerHotspotEvent(hs, IptEventHandler.TYPE_UNLOCK);
+//            palaceController.triggerHotspotEvent(hs, IptEventHandler.TYPE_UNLOCK);
         }
     }
 

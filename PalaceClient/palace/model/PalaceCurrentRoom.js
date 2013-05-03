@@ -27,7 +27,7 @@ var ArrayCollection = require("../../mx/collections/ArrayCollection");
 var PalaceRoomEvent = require("../event/PalaceRoomEvent");
 //import net.codecomposer.palace.event.ChatEvent;
 //import net.codecomposer.palace.event.PalaceRoomEvent;
-//import net.codecomposer.palace.util.PalaceUtil;
+var PalaceUtil = require("../util/PalaceUtil");
 //import net.codecomposer.palace.view.PalaceRoomView;
 
 var PalaceUser = require("./PalaceUser");
@@ -83,7 +83,7 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     function Timer() {
     }
 
-    function dispatchEvent() {
+    function dispatchEvent(event) {
     }
 
 

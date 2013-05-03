@@ -31,16 +31,16 @@ function PalaceHotspotState() {
     var opacity = this.opacity/* :Number */ = 1;
     var hotspotImage = this.hotspotImage/* :HotSpotImage */;
 
-    var size = this.constants.size/* :int */ = 8;
+    var size = this.size = this.constants.size/* :int */ = 8;
 
-    var UNLOCKED = this.constants.UNLOCKED/* :int */ = 0;
-    var LOCKED = this.constants.LOCKED/* :int */ = 1;
+    var UNLOCKED = this.UNLOCKED = this.constants.UNLOCKED/* :int */ = 0;
+    var LOCKED = this.LOCKED = this.constants.LOCKED/* :int */ = 1;
 
     var PalaceHotspotState = this.PalaceHotspotState = function () {
     }
 
     var readData = this.readData = function (endian/* :String */, roomBytes/* :Array */, offset/* :int */)/* :void */ {
-        console.log("PalaceHotspotState size:" + size);
+//        console.log("PalaceHotspotState size:" + size);
         var ba/* :ByteArray */ = new ByteArray(size + 1);
         for (var j/* :int */ = offset; j < offset + size + 1; j++) {
             ba.writeByte(roomBytes[j]);
@@ -52,6 +52,7 @@ function PalaceHotspotState() {
         ba.readShort(); // Filler for alignment
         y = ba.readShort();
         x = ba.readShort();
+//        console.log("PalaceHotspotState pictureId: "+ pictureId + " x: " + x + " y: " + y);
     }
 
 }

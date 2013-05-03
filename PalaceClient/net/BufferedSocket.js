@@ -101,9 +101,9 @@ function extendBuffer(socket){
         Buffer.prototype.readShort = function(){
 //            trace('position: ' + this.position);
             if (socket.endian == "littleEndian") {
-                var value = this.readUInt16LE(this.position);
+                var value = this.readInt16LE(this.position);
             } else if (socket.endian == "bigEndian"){
-                var value = this.readUInt16BE(this.position);
+                var value = this.readInt16BE(this.position);
             }
             this.position = this.position + 2;
             return value;

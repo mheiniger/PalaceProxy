@@ -189,7 +189,7 @@ function PalaceHotspot() //extends EventDispatcher
 //		Landingpad                0x00000200        /* Linux 4.5.1 PServer */
 
     // Hotspot records are 48 bytes
-    var size = this.constants.size/* :int */ = 48;
+    var size = this.size = this.constants.size/* :int */ = 48;
 
     var PalaceHotspot = this.PalaceHotspot = function()
     {
@@ -266,14 +266,13 @@ function PalaceHotspot() //extends EventDispatcher
 //			trace("Hotspot offset " + offset);
         location = new FlexPoint();
 
-        trace("size:" + size);
         var ba/* :ByteArray */ = new ByteArray(size+1);
-        for (var j/* :int */=offset; j < offset+size+1; j++) {
+        for (var j/* :int */ = offset; j < offset + size; j++) {
             ba.writeByte(roomBytes[j]);
         }
         ba.position = 0;
         ba.endian = endian;
-
+//        outputHexView(ba);
         scriptEventMask = ba.readInt();
         flags = ba.readInt();
 //			trace("Hotspot Flags: 0x" + flags.toString(16));
@@ -300,7 +299,7 @@ function PalaceHotspot() //extends EventDispatcher
         ba.readShort();
         if (nameOffset > 0) {
             var nameLength/* :int */ = roomBytes[nameOffset] || 0;
-            trace("nameLength:" + nameLength);
+//            trace("nameoffset: "+ nameOffset + "nameLength:" + nameLength);
             var nameByteArray/* :ByteArray */ = new ByteArray(nameLength);
             for (var a/* :int */ = nameOffset+1; a < nameOffset+nameLength+1; a++) {
                 nameByteArray.writeByte(roomBytes[a]);
@@ -311,30 +310,35 @@ function PalaceHotspot() //extends EventDispatcher
         else {
             name = "";
         }
+        trace("Hotspot name: " + name);
 
         // Script...
-        if (scriptTextOffset > 0) {
-            var currentByte/* :int */ = -1;
-            var counter/* :int */ = scriptTextOffset;
-            var maxLength/* :int */ = roomBytes.length;
-            trace("scriptTextOffset:" + (maxLength - scriptTextOffset));
-            var scriptByteArray/* :ByteArray */ = new ByteArray(maxLength - scriptTextOffset);
-            var scriptChars/* :int */ = 0;
-            while (currentByte != 0 && counter < maxLength) {
-                scriptByteArray.writeByte(roomBytes[counter++]);
-                scriptChars ++;
-            }
-            scriptByteArray.position = 0;
-            scriptString = scriptByteArray.readMultiByte(scriptChars, 'Windows-1252');
-        }
+//        if (scriptTextOffset > 0) {
+//            var currentByte/* :int */ = -1;
+//            var counter/* :int */ = scriptTextOffset;
+//            var maxLength/* :int */ = roomBytes.length;
+//            trace("scriptTextOffset:" + (maxLength - scriptTextOffset));
+//            var scriptByteArray/* :ByteArray */ = new ByteArray(maxLength - scriptTextOffset);
+//            var scriptChars/* :int */ = 0;
+//            while (currentByte != 0 && counter < maxLength) {
+//                scriptByteArray.writeByte(roomBytes[counter++]);
+//                scriptChars ++;
+//            }
+//            scriptByteArray.position = 0;
+//            scriptString = scriptByteArray.readMultiByte(scriptChars, 'Windows-1252');
+//        }
 //			trace("Script: " + scriptString);
-        loadScripts();
+        //loadScripts();
         var endPos/* :int */ = pointsOffset+(numPoints*4);
-        trace("pointsOffset:" + (endPos + 1 - pointsOffset));
+//        trace("pointsOffset:" + (pointsOffset));
         ba = new ByteArray(endPos + 1 - pointsOffset);
-        for (j=pointsOffset; j < endPos+1; j++) {
-            ba.writeByte(roomBytes[j]);
-        }
+//        for (j=pointsOffset; j < endPos+1; j++) {
+//            ba.writeByte(roomBytes[j]);
+//        }
+        roomBytes.copy(ba, 0, pointsOffset, endPos+1);
+
+//        outputHexView(ba);
+//        console.log(ba);
         ba.position = 0;
         ba.endian = endian;
 
@@ -344,7 +348,7 @@ function PalaceHotspot() //extends EventDispatcher
         for (var i/* :int */ = 0; i < numPoints; i++) {
             var y/* :int */ = ba.readShort();
             var x/* :int */ = ba.readShort();
-            // trace("----- X: " + x + " (" + uint(x).toString(16) + ")    Y: " + y + "(" + uint(y).toString(16) +")");
+//            trace("----- X: " + x + " (" + (x).toString(16) + ")    Y: " + y + "(" + (y).toString(16) +")");
             polygon.push(new Point(x, y));
         }
 
@@ -378,6 +382,44 @@ function PalaceHotspot() //extends EventDispatcher
 
         }
         return null;
+    }
+
+    function outputHexView(bytes) {
+        var output = "";
+        var outputLineHex = "";
+        var outputLineAscii = "";
+        for (var byteNum = 0; byteNum < bytes.length; byteNum++) {
+            var hexNum = (bytes[byteNum]).toString(16).toUpperCase();
+            if (hexNum.length == 1) {
+                hexNum = "0" + hexNum;
+            }
+
+            if (byteNum % 16 == 0) {
+                output = output.concat(outputLineHex, "      ", outputLineAscii, "\n");
+                outputLineHex = "";
+                outputLineAscii = "";
+            }
+            else if (byteNum % 4 == 0) {
+                outputLineHex = outputLineHex.concat("  ");
+                outputLineAscii = outputLineAscii.concat(" ");
+            }
+            else {
+                outputLineHex = outputLineHex.concat(" ");
+            }
+            outputLineHex = outputLineHex.concat(hexNum);
+            outputLineAscii = outputLineAscii.concat(
+                (bytes[byteNum] >= 32 && bytes[byteNum] <= 126) ? String.fromCharCode(bytes[byteNum]) : " "
+            );
+        }
+
+        var bufferLength = 57 - outputLineHex.length;
+        var bufferString = "";
+        for (var i = 0; i < bufferLength; i++) {
+            bufferString += " ";
+        }
+
+        output = output.concat(outputLineHex, bufferString, outputLineAscii, "\n");
+        trace(output);
     }
 
     var loadScripts = this.loadScripts = function()/* :void */ {

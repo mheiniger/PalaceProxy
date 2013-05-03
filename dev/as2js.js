@@ -91,10 +91,10 @@ for(var i = 0;i<array.length;i++) {
     line = line.replace(/public function set (\w+)/, 'var set_$1 = this.set_$1 = function');
     line = line.replace(/public function get (\w+)/, 'var get_$1 = this.get_$1 = function');
     line = line.replace(/public function (\w+)/, 'var $1 = this.$1 = function');
+    line = line.replace(/public static function (\w+)/, 'var $1 = this.$1 = this.constants.$1 = function ');
 
 
-
-    line = line.replace(/public static const (\w+)/, 'var $1 = this.constants.$1');
+    line = line.replace(/public static const (\w+)/, 'var $1 = this.$1 = this.constants.$1');
     line = line.replace(/public const (\w+)/, 'var $1 = this.constants.$1');
 
     line = line.replace(":Vector.<IptEventHandler> = new Vector.<IptEventHandler>()", "= {}");
@@ -106,7 +106,6 @@ for(var i = 0;i<array.length;i++) {
     line = line.replace("private function ", "function ");
     line = line.replace("private static var ", "");
     line = line.replace("public static var ", "");
-    line = line.replace("public static function ", "function ");
 
 
         //line = line.replace(/public class (.*)/, );
