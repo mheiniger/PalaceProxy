@@ -4,7 +4,7 @@
   "description": "A nodeJs proxy between palaceclient and server",
   "main": "app.js",
   "dependencies": {
-    "packet": "~0.0.4"
+    "socket.io": "*"
   },
   "devDependencies": {},
   "scripts": {
