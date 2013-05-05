@@ -42,6 +42,12 @@ function extendSocket(socket) {
 //            socket.write(buffer);
     }
 
+    socket.writeBytes = function (tmpBuffer) {
+        this.extendWriteBuffer(tmpBuffer.length);
+        tmpBuffer.copy(this.writeBuffer, this.writeBufferPos);
+        this.writeBufferPos += tmpBuffer.length;
+    }
+
     socket.writeMultiByte = function (data, encoding) {
         //console.log('sending MultyByte: ', data);
         // temporary write just utf8.. encoding later...

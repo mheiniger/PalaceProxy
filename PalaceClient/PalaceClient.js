@@ -119,6 +119,7 @@ function PalaceClient() // extends EventDispatcher
     var DLCAPS_EXTEND_PKT = 0x00000200;
 
     var socket = null;
+    var webSocket = null;
 
     var ByteArray = Buffer;
 
@@ -162,7 +163,7 @@ function PalaceClient() // extends EventDispatcher
     var assetRequestQueue = [];
     var assetRequestQueueCounter = 0;
     var assetsLastRequestedAt = new Date();
-    var chatQueue = {};
+    var chatQueue = [];
     var currentChatItem;
     var puidChanged = false;
     var puidCounter = 0xf5dc385e;
@@ -292,9 +293,10 @@ function PalaceClient() // extends EventDispatcher
     // ***************************************************************
     var buffers = new Array();
 
-    function connect(userName, host, port, initialRoom) {
+    function connect(userName, host, port, initialRoom, webSocket) {
         port = port || '9998';
         initialRoom = initialRoom || '0';
+        webSocket = webSocket || null;
 
 //        PalaceClient.loaderContext.checkPolicyFile = true;
 
@@ -304,6 +306,7 @@ function PalaceClient() // extends EventDispatcher
             host = match[1];
         }
 
+        that.webSocket = webSocket;
         that.host = host;
         that.port = port;
         that.initialRoom = initialRoom;
@@ -419,7 +422,7 @@ function PalaceClient() // extends EventDispatcher
         socket.flush();
     }
 
-    function say(message) {
+    var say = this.say = function(message) {
         if (!connected || message == null || message.length == 0) {
             return;
         }
@@ -865,6 +868,9 @@ function PalaceClient() // extends EventDispatcher
 
     function trace(text) {
         console.log(text);
+        if(that.webSocket) {
+            that.webSocket.emit('log', { 'text': text });
+        }
     }
 
     function onClose(event) {
@@ -1922,14 +1928,16 @@ function PalaceClient() // extends EventDispatcher
             }
             var currentItem = chatQueue.shift();
             currentChatItem = currentItem;
-
-            // These are global variables that need to persist even after
-            // the last chat message has been processed, for compatibility
-            // with the old Palace32 behavior.
+            console.log('item: ' );
+            console.log(currentChatItem);
             whochat = currentItem.whochat;
             chatstr = currentItem.chatstr;
-
+trace('currentItemChatstr:' + chatstr);
             if (currentItem.eventHandlers) {
+                // These are global variables that need to persist even after
+                // the last chat message has been processed, for compatibility
+                // with the old Palace32 behavior.
+
                 for (var handler in currentItem.eventHandlers) {
                     handler.addEventListener(IptEngineEvent.FINISH, handleChatEventFinish);
                 }
@@ -1974,6 +1982,7 @@ function PalaceClient() // extends EventDispatcher
                     "chat record, but processing was attempted " +
                     "without an event triggering it!");
             }
+            trace(chatstr);
 
             currentChatItem.chatstr = chatstr;
 

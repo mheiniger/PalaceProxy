@@ -8,7 +8,7 @@
             var logwindow = document.getElementById('log');
             console.log(data);
             logwindow.innerHTML = logwindow.innerHTML + data.text + '<br>';
-
+            logwindow.scrollTop = logwindow.scrollHeight;
         });
 
 
