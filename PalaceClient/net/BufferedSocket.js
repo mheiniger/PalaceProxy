@@ -163,6 +163,7 @@ function extendBuffer(socket){
         Buffer.prototype.writeUTFBytes = function(string){
             var bytesWritten = this.write(string, this.position);
             this.position = this.position + bytesWritten;
+            return bytesWritten;
         }
 
         Buffer.prototype.writeMultiByte = function (data, encoding) {
@@ -170,6 +171,7 @@ function extendBuffer(socket){
             // temporary write just utf8.. encoding later...
             var bytesWritten = this.write(data, this.position);
             this.position = this.position + bytesWritten;
+            return bytesWritten;
         }
 
     }

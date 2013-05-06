@@ -21,8 +21,6 @@ if (process.argv.length != 4) {
 var serverHost = process.argv[2];
 var serverPort = process.argv[3];
 
-var palaceClient = PalaceClient.getInstance();
-
 app.listen(3000);
 
 function handler (req, res) {
@@ -43,6 +41,7 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
+    var palaceClient = new PalaceClient();
     palaceClient.connect("TestUser", serverHost, serverPort, 0, socket);
     socket.emit('log', { text: 'You\'re connected to ' + serverHost + ":" + serverPort});
     socket.on('text entered', function (data) {
