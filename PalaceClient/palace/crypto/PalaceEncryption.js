@@ -30,15 +30,17 @@ function PalaceEncryption() {
         byteLimit = byteLimit || 254;
 
         var i/* :int */ = 0;
-        var bytesIn/* :ByteArray */ = new ByteArray(1024);
-        bytesIn.position = 0;
+//        var bytesIn/* :ByteArray */ = new ByteArray(1024);
+//        bytesIn.position = 0;
         if (utf8Output) {
-            var bytesWritten = bytesIn.writeUTFBytes(message);
+            var bytesIn = new ByteArray(message, 'utf8');
         }
         else {
-            var bytesWritten = bytesIn.writeMultiByte(message, 'Windows-1252');
+            var bytesIn = new ByteArray(message /* , 'Windows-1252' */);
         }
         console.log('textLength: ' + bytesIn.getLength());
+//        console.log('bytesWritten: ' + bytesWritten);
+
         if (bytesIn.getLength() > byteLimit) {
             var temp/* :ByteArray */ = bytesIn;
             bytesIn = new ByteArray(byteLimit);

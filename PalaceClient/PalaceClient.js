@@ -291,8 +291,6 @@ function PalaceClient() // extends EventDispatcher
     // ***************************************************************
     // Begin public functions for user interaction
     // ***************************************************************
-    var buffers = new Array();
-
     function connect(userName, host, port, initialRoom, webSocket) {
         port = port || '9998';
         initialRoom = initialRoom || '0';
@@ -371,10 +369,6 @@ function PalaceClient() // extends EventDispatcher
         resetState();
     }
 
-    function trace(text) {
-        console.log(text);
-    }
-
     function changeName(newName) {
         this.userName = newName;
         if (socket && socket.connected) {
@@ -392,6 +386,7 @@ function PalaceClient() // extends EventDispatcher
             return;
         }
         trace("Saying: " + message);
+        //logText(getUserName() + ": " + message);
         var messageBytes = PalaceEncryption.getInstance().encrypt(message, utf8, 254);
         messageBytes.position = 0;
 
@@ -866,10 +861,24 @@ function PalaceClient() // extends EventDispatcher
         trace("Connected");
     }
 
-    function trace(text) {
+    function logText(text) {
         console.log(text);
         if(that.webSocket) {
             that.webSocket.emit('log', { 'text': text });
+        }
+    }
+
+    function trace(text) {
+        console.log(text);
+        if(that.webSocket) {
+            that.webSocket.emit('dev-log', { 'text': text });
+        }
+    }
+
+    function traceObj(obj) {
+        console.log(obj);
+        if(that.webSocket) {
+            that.webSocket.emit('dev-log', obj);
         }
     }
 
@@ -1176,12 +1185,6 @@ function PalaceClient() // extends EventDispatcher
         }
     }
 
-    function getBufferCopy(buffer) {
-        var bufferCopy = new Buffer(buffer.length);
-        buffer.copy(bufferCopy);
-        return bufferCopy;
-    }
-
     // Server Op Handlers
     function logOn(size, referenceId) {
         var i;
@@ -1326,6 +1329,7 @@ function PalaceClient() // extends EventDispatcher
 
     function handleReceiveServerInfo(buffer, size, referenceId) {
         serverInfo = new PalaceServerInfo();
+        traceObj(serverInfo);
         serverInfo.permissions = buffer.readInt();
         var size = Math.abs(buffer.readByte());
         serverName = serverInfo.name = buffer.readMultiByte(size, 'Windows-1252');
@@ -1335,7 +1339,7 @@ function PalaceClient() // extends EventDispatcher
 //			serverInfo.options = buffer.readUnsignedInt();
 //			serverInfo.uploadCapabilities = buffer.readUnsignedInt();
 //			serverInfo.downloadCapabilities = buffer.readUnsignedInt();
-//			trace("Server name: " + serverName);
+			trace("Server name: " + serverName);
     }
 
     function handleAuthenticate(size, referenceId) {
@@ -1373,7 +1377,8 @@ function PalaceClient() // extends EventDispatcher
 //            }
 //        });
 //        timer.start();
-        trace("User ID: " + referenceId + " just logged on.  Population: " + population);
+        logText("User ID: " + referenceId + " just logged on.  Population: " + population);
+        //logText(currentRoom.getUserById(referenceId).name + "just logged on");
     }
 
     function handleReceiveMediaServer(buffer, size, referenceId) {
@@ -1651,7 +1656,7 @@ function PalaceClient() // extends EventDispatcher
 
         currentRoom.dimRoom(100);
         currentRoom.showAvatars = true;
-
+        trace(currentRoom);
         var roomChangeEvent = new PalaceEvent(PalaceEvent.ROOM_CHANGED);
         dispatchEvent(roomChangeEvent);
     }
@@ -1926,11 +1931,9 @@ function PalaceClient() // extends EventDispatcher
             }
             var currentItem = chatQueue.shift();
             currentChatItem = currentItem;
-            console.log('item: ' );
-            console.log(currentChatItem);
+            traceObj(currentChatItem);
             whochat = currentItem.whochat;
             chatstr = currentItem.chatstr;
-trace('currentItemChatstr:' + chatstr);
             if (currentItem.eventHandlers) {
                 // These are global variables that need to persist even after
                 // the last chat message has been processed, for compatibility
@@ -1980,7 +1983,6 @@ trace('currentItemChatstr:' + chatstr);
                     "chat record, but processing was attempted " +
                     "without an event triggering it!");
             }
-            trace(chatstr);
 
             currentChatItem.chatstr = chatstr;
 
@@ -1991,6 +1993,9 @@ trace('currentItemChatstr:' + chatstr);
                 }
                 else {
                     currentRoom.chat(currentChatItem.whochat, currentChatItem.chatstr, currentChatItem.originalChatstr);
+                    var user = currentRoom.getUserById(currentChatItem.whochat);
+                    var logMessage = currentChatItem.chatstr || currentChatItem.originalChatstr;
+                    logText("<b>" + user.name + ":</b> " + logMessage + "\n");
                 }
 
             }
@@ -2088,7 +2093,7 @@ trace('currentItemChatstr:' + chatstr);
             message
         );
         //chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
-        //chatQueue.push(chatRecord);
+        chatQueue.push(chatRecord);
         processChatQueue();
 		trace("Got xtalk from userID " + referenceId + ": " + message);
     }

@@ -25,7 +25,7 @@ var Event = require("../event/Event");
 
 var ArrayCollection = require("../../mx/collections/ArrayCollection");
 var PalaceRoomEvent = require("../event/PalaceRoomEvent");
-//import net.codecomposer.palace.event.ChatEvent;
+var ChatEvent = require("../event/ChatEvent");
 //import net.codecomposer.palace.event.PalaceRoomEvent;
 var PalaceUtil = require("../util/PalaceUtil");
 //import net.codecomposer.palace.view.PalaceRoomView;
