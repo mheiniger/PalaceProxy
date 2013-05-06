@@ -1,0 +1,34 @@
+<html>
+<head>
+    <title>Concept of Web-Palaceclient</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://localhost');
+        socket.on('log', function (data) {
+            var logwindow = document.getElementById('log');
+            console.log(data);
+            logwindow.innerHTML = logwindow.innerHTML + data.text + '<br>';
+            logwindow.scrollTop = logwindow.scrollHeight;
+        });
+
+
+    </script>
+</head>
+<body>
+<div id="room" style="width: 512px; height: 384px; background-color: #AEBDCC; float: left;"></div>
+<div id="log" style="width: 300px; height: 384px; background-color: #eeeeee; float: left; overflow:scroll"></div>
+<textarea id="input" style="width: 512px; height: 50px; background-color: #eeeeee; float: none; "></textarea>
+
+<script>
+    document.getElementById('input').onkeypress = function(e){
+        if (!e) e = window.event;
+        if (e.keyCode == '13'){
+            socket.emit('text entered', { text: this.value });
+            this.value = '';
+            return false;
+        }
+    }
+</script>
+</body>
+</html>
+

@@ -42,6 +42,12 @@ function extendSocket(socket) {
 //            socket.write(buffer);
     }
 
+    socket.writeBytes = function (tmpBuffer) {
+        this.extendWriteBuffer(tmpBuffer.length);
+        tmpBuffer.copy(this.writeBuffer, this.writeBufferPos);
+        this.writeBufferPos += tmpBuffer.length;
+    }
+
     socket.writeMultiByte = function (data, encoding) {
         //console.log('sending MultyByte: ', data);
         // temporary write just utf8.. encoding later...
@@ -157,6 +163,7 @@ function extendBuffer(socket){
         Buffer.prototype.writeUTFBytes = function(string){
             var bytesWritten = this.write(string, this.position);
             this.position = this.position + bytesWritten;
+            return bytesWritten;
         }
 
         Buffer.prototype.writeMultiByte = function (data, encoding) {
@@ -164,6 +171,7 @@ function extendBuffer(socket){
             // temporary write just utf8.. encoding later...
             var bytesWritten = this.write(data, this.position);
             this.position = this.position + bytesWritten;
+            return bytesWritten;
         }
 
     }

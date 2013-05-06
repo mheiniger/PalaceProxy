@@ -31,12 +31,14 @@ function PalaceEncryption() {
 
         var i/* :int */ = 0;
         var bytesIn/* :ByteArray */ = new ByteArray(1024);
+        bytesIn.position = 0;
         if (utf8Output) {
-            bytesIn.writeUTFBytes(message);
+            var bytesWritten = bytesIn.writeUTFBytes(message);
         }
         else {
-            bytesIn.writeMultiByte(message, 'Windows-1252');
+            var bytesWritten = bytesIn.writeMultiByte(message, 'Windows-1252');
         }
+        console.log('textLength: ' + bytesIn.getLength());
         if (bytesIn.getLength() > byteLimit) {
             var temp/* :ByteArray */ = bytesIn;
             bytesIn = new ByteArray(byteLimit);
