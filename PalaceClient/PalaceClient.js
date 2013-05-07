@@ -23,9 +23,10 @@ function PalaceClient() // extends EventDispatcher
     var util = require('util');
     var BufferedSocket = require("./net/BufferedSocket");
 
+
     //import com.adobe.net.URI;
 
-    //import flash.events.Event;
+    var Event =  require("./palace/event/Event");
     //import flash.events.EventDispatcher;
     //import flash.events.IOErrorEvent;
     //import flash.events.ProgressEvent;
@@ -39,12 +40,10 @@ function PalaceClient() // extends EventDispatcher
     //import flash.utils.Endian;
     //import flash.utils.Timer;
     //import flash.utils.setTimeout;
-
     var ArrayCollection = require("./mx/collections/ArrayCollection");
     // var Alert = require("./mx/controls/Alert");
     // var AccountServerClient = require("./openpalace/accountserver/rpc/AccountServerClient");
     var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
-    var Event =  require("./palace/event/Event");
     var PalaceEvent =  require("./palace/event/PalaceEvent");
     // var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
     // var PropEvent = require("./palace/event/PropEvent");

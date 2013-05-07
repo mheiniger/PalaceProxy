@@ -1,7 +1,7 @@
 var eventEmitter = require('events').EventEmitter;
 //	import flash.events.Event;
 	
-	function PalaceEvent() // extends Event
+	function PalaceEvent(type/* :String */, bubbles, cancelable) // extends Event
 	{
 		this.ROOM_CHANGED/* :String */ = "roomChanged";
 		
@@ -20,13 +20,13 @@ var eventEmitter = require('events').EventEmitter;
             console.log('emitted!');
         }
 
-		this.PalaceEvent = function (type/* :String */, bubbles, cancelable)
+		this.constructor = function ()
 		{
 			bubbles = bubbles || false;
             cancelable = cancelable || false;
-            eventEmitter.emit(type, bubbles, cancelable);
+//            eventEmitter.emit(type, bubbles, cancelable);
             console.log('emitted!');
-		}
+		}();
 	}
 
 module.exports = PalaceEvent;

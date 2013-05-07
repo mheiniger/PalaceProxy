@@ -13,7 +13,7 @@ if (process.argv.length != 4) {
     console.log(" e.g. localhost 9998");
     process.exit();
 }
-
+io.set('log level', 1);
 
 
 
