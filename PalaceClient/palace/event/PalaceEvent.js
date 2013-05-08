@@ -1,32 +1,35 @@
 var eventEmitter = require('events').EventEmitter;
 //	import flash.events.Event;
-	
-	function PalaceEvent(type/* :String */, bubbles, cancelable) // extends Event
-	{
-		this.ROOM_CHANGED/* :String */ = "roomChanged";
-		
-		this.CONNECT_START/* :String */ = "connectStart";
-		this.CONNECT_COMPLETE/* :String */ = "connectComplete";
-		this.CONNECT_FAILED/* :String */ = "connectFailed";
-		this.DISCONNECTED/* :String */ = "disconnected";
-		this.GOTO_URL/* :String */ = "gotoURL";
-		this.AUTHENTICATION_REQUESTED/* :String */ = "authenticationRequested";
-		this.ESP_CHANGED/* :String */ = "espChanged";
-		
-		this.text/* :String */;
-		this.url/* :String */;
 
-        this.emit = function(){
-            console.log('emitted!');
-        }
+var constants = {};
+var ROOM_CHANGED = constants.ROOM_CHANGED/* :String */ = "roomChanged";
 
-		this.constructor = function ()
-		{
-			bubbles = bubbles || false;
-            cancelable = cancelable || false;
+var CONNECT_START = constants.CONNECT_START/* :String */ = "connectStart";
+var CONNECT_COMPLETE = constants.CONNECT_COMPLETE/* :String */ = "connectComplete";
+var CONNECT_FAILED = constants.CONNECT_FAILED/* :String */ = "connectFailed";
+var DISCONNECTED = constants.DISCONNECTED/* :String */ = "disconnected";
+var GOTO_URL = constants.GOTO_URL/* :String */ = "gotoURL";
+var AUTHENTICATION_REQUESTED = constants.AUTHENTICATION_REQUESTED/* :String */ = "authenticationRequested";
+var ESP_CHANGED = constants.ESP_CHANGED/* :String */ = "espChanged";
+
+function PalaceEvent(type/* :String */, bubbles, cancelable) // extends Event
+{
+    this.text/* :String */;
+    this.url/* :String */;
+
+    this.emit = function () {
+        console.log('emitted!');
+    }
+
+    this.constructor = function () {
+        bubbles = bubbles || false;
+        cancelable = cancelable || false;
 //            eventEmitter.emit(type, bubbles, cancelable);
-            console.log('emitted!');
-		}();
-	}
+        console.log('emit PalaceEvent');
+    }();
+}
 
 module.exports = PalaceEvent;
+for (name in constants) {
+    module.exports[name] = constants[name];
+}

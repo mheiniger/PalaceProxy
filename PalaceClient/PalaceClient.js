@@ -883,7 +883,7 @@ function PalaceClient() // extends EventDispatcher
 
     function onClose(event) {
         trace("Disconnected");
-        onSocketData();
+        onSocketData(new Buffer(0));
         connected = false;
         disconnect();
         dispatchEvent(new PalaceEvent(PalaceEvent.DISCONNECTED));
