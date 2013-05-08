@@ -14,10 +14,11 @@
  You should have received a copy of the GNU General Public License
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+var util = require("util");
 //package net.codecomposer.palace.model
 //{
 //	import flash.events.Event;
+var EventDispatcher = require("./../event/EventDispatcher");
 //	import flash.events.EventDispatcher;
 
 var ArrayCollection = require("../../mx/collections/ArrayCollection");
@@ -25,49 +26,39 @@ var ArrayCollection = require("../../mx/collections/ArrayCollection");
 //	import net.codecomposer.palace.event.PropEvent;
 //	import net.codecomposer.palace.rpc.PalaceClient;
 
+var constants = {};
+// wizard
+var SUPERUSER = constants.SUPERUSER/* :uint */ = 0x0001;
+// Total wizard
+var GOD = constants.GOD/* :uint */ = 0x0002;
+// Server should drop user at first opportunity
+var KILL = constants.KILL/* :uint */ = 0x0004;
+// user is a guest (no registration code)
+var GUEST = constants.GUEST/* :uint */ = 0x0008;
+// Redundant with KILL.  Shouldn't be used
+var BANISHED = constants.BANISHED/* :uint */ = 0x0010;
+// historical artifact.  Shouldn't be used
+var PENALIZED = constants.PENALIZED/* :uint */ = 0x0020;
+// Comm error, drop at first opportunity
+var COMM_ERROR = constants.COMM_ERROR/* :uint */ = 0x0040;
+// Not allowed to speak
+var GAG = constants.GAG/* :uint */ = 0x0080;
+// Stuck in corner and not allowed to move
+var PIN = constants.PIN/* :uint */ = 0x0100;
+// Doesn't appear on user list
+var HIDE = constants.HIDE/* :uint */ = 0x0200;
+// Not accepting whisper from outside room
+var REJECT_ESP = constants.REJECT_ESP/* :uint */ = 0x0400;
+// Not accepting whisper from inside room
+var REJECT_PRIVATE = constants.REJECT_PRIVATE/* :uint */ = 0x0800;
+// Not allowed to wear props
+var PROPGAG = constants.PROPGAG/* :uint */ = 0x1000;
+
+
 /* \[Bindable\] */
 function PalaceUser() //extends EventDispatcher
 {
-    this.constants = {};
-    // wizard
-    var SUPERUSER = this.constants.SUPERUSER/* :uint */ = 0x0001;
-
-    // Total wizard
-    var GOD = this.constants.GOD/* :uint */ = 0x0002;
-
-    // Server should drop user at first opportunity
-    var KILL = this.constants.KILL/* :uint */ = 0x0004;
-
-    // user is a guest (no registration code)
-    var GUEST = this.constants.GUEST/* :uint */ = 0x0008;
-
-    // Redundant with KILL.  Shouldn't be used
-    var BANISHED = this.constants.BANISHED/* :uint */ = 0x0010;
-
-    // historical artifact.  Shouldn't be used
-    var PENALIZED = this.constants.PENALIZED/* :uint */ = 0x0020;
-
-    // Comm error, drop at first opportunity
-    var COMM_ERROR = this.constants.COMM_ERROR/* :uint */ = 0x0040;
-
-    // Not allowed to speak
-    var GAG = this.constants.GAG/* :uint */ = 0x0080;
-
-    // Stuck in corner and not allowed to move
-    var PIN = this.constants.PIN/* :uint */ = 0x0100;
-
-    // Doesn't appear on user list
-    var HIDE = this.constants.HIDE/* :uint */ = 0x0200;
-
-    // Not accepting whisper from outside room
-    var REJECT_ESP = this.constants.REJECT_ESP/* :uint */ = 0x0400;
-
-    // Not accepting whisper from inside room
-    var REJECT_PRIVATE = this.constants.REJECT_PRIVATE/* :uint */ = 0x0800;
-
-    // Not allowed to wear props
-    var PROPGAG = this.constants.PROPGAG/* :uint */ = 0x1000;
-
+    EventDispatcher.call(this);
 
     var isSelf = this.isSelf/* :Boolean */ = false;
     var id = this.id/* :int */;
@@ -230,9 +221,9 @@ function PalaceUser() //extends EventDispatcher
 
 }
 //}
+util.inherits(PalaceUser, EventDispatcher);
 
 module.exports = PalaceUser;
-var PalaceUserVar = new PalaceUser();
-for (name in PalaceUserVar.constants) {
-    module.exports[name] = PalaceUserVar.constants[name];
+for (name in constants) {
+    module.exports[name] = constants[name];
 }

@@ -21,26 +21,29 @@
 
 //	import net.codecomposer.palace.model.PalaceLooseProp;
 //	import net.codecomposer.palace.model.PalaceUser;
+var constants = {};
 
-function PalaceRoomEvent() //extends Event
+var USER_ENTERED = constants.USER_ENTERED/* :String */ = "userEntered";
+var USER_LEFT = constants.USER_LEFT/* :String */ = "userLeft";
+var ROOM_CLEARED = constants.ROOM_CLEARED/* :String */ = "roomCleared";
+var LOOSE_PROP_ADDED = constants.LOOSE_PROP_ADDED/* :String */ = "loosePropAdded";
+var LOOSE_PROP_REMOVED = constants.LOOSE_PROP_REMOVED/* :String */ = "loosePropRemoved";
+var LOOSE_PROP_MOVED = constants.LOOSE_PROP_MOVED/* :String */ = "loosePropMoved";
+var LOOSE_PROPS_CLEARED = constants.LOOSE_PROPS_CLEARED/* :String */ = "loosePropsCleared";
+var USER_MOVED = constants.USER_MOVED/* :String */ = "userMoved";
+var SELECTED_USER_CHANGED = constants.SELECTED_USER_CHANGED/* :String */ = "selectedUserChanged";
+
+
+function PalaceRoomEvent(type/* :String */, user/* :PalaceUser  = null*/) //extends Event
 {
-    this.constants = {};
+
     var user = this.user/* :PalaceUser */;
     var propIndex = this.propIndex/* :int */;
     var looseProp = this.looseProp/* :PalaceLooseProp */;
     var addToFront = this.addToFront/* :Boolean */;
 
-    var USER_ENTERED = this.constants.USER_ENTERED/* :String */ = "userEntered";
-    var USER_LEFT = this.constants.USER_LEFT/* :String */ = "userLeft";
-    var ROOM_CLEARED = this.constants.ROOM_CLEARED/* :String */ = "roomCleared";
-    var LOOSE_PROP_ADDED = this.constants.LOOSE_PROP_ADDED/* :String */ = "loosePropAdded";
-    var LOOSE_PROP_REMOVED = this.constants.LOOSE_PROP_REMOVED/* :String */ = "loosePropRemoved";
-    var LOOSE_PROP_MOVED = this.constants.LOOSE_PROP_MOVED/* :String */ = "loosePropMoved";
-    var LOOSE_PROPS_CLEARED = this.constants.LOOSE_PROPS_CLEARED/* :String */ = "loosePropsCleared";
-    var USER_MOVED = this.constants.USER_MOVED/* :String */ = "userMoved";
-    var SELECTED_USER_CHANGED = this.constants.SELECTED_USER_CHANGED/* :String */ = "selectedUserChanged";
 
-    var PalaceRoomEvent = this.PalaceRoomEvent = function (type/* :String */, user/* :PalaceUser  = null*/) {
+    this.constructor = function () {
         this.user = user || null;
         //super(type, false, false);
     }
@@ -49,7 +52,6 @@ function PalaceRoomEvent() //extends Event
 //}
 
 module.exports = PalaceRoomEvent;
-var PalaceRoomEventVar = new PalaceRoomEvent();
-for (name in PalaceRoomEventVar.constants) {
-    module.exports[name] = PalaceRoomEventVar.constants[name];
+for (name in constants) {
+    module.exports[name] = constants[name];
 }

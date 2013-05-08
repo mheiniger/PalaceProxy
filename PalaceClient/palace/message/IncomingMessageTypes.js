@@ -70,7 +70,6 @@ constants.BLOWTHRU/* :int */ = 1651273591;
 constants.AUTHENTICATE/* :int */ = 0x61757468;
 
 function IncomingMessageTypes() {
-    this.constants = constants;
 }
 
 module.exports = IncomingMessageTypes;

@@ -17,7 +17,11 @@
 
 //package net.codecomposer.palace.model
 //{
-//	import flash.events.EventDispatcher;
+var util = require("util");
+
+var Event = require('./../event/Event');
+var EventDispatcher = require('./../event/EventDispatcher');
+
 var Point = require("./Point");
 //	import flash.utils.ByteArray;
 var ByteArray = Buffer;
@@ -37,11 +41,47 @@ var PalaceClient = require("../../PalaceClient");
 
 //	[Event(name="stateChanged",type="net.codecomposer.palace.event.HotspotEvent")]
 //	[Event(name="moved",type="net.codecomposer.palace.event.HotspotEvent")]
+var constants = {};
+
+var TYPE_NORMAL = constants.TYPE_NORMAL/* :int */ = 0;
+var TYPE_PASSAGE = constants.TYPE_PASSAGE/* :int */ = 1;
+var TYPE_SHUTABLE_DOOR = constants.TYPE_SHUTABLE_DOOR/* :int */ = 2;
+var TYPE_LOCKABLE_DOOR = constants.TYPE_LOCKABLE_DOOR/* :int */ = 3;
+var TYPE_BOLT = constants.TYPE_BOLT/* :int */ = 4;
+var TYPE_NAVAREA = constants.TYPE_NAVAREA/* :int */ = 5;
+
+var STATE_UNLOCKED = constants.STATE_UNLOCKED/* :int */ = 0;
+var STATE_LOCKED = constants.STATE_LOCKED/* :int */ = 1;
+
+var FLAG_SHOW_NAME = constants.FLAG_SHOW_NAME/* :int */ = 0x08;
+var FLAG_DONT_MOVE_HERE = constants.FLAG_DONT_MOVE_HERE/* :int */ = 0x02;
+var FLAG_DRAGGABLE = constants.FLAG_DRAGGABLE/* :int */ = 0x01;
+var FLAG_INVISIBLE = constants.FLAG_INVISIBLE/* :int */ = 0x04;
+var FLAG_DRAW_FRAME = constants.FLAG_DRAW_FRAME/* :int */ = 0x10;
+var FLAG_SHADOW = constants.FLAG_SHADOW/* :int */ = 0x20;
+var FLAG_FILL = constants.FLAG_FILL/* :int */ = 0x40;
+
+
+//		PicturesAboveAll        0x00000001        /* was "Draggable" */
+//		DontMoveHere            0x00000002
+//		PicturesAboveProps        0x00000004        /* was "Invisible" */
+//		ShowName                0x00000008
+//		ShowFrame                0x00000010
+//		Shadow                    0x00000020
+//		PicturesAboveNameTags    0x00000040        /* was "Fill" */
+//		Forbidden                0x00000080        /* Linux 4.5.1 PServer */
+//		Mandatory                0x00000100        /* Linux 4.5.1 PServer */
+//		Landingpad                0x00000200        /* Linux 4.5.1 PServer */
+
+// Hotspot records are 48 bytes
+var size = constants.size /* :int */ = 48;
+
 
 /* \[Bindable\] */
 function PalaceHotspot() //extends EventDispatcher
 {
-    this.constants = {};
+    EventDispatcher.call(this);
+
 
     var type = this.type/* :int */ = 0;
     var dest = this.dest/* :int */ = 0;
@@ -158,42 +198,8 @@ function PalaceHotspot() //extends EventDispatcher
         return (!draggable && !invisible && !fill);
     }
 
-    var TYPE_NORMAL = this.constants.TYPE_NORMAL/* :int */ = 0;
-    var TYPE_PASSAGE = this.constants.TYPE_PASSAGE/* :int */ = 1;
-    var TYPE_SHUTABLE_DOOR = this.constants.TYPE_SHUTABLE_DOOR/* :int */ = 2;
-    var TYPE_LOCKABLE_DOOR = this.constants.TYPE_LOCKABLE_DOOR/* :int */ = 3;
-    var TYPE_BOLT = this.constants.TYPE_BOLT/* :int */ = 4;
-    var TYPE_NAVAREA = this.constants.TYPE_NAVAREA/* :int */ = 5;
-
-    var STATE_UNLOCKED = this.constants.STATE_UNLOCKED/* :int */ = 0;
-    var STATE_LOCKED = this.constants.STATE_LOCKED/* :int */ = 1;
-
-    var FLAG_SHOW_NAME = this.constants.FLAG_SHOW_NAME/* :int */ = 0x08;
-    var FLAG_DONT_MOVE_HERE = this.constants.FLAG_DONT_MOVE_HERE/* :int */ = 0x02;
-    var FLAG_DRAGGABLE = this.constants.FLAG_DRAGGABLE/* :int */ = 0x01;
-    var FLAG_INVISIBLE = this.constants.FLAG_INVISIBLE/* :int */ = 0x04;
-    var FLAG_DRAW_FRAME = this.constants.FLAG_DRAW_FRAME/* :int */ = 0x10;
-    var FLAG_SHADOW = this.constants.FLAG_SHADOW/* :int */ = 0x20;
-    var FLAG_FILL = this.constants.FLAG_FILL/* :int */ = 0x40;
-
-
-//		PicturesAboveAll        0x00000001        /* was "Draggable" */
-//		DontMoveHere            0x00000002
-//		PicturesAboveProps        0x00000004        /* was "Invisible" */
-//		ShowName                0x00000008
-//		ShowFrame                0x00000010
-//		Shadow                    0x00000020
-//		PicturesAboveNameTags    0x00000040        /* was "Fill" */
-//		Forbidden                0x00000080        /* Linux 4.5.1 PServer */
-//		Mandatory                0x00000100        /* Linux 4.5.1 PServer */
-//		Landingpad                0x00000200        /* Linux 4.5.1 PServer */
-
-    // Hotspot records are 48 bytes
-    var size = this.size = this.constants.size/* :int */ = 48;
-
-    var PalaceHotspot = this.PalaceHotspot = function()
-    {
-    }
+    this.constructor = function () {
+    }();
 
     var get_isDoor = this.get_isDoor = function()/* :Boolean */ {
         return Boolean(type == TYPE_PASSAGE ||
@@ -448,6 +454,7 @@ function PalaceHotspot() //extends EventDispatcher
 
 }
 //}
+util.inherits(PalaceHotspot, EventDispatcher);
 
 module.exports = PalaceHotspot;
 var PalaceHotspotVar = new PalaceHotspot();
