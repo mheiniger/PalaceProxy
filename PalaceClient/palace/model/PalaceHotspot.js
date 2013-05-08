@@ -82,6 +82,8 @@ function PalaceHotspot() //extends EventDispatcher
 {
     EventDispatcher.call(this);
 
+    // Hotspot records are 48 bytes
+    this.size/* :int */ = size;
 
     var type = this.type/* :int */ = 0;
     var dest = this.dest/* :int */ = 0;
@@ -197,9 +199,6 @@ function PalaceHotspot() //extends EventDispatcher
     var get_layerNormal = this.get_layerNormal = function()/* :Boolean */ {
         return (!draggable && !invisible && !fill);
     }
-
-    this.constructor = function () {
-    }();
 
     var get_isDoor = this.get_isDoor = function()/* :Boolean */ {
         return Boolean(type == TYPE_PASSAGE ||
