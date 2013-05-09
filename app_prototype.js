@@ -49,5 +49,8 @@ io.sockets.on('connection', function (socket) {
         //socket.emit('log', { text: 'you sent: ' + data.text });
         palaceClient.say(data.text);
     });
+    palaceClient.on('connectComplete' , function(data){
+        socket.emit('log', { text: 'connected'});
+    })
 });
 
