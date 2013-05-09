@@ -17,7 +17,8 @@
 
 //package net.codecomposer.palace.event
 //{
-//	import flash.events.Event;
+var Event = require("./../../adapter/events/Event.js") //	import flash.events.Event;
+var util = require("util");
 
 //	import net.codecomposer.palace.model.PalaceLooseProp;
 //	import net.codecomposer.palace.model.PalaceUser;
@@ -33,21 +34,16 @@ var LOOSE_PROPS_CLEARED = constants.LOOSE_PROPS_CLEARED/* :String */ = "loosePro
 var USER_MOVED = constants.USER_MOVED/* :String */ = "userMoved";
 var SELECTED_USER_CHANGED = constants.SELECTED_USER_CHANGED/* :String */ = "selectedUserChanged";
 
-
+util.inherits(PalaceRoomEvent, Event);
 function PalaceRoomEvent(type/* :String */, user/* :PalaceUser  = null*/) //extends Event
 {
 
-    this.type = type;
-    var user = this.user/* :PalaceUser */;
+    this.user = user || null/* :PalaceUser */;
     var propIndex = this.propIndex/* :int */;
     var looseProp = this.looseProp/* :PalaceLooseProp */;
     var addToFront = this.addToFront/* :Boolean */;
 
-
-    this.PalaceRoomEvent = function () {
-        this.user = user || null;
-        //super(type, false, false);
-    }
+    PalaceRoomEvent.super_.call(this, type);
 
 }
 //}
