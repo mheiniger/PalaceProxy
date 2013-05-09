@@ -1,5 +1,6 @@
-var eventEmitter = require('events').EventEmitter;
-//	import flash.events.Event;
+// var eventEmitter = require('events').EventEmitter;
+var Event = require("./../../adapter/events/Event.js") //	import flash.events.Event;
+var util = require("util");
 
 var constants = {};
 var ROOM_CHANGED = constants.ROOM_CHANGED/* :String */ = "roomChanged";
@@ -17,17 +18,10 @@ function PalaceEvent(type/* :String */, bubbles, cancelable) // extends Event
     this.text/* :String */;
     this.url/* :String */;
 
-    this.emit = function () {
-        console.log('emitted!');
-    }
+    PalaceEvent.super_.call(this, type);
 
-    this.constructor = function () {
-        bubbles = bubbles || false;
-        cancelable = cancelable || false;
-//            eventEmitter.emit(type, bubbles, cancelable);
-        console.log('emit PalaceEvent');
-    }();
 }
+util.inherits(PalaceEvent, Event);
 
 module.exports = PalaceEvent;
 for (name in constants) {

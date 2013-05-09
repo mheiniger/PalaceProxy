@@ -37,13 +37,14 @@ var SELECTED_USER_CHANGED = constants.SELECTED_USER_CHANGED/* :String */ = "sele
 function PalaceRoomEvent(type/* :String */, user/* :PalaceUser  = null*/) //extends Event
 {
 
+    this.type = type;
     var user = this.user/* :PalaceUser */;
     var propIndex = this.propIndex/* :int */;
     var looseProp = this.looseProp/* :PalaceLooseProp */;
     var addToFront = this.addToFront/* :Boolean */;
 
 
-    this.constructor = function () {
+    this.PalaceRoomEvent = function () {
         this.user = user || null;
         //super(type, false, false);
     }

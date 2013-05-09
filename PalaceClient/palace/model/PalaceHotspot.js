@@ -19,14 +19,14 @@
 //{
 var util = require("util");
 
-var Event = require('./../event/Event');
-var EventDispatcher = require('./../event/EventDispatcher');
+var Event = require('./../../adapter/events/Event');
+var EventDispatcher = require('./../../adapter/events/EventDispatcher');
 
 var Point = require("./Point");
 //	import flash.utils.ByteArray;
 var ByteArray = Buffer;
 
-var	ArrayCollection = require("../../mx/collections/ArrayCollection");
+var	ArrayCollection = require("../../adapter/collections/ArrayCollection");
 var PalaceHotspotState = require("./PalaceHotspotState");
 var FlexPoint = require("./FlexPoint");
 var PalaceClient = require("../../PalaceClient");

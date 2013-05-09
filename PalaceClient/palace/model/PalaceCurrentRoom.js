@@ -17,20 +17,19 @@
 
 //package net.codecomposer.palace.model
 //{
-var Event = require("../event/Event");
+var Event = require("../../adapter/events/Event");
 //import flash.events.EventDispatcher;
 //import flash.events.TimerEvent;
 //import flash.utils.Dictionary;
 //import flash.utils.Timer;
 
-var ArrayCollection = require("../../mx/collections/ArrayCollection");
-var PalaceRoomEvent = require("../event/PalaceRoomEvent");
-var ChatEvent = require("../event/ChatEvent");
-//import net.codecomposer.palace.event.PalaceRoomEvent;
-var PalaceUtil = require("../util/PalaceUtil");
+var ArrayCollection = require("../../adapter/collections/ArrayCollection");
+var PalaceRoomEvent = require("../../palace/event/PalaceRoomEvent");
+var ChatEvent = require("../../palace/event/ChatEvent");
+var PalaceUtil = require("../../palace/util/PalaceUtil");
 //import net.codecomposer.palace.view.PalaceRoomView;
 
-var PalaceUser = require("./PalaceUser");
+var PalaceUser = require("../../palace/model/PalaceUser");
 
 //    [Event(name="chatLogUpdated")]
 //        [Event(name="chat",type="net.codecomposer.palace.event.ChatEvent")]

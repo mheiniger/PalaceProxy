@@ -29,8 +29,6 @@ var ROOM_MESSAGE /* :String */ = "roomMessage";
 
 function ChatEvent(type/* :String */, chatText/* :String */, user/* :PalaceUser = null*/ ) //extends Event
 {
-    this.constants = {};
-
     var logText = this.logText/* :String */;
     var user = this.user/* :PalaceUser */;
     var soundName = this.soundName/* :String */;

@@ -18,10 +18,10 @@ var util = require("util");
 //package net.codecomposer.palace.model
 //{
 //	import flash.events.Event;
-var EventDispatcher = require("./../event/EventDispatcher");
+var EventDispatcher = require("../../adapter/events/EventDispatcher");
 //	import flash.events.EventDispatcher;
 
-var ArrayCollection = require("../../mx/collections/ArrayCollection");
+var ArrayCollection = require("../../adapter/collections/ArrayCollection");
 
 //	import net.codecomposer.palace.event.PropEvent;
 //	import net.codecomposer.palace.rpc.PalaceClient;

@@ -15,73 +15,79 @@
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var net = require('net');
+var util = require('util');
+var BufferedSocket = require("./adapter/net/BufferedSocket");
+
+var Event =  require("./adapter/events/Event");
+var EventDispatcher = require("./adapter/events/EventDispatcher");
+var EventEmitter = require("events").EventEmitter;
+//import flash.events.EventDispatcher;
+//import flash.events.IOErrorEvent;
+//import flash.events.ProgressEvent;
+//import flash.events.SecurityErrorEvent;
+//import flash.events.TimerEvent;
+//import flash.net.SharedObject;
+//import flash.net.Socket;
+//import flash.net.XMLSocket;
+//import flash.system.LoaderContext;
+//import flash.utils.ByteArray;
+var ByteArray = Buffer;
+//import flash.utils.Endian;
+//import flash.utils.Timer;
+//import flash.utils.setTimeout;
+//import com.adobe.net.URI;
+
+var ArrayCollection = require("./adapter/collections/ArrayCollection");
+// var Alert = require("./mx/controls/Alert");
+// var AccountServerClient = require("./openpalace/accountserver/rpc/AccountServerClient");
+var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
+var PalaceEvent =  require("./palace/event/PalaceEvent");
+// var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
+// var PropEvent = require("./palace/event/PropEvent");
+// var DebugData = require("./palace/iptscrae/DebugData");
+// var IptEventHandler = require("./palace/iptscrae/IptEventHandler");
+// var PalaceController = require("./palace/iptscrae/PalaceController");
+var IncomingMessageTypes =  require("./palace/message/IncomingMessageTypes");
+// var NavErrorMessage = require("./palace/message/NavErrorMessage");
+var OutgoingMessageTypes =  require("./palace/message/OutgoingMessageTypes");
+// var AssetManager = require("./palace/model/AssetManager");
+// var PalaceAsset = require("./palace/model/PalaceAsset");
+var PalaceConfig =  require("./palace/model/PalaceConfig");
+var PalaceCurrentRoom = require("./palace/model/PalaceCurrentRoom");
+var PalaceHotspot = require("./palace/model/PalaceHotspot");
+// var PalaceImageOverlay = require("./palace/model/PalaceImageOverlay");
+// var PalaceLooseProp = require("./palace/model/PalaceLooseProp");
+// var PalaceProp = require("./palace/model/PalaceProp");
+// var PalacePropStore = require("./palace/model/PalacePropStore");
+var PalaceRoom = require("./palace/model/PalaceRoom");
+var PalaceServerInfo =  require("./palace/model/PalaceServerInfo");
+
+var PalaceUser = require("./palace/model/PalaceUser");
+var PalaceChatRecord = require("./palace/record/PalaceChatRecord");
+// var PalaceDrawRecord = require("./palace/record/PalaceDrawRecord");
+// var PalaceSoundPlayer = require("./palace/view/PalaceSoundPlayer");
+//
+// var IptEngineEvent = require("./org/openpalace/iptscrae/IptEngineEvent");
+// var IptTokenList = require("./org/openpalace/iptscrae/IptTokenList");
+// var RegistrationCode = require("./org/openpalace/registration/RegistrationCode");
+
+//[Event(type="net.codecomposer.event.PalaceEvent",name="connectStart")]
+//[Event(type="net.codecomposer.event.PalaceEvent",name="connectComplete")]
+//[Event(type="net.codecomposer.event.PalaceEvent",name="connectFailed")]
+//[Event(type="net.codecomposer.event.PalaceEvent",name="disconnected")]
+//[Event(type="net.codecomposer.event.PalaceEvent",name="gotoURL")]
+//[Event(type="net.codecomposer.event.PalaceEvent",name="roomChanged")]
+//[Event(type="net.codecomposer.event.PalaceEvent",name="authenticationRequested")]
+//[Event(type="net.codecomposer.event.PalaceSecurityErrorEvent",name="securityError")]
+
+util.inherits(PalaceClient, EventDispatcher);
+
 function PalaceClient() // extends EventDispatcher
 {
     var that = this;
 
-    var net = require('net');
-    var util = require('util');
-    var BufferedSocket = require("./net/BufferedSocket");
-
-
-    //import com.adobe.net.URI;
-
-    var Event =  require("./palace/event/Event");
-    //import flash.events.EventDispatcher;
-    //import flash.events.IOErrorEvent;
-    //import flash.events.ProgressEvent;
-    //import flash.events.SecurityErrorEvent;
-    //import flash.events.TimerEvent;
-    //import flash.net.SharedObject;
-    //import flash.net.Socket;
-    //import flash.net.XMLSocket;
-    //import flash.system.LoaderContext;
-    //import flash.utils.ByteArray;
-    //import flash.utils.Endian;
-    //import flash.utils.Timer;
-    //import flash.utils.setTimeout;
-    var ArrayCollection = require("./mx/collections/ArrayCollection");
-    // var Alert = require("./mx/controls/Alert");
-    // var AccountServerClient = require("./openpalace/accountserver/rpc/AccountServerClient");
-    var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
-    var PalaceEvent =  require("./palace/event/PalaceEvent");
-    // var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
-    // var PropEvent = require("./palace/event/PropEvent");
-    // var DebugData = require("./palace/iptscrae/DebugData");
-    // var IptEventHandler = require("./palace/iptscrae/IptEventHandler");
-    // var PalaceController = require("./palace/iptscrae/PalaceController");
-    var IncomingMessageTypes =  require("./palace/message/IncomingMessageTypes");
-    // var NavErrorMessage = require("./palace/message/NavErrorMessage");
-    var OutgoingMessageTypes =  require("./palace/message/OutgoingMessageTypes");
-    // var AssetManager = require("./palace/model/AssetManager");
-    // var PalaceAsset = require("./palace/model/PalaceAsset");
-    var PalaceConfig =  require("./palace/model/PalaceConfig");
-    var PalaceCurrentRoom = require("./palace/model/PalaceCurrentRoom");
-    var PalaceHotspot = require("./palace/model/PalaceHotspot");
-    // var PalaceImageOverlay = require("./palace/model/PalaceImageOverlay");
-    // var PalaceLooseProp = require("./palace/model/PalaceLooseProp");
-    // var PalaceProp = require("./palace/model/PalaceProp");
-    // var PalacePropStore = require("./palace/model/PalacePropStore");
-    var PalaceRoom = require("./palace/model/PalaceRoom");
-    var PalaceServerInfo =  require("./palace/model/PalaceServerInfo");
-
-    var PalaceUser = require("./palace/model/PalaceUser");
-    var PalaceChatRecord = require("./palace/record/PalaceChatRecord");
-    // var PalaceDrawRecord = require("./palace/record/PalaceDrawRecord");
-    // var PalaceSoundPlayer = require("./palace/view/PalaceSoundPlayer");
-    //
-    // var IptEngineEvent = require("./org/openpalace/iptscrae/IptEngineEvent");
-    // var IptTokenList = require("./org/openpalace/iptscrae/IptTokenList");
-    // var RegistrationCode = require("./org/openpalace/registration/RegistrationCode");
-
-    //[Event(type="net.codecomposer.event.PalaceEvent",name="connectStart")]
-    //[Event(type="net.codecomposer.event.PalaceEvent",name="connectComplete")]
-    //[Event(type="net.codecomposer.event.PalaceEvent",name="connectFailed")]
-    //[Event(type="net.codecomposer.event.PalaceEvent",name="disconnected")]
-    //[Event(type="net.codecomposer.event.PalaceEvent",name="gotoURL")]
-    //[Event(type="net.codecomposer.event.PalaceEvent",name="roomChanged")]
-    //[Event(type="net.codecomposer.event.PalaceEvent",name="authenticationRequested")]
-    //[Event(type="net.codecomposer.event.PalaceSecurityErrorEvent",name="securityError")]
+    PalaceClient.super_.call(this);
 
     //    var loaderContext = new LoaderContext();
 
@@ -119,8 +125,6 @@ function PalaceClient() // extends EventDispatcher
 
     var socket = null;
     var webSocket = null;
-
-    var ByteArray = Buffer;
 
 //    var accountClient = AccountServerClient.getInstance();
 
@@ -316,7 +320,7 @@ function PalaceClient() // extends EventDispatcher
             resetState();
         }
         connecting = true;
-        dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_START));
+        this.dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_START));
 
         socket = new net.Socket();
         BufferedSocket.extendSocket(socket);
@@ -332,7 +336,8 @@ function PalaceClient() // extends EventDispatcher
     this.connect = connect;
 
     function dispatchEvent(object) {
-        object.emit;
+        trace("dispatch event: " + object.type);
+        that.dispatchEvent(object.type, object);
     }
 
     function intToText(number) {
@@ -2421,6 +2426,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
 }
+
 
 var instance;
 function getInstance() {
