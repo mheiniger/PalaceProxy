@@ -21,6 +21,13 @@ During first stages of development, use following to start Palaceproxy:
 nodejs app_test.js localhost 9998
 ```
 
+There is also a little protoype of a web-chat-client, to try out sending commands to the server:
+```
+nodejs app_prototype.js localhost 9998
+```
+Afterwards open http://localhost:3000 in your Browser to connect.
+
+
 Where is this .as stuff coming from?
 ------------------------------------
 
