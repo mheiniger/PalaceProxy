@@ -17,7 +17,9 @@
 
 //package net.codecomposer.palace.event
 //{
-//	import flash.events.Event;
+var Event = require("./../../adapter/events/Event.js") //	import flash.events.Event;
+var util = require("util");
+
 
 //	import net.codecomposer.palace.model.PalaceUser;
 
@@ -26,7 +28,7 @@ var CHAT /* :String */ = "chat";
 var WHISPER /* :String */ = "whisper";
 var ROOM_MESSAGE /* :String */ = "roomMessage";
 
-
+util.inherits(ChatEvent, Event);
 function ChatEvent(type/* :String */, chatText/* :String */, user/* :PalaceUser = null*/ ) //extends Event
 {
     var logText = this.logText/* :String */;
@@ -60,6 +62,7 @@ function ChatEvent(type/* :String */, chatText/* :String */, user/* :PalaceUser 
         this.chatText = chatText;
         this.user = user || null;
         this.whisper = Boolean(type == WHISPER);
+        ChatEvent.super_.call(this, type);
         //super(type, false, true);
     }();
 
