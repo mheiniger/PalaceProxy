@@ -17,7 +17,9 @@
 
 //package net.codecomposer.palace.model
 //{
+var util = require('util');
 var Event = require("../../adapter/events/Event");
+var EventDispatcher = require("../../adapter/events/EventDispatcher");
 //import flash.events.EventDispatcher;
 //import flash.events.TimerEvent;
 //import flash.utils.Dictionary;
@@ -40,7 +42,11 @@ var PalaceUser = require("../../palace/model/PalaceUser");
 //
 //        [Bindable]
 
-function PalaceCurrentRoom() /* extends EventDispatcher */ {
+util.inherits(PalaceCurrentRoom, EventDispatcher); /* extends EventDispatcher */
+function PalaceCurrentRoom() {
+    PalaceCurrentRoom.super_.call(this);
+    var that = this;
+
 
     this.constants = {};
     var id = this.id/* :int */;
@@ -82,14 +88,17 @@ function PalaceCurrentRoom() /* extends EventDispatcher */ {
     function Timer() {
     }
 
-    function dispatchEvent(event) {
+    function dispatchEvent(object) {
+        trace("dispatch event: " + object.type);
+        that.dispatchEvent(object.type, object);
     }
 
 
-    var PalaceCurrentRoom = this.PalaceCurrentRoom = function () {
-        lastMessageTimer.addEventListener(TimerEvent.TIMER, handleLastMessageTimer);
-        statusDisappearTimer.addEventListener(TimerEvent.TIMER, handleStatusDisappearTimer);
-    }
+    this.PalaceCurrentRoomConstructor = function () {
+        // todo: implement
+        //lastMessageTimer.addEventListener(TimerEvent.TIMER, handleLastMessageTimer);
+        //statusDisappearTimer.addEventListener(TimerEvent.TIMER, handleStatusDisappearTimer);
+    }()
 
 //		[Bindable(event="selectedUserChanged")]
     var set_selectedUser = this.set_selectedUser = function (newValue/* :PalaceUser */)/* :void */ {
