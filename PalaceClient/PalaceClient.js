@@ -190,10 +190,6 @@ function PalaceClient() // extends EventDispatcher
         return _userName;
     }
 
-//	function ArrayCollection() {
-//		 return {};
-//	}
-
     function setUserName(newValue) {
         if (newValue.length > 31) {
             newValue = newValue.slice(0, 31);
@@ -215,13 +211,13 @@ function PalaceClient() // extends EventDispatcher
 //    }
 
     var PalaceClientConstructor = function () {
-        if (PalaceClient.instance != null) {
+        if (PalaceClient.instance !== null) {
             throw new Error("Cannot create more than one instance of a singleton.");
         }
         // Todo: client should do scripting
 //        palaceController = new PalaceController();
 //        palaceController.client = this;
-    }();
+    };
 
     function setCyborg(cyborgScript) {
         cyborgHotspot = new PalaceHotspot();
@@ -386,7 +382,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function roomChat(message) {
-        if (!connected || message == null || message.length == 0) {
+        if (!connected || message === null || message.length === 0) {
             return;
         }
         trace("Saying: " + message);
@@ -404,7 +400,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function privateMessage(message, userId) {
-        if (!connected || message == null || message.length == 0) {
+        if (!connected || message === null || message.length === 0) {
             return;
         }
 
@@ -422,7 +418,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     var say = this.say = function(message) {
-        if (!connected || message == null || message.length == 0) {
+        if (!connected || message === null || message.length === 0) {
             return;
         }
 
@@ -459,7 +455,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function globalMessage(message) {
-        if (!connected || message == null || message.length == 0) {
+        if (!connected || message === null || message.length === 0) {
             return;
         }
 
@@ -481,7 +477,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function roomMessage(message) {
-        if (!connected || message == null || message.length === 0) {
+        if (!connected || message === null || message.length === 0) {
             return;
         }
 //			trace("ROOMMSG");
@@ -503,7 +499,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function superUserMessage(message) {
-        if (!connected || message == null || message.length == 0) {
+        if (!connected || message === null || message.length === 0) {
             return;
         }
 //			trace("SUSRMSG");
@@ -651,7 +647,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function handleLeaveEventHandlersFinish(event) {
-        if (leaveEventHandlers == null) {
+        if (leaveEventHandlers === null) {
             actuallyGotoRoom(requestedRoomId);
         }
 
