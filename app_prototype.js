@@ -51,6 +51,7 @@ io.sockets.on('connection', function (socket) {
     });
     palaceClient.on('connectComplete' , function(data){
         socket.emit('log', { text: 'connected'});
+        console.log(data);
     })
 });
 

@@ -320,7 +320,7 @@ function PalaceClient() // extends EventDispatcher
             resetState();
         }
         connecting = true;
-        this.dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_START));
+        dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_START));
 
         socket = new net.Socket();
         BufferedSocket.extendSocket(socket);
@@ -880,7 +880,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function traceObj(obj) {
-        console.log(obj);
+        //console.log(obj);
         if(that.webSocket) {
             that.webSocket.emit('dev-log', obj);
         }
