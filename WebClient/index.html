@@ -15,23 +15,30 @@
             logwindow.innerHTML = logwindow.innerHTML + data.text + '<br>';
             logwindow.scrollTop = logwindow.scrollHeight;
         });
-        socket.on('roomChanged', function (room, mediaServer) {
-            console.log(room);
-            document.getElementById('room-name').innerHTML = room.name;
-            console.log(mediaServer + room.backgroundFile);
-            document.getElementById('room-stage').backgroundImage = mediaServer + room.backgroundFile;
+        socket.on('roomChanged', function (roomData, mediaServer) {
+            console.log(roomData);
+            var room = document.getElementById('room');
+            var roomName = document.getElementById('room-name')
+            var stage = document.getElementById('room-stage');
+            var img = new Image();
+            stage.style.backgroundImage = "url('" + mediaServer + roomData.backgroundFile + "')";
+            img.src = mediaServer + roomData.backgroundFile;
+            roomName.innerHTML = roomData.name;
+            room.style.width = img.width;
+            stage.style.height = img.height;
+            stage.innerHTML = "";
         });
 
 
     </script>
 </head>
 <body>
-<div id="room" style="width: 512px; height: 420px; float: left;">
-    <div id="room-title" style="background-color:aqua; float: left;">
+<div id="room" style="width: 300px; float: left;">
+    <div id="room-title" style="background-color:cornflowerblue; float: left; width: 100%">
         Room-Name: <span id="room-name"></span>
     </div>
-    <div id="room-stage" style="width: 512px; height: 384px; background-color: #AEBDCC; float: left;">
-
+    <div id="room-stage" style="width: 100%; height: 200px; background-color: #AEBDCC; float: left;">
+            Not Connected!
     </div>
 </div>
 <div style="float: left;">Log<br><div id="log" style="width: 300px; height: 384px; background-color: #eeeeee;  overflow:scroll;"></div></div>

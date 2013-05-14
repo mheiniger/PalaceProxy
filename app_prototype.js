@@ -55,7 +55,7 @@ io.sockets.on('connection', function (socket) {
         console.log(data);
     });
     palaceClient.on(PalaceEvent.ROOM_CHANGED, function(data){
-       socket.emit(PalaceEvent.ROOM_CHANGED, palaceClient.currentRoom, palaceClient.mediaServer);
+       socket.emit(PalaceEvent.ROOM_CHANGED, palaceClient.currentRoom, palaceClient.get_mediaServer());
     });
 });
 

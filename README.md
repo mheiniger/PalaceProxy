@@ -81,6 +81,22 @@ cd /usr/local/palace/bin
 
 pserver will listen on port 9998 by default.
 
+To be able to deliver background images, you should set up a webserver on port 9990 which points to /usr/local/palace
+
+Example for Nginx:
+```
+server {
+        listen localhost:9990;
+        server_name localhost;
+        root /usr/local/palace;
+        index index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}
+```
+
 Dev helper
 ----------
 

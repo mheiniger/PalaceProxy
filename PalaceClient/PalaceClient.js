@@ -151,7 +151,7 @@ function PalaceClient() // extends EventDispatcher
     var serverInfo = new PalaceServerInfo();
 
     var population = 0;
-    var mediaServer = this.mediaServer = "";
+    var mediaServer = "";
     var userList = new ArrayCollection();
 
     var currentRoom = this.currentRoom = new PalaceCurrentRoom();
@@ -196,6 +196,10 @@ function PalaceClient() // extends EventDispatcher
         }
         _userName = newValue;
         dispatchEvent(new Event('userNameChange'));
+    }
+
+    var get_mediaServer = this.get_mediaServer = function(){
+        return mediaServer;
     }
 
     // States
@@ -868,7 +872,7 @@ function PalaceClient() // extends EventDispatcher
         }
     }
 
-    function trace(text) {
+    function trace(text, error) {
         console.log(text);
         if(that.webSocket) {
             that.webSocket.emit('dev-log', { 'text': text });
@@ -1329,7 +1333,7 @@ function PalaceClient() // extends EventDispatcher
 
     function handleReceiveServerInfo(buffer, size, referenceId) {
         serverInfo = new PalaceServerInfo();
-        traceObj(serverInfo);
+        //traceObj(serverInfo);
         serverInfo.permissions = buffer.readInt();
         var size = Math.abs(buffer.readByte());
         serverName = serverInfo.name = buffer.readMultiByte(size, 'Windows-1252');
@@ -1339,7 +1343,7 @@ function PalaceClient() // extends EventDispatcher
 //			serverInfo.options = buffer.readUnsignedInt();
 //			serverInfo.uploadCapabilities = buffer.readUnsignedInt();
 //			serverInfo.downloadCapabilities = buffer.readUnsignedInt();
-			trace("Server name: " + serverName);
+			//trace("Server name: " + serverName);
     }
 
     function handleAuthenticate(size, referenceId) {

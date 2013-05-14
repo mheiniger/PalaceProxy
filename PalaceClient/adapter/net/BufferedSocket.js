@@ -134,11 +134,15 @@ function extendBuffer(socket){
             //console.log(outBuffer);
         }
 
-        Buffer.prototype.readMultiByte = function(number, charset){
-//            trace('position: ' + this.position);
+        Buffer.prototype.readMultiByte = function(length, charset){
             charset = 'utf-8'; // for now
-            var value = this.toString(charset, this.position, this.position + number);
-            this.position = this.position + number;
+//            trace('position: ' + this.position);
+            var stringLength = this.getCstringLength(this, length);
+
+            var value = this.toString(charset, this.position, this.position + stringLength);
+            //var valueHex = this.toString('hex', this.position, this.position + length );
+            //console.log("multibyte-length " +length + ", string: " + value + ", hex: " + valueHex);
+            this.position = this.position + length;
             return value;
         }
 
@@ -172,6 +176,19 @@ function extendBuffer(socket){
             var bytesWritten = this.write(data, this.position);
             this.position = this.position + bytesWritten;
             return bytesWritten;
+        }
+
+        /**
+         * Gets the length of a null-terminated C-String (or full length if not terminated)
+         **/
+        Buffer.prototype.getCstringLength = function(buffer, length) {
+            for (var i = 0; i < length ; i++) {
+                if (buffer[buffer.position + i] === 0) {
+                    length = i;
+                    break;
+                }
+            }
+            return length;
         }
 
     }
