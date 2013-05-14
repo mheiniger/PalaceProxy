@@ -1246,7 +1246,7 @@ function PalaceClient() // extends EventDispatcher
         // Protocol spec lists these as reserved, and says there shouldn't
         // be anything put in them... but the server records these 6 bytes
         // in the log file.  So I'll exploit that.
-        socket.writeMultiByte("NJSPAL", "iso-8859-1");
+        socket.writeMultiByte("OPNPAL", "iso-8859-1");
 
         // ulRequestedProtocolVersion -- ignored on server
         socket.writeInt(0);
