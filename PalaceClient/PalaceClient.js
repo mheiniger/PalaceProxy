@@ -19,7 +19,7 @@ var net = require('net');
 var util = require('util');
 var BufferedSocket = require("./adapter/net/BufferedSocket");
 
-var Event =  require("./adapter/events/Event");
+var Event = require("./adapter/events/Event");
 var EventDispatcher = require("./adapter/events/EventDispatcher");
 var EventEmitter = require("events").EventEmitter;
 //import flash.events.EventDispatcher;

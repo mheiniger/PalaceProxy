@@ -17,22 +17,22 @@
 
 //package net.codecomposer.palace.event
 //{
-var Event = require("./../../adapter/events/Event.js") //	import flash.events.Event;
+var Event = require("./../../adapter/events/Event.js"); //	import flash.events.Event;
 var util = require("util");
 
 //	import net.codecomposer.palace.model.PalaceLooseProp;
 //	import net.codecomposer.palace.model.PalaceUser;
-var constants = {};
 
-var USER_ENTERED = constants.USER_ENTERED/* :String */ = "userEntered";
-var USER_LEFT = constants.USER_LEFT/* :String */ = "userLeft";
-var ROOM_CLEARED = constants.ROOM_CLEARED/* :String */ = "roomCleared";
-var LOOSE_PROP_ADDED = constants.LOOSE_PROP_ADDED/* :String */ = "loosePropAdded";
-var LOOSE_PROP_REMOVED = constants.LOOSE_PROP_REMOVED/* :String */ = "loosePropRemoved";
-var LOOSE_PROP_MOVED = constants.LOOSE_PROP_MOVED/* :String */ = "loosePropMoved";
-var LOOSE_PROPS_CLEARED = constants.LOOSE_PROPS_CLEARED/* :String */ = "loosePropsCleared";
-var USER_MOVED = constants.USER_MOVED/* :String */ = "userMoved";
-var SELECTED_USER_CHANGED = constants.SELECTED_USER_CHANGED/* :String */ = "selectedUserChanged";
+module.exports = PalaceRoomEvent;
+module.exports.USER_ENTERED/* :String */ = "userEntered";
+module.exports.USER_LEFT/* :String */ = "userLeft";
+module.exports.ROOM_CLEARED/* :String */ = "roomCleared";
+module.exports.LOOSE_PROP_ADDED/* :String */ = "loosePropAdded";
+module.exports.LOOSE_PROP_REMOVED/* :String */ = "loosePropRemoved";
+module.exports.LOOSE_PROP_MOVED/* :String */ = "loosePropMoved";
+module.exports.LOOSE_PROPS_CLEARED/* :String */ = "loosePropsCleared";
+module.exports.USER_MOVED/* :String */ = "userMoved";
+module.exports.SELECTED_USER_CHANGED/* :String */ = "selectedUserChanged";
 
 util.inherits(PalaceRoomEvent, Event);
 function PalaceRoomEvent(type/* :String */, user/* :PalaceUser  = null*/) //extends Event
@@ -47,8 +47,3 @@ function PalaceRoomEvent(type/* :String */, user/* :PalaceUser  = null*/) //exte
 
 }
 //}
-
-module.exports = PalaceRoomEvent;
-for (name in constants) {
-    module.exports[name] = constants[name];
-}

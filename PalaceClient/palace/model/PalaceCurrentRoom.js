@@ -47,13 +47,11 @@ function PalaceCurrentRoom() {
     PalaceCurrentRoom.super_.call(this);
     var that = this;
 
-
-    this.constants = {};
     var id = this.id/* :int */;
     var name = this.name/* :String */ = "Not Connected";
     var backgroundFile = this.backgroundFile/* :String */;
-    var users = this.users/* :Array Collection */ = new ArrayCollection();
-    var usersHash = this.usersHash/* :Object */ = {};
+    this.users/* :Array Collection */ = new ArrayCollection();
+    this.usersHash/* :Object */ = {};
     var roomFlags = this.roomFlags/* :int */;
     var images = this.images/* :Object */ = {};
     var spotImages = this.spotImages/* :Object */ = {};
@@ -68,7 +66,7 @@ function PalaceCurrentRoom() {
     var drawBackCommands = this.drawBackCommands/* :Array Collection */ = new ArrayCollection();
     var drawLayerHistory = this.drawLayerHistory/* :Vector.<uint> */ = {};
     var _selectedUser = this._selectedUser/* :PalaceUser */;
-    var selfUserId = this.selfUserId/* :int */ = -1;
+    this.selfUserId/* :int */ = -1;
     var roomView = this.roomView/* :PalaceRoom View */;
     var dimLevel = this.dimLevel/* :Number */ = 1;
     var showAvatars = this.showAvatars/* :Boolean */ = true;
@@ -89,7 +87,7 @@ function PalaceCurrentRoom() {
     }
 
     function dispatchEvent(object) {
-        //trace("dispatch event: " + object.type);
+        trace("PalaceCurrentRoom dispatches event: " + object.type);
         that.dispatchEvent(object.type, object);
     }
 
@@ -214,18 +212,18 @@ function PalaceCurrentRoom() {
     }
 
     var addUser = this.addUser = function (user/* :PalaceUser */)/* :void */ {
-        usersHash[user.id] = user;
-        users.addItem(user);
+        that.usersHash[user.id] = user;
+        that.users.addItem(user);
         var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.USER_ENTERED, user);
         dispatchEvent(event);
     }
 
     var getUserById = this.getUserById = function (id/* :int */)/* :PalaceUser */ {
-        return usersHash[id];
+        return that.usersHash[id];
     }
 
     var getUserByName = this.getUserByName = function (name/* :String */)/* :PalaceUser */ {
-        for (var user/* :PalaceUser */ in users) {
+        for (var user/* :PalaceUser */ in that.users) {
             if (user.name == name) {
                 return user;
             }
@@ -234,11 +232,11 @@ function PalaceCurrentRoom() {
     }
 
     var getUserByIndex = this.getUserByIndex = function (userIndex/* :int */)/* :PalaceUser */ {
-        return users.getItemAt(userIndex);
+        return that.users.getItemAt(userIndex);
     }
 
     var getSelfUser = this.getSelfUser = function ()/* :PalaceUser */ {
-        return getUserById(selfUserId);
+        return getUserById(that.selfUserId);
     }
 
     var removeUser = this.removeUser = function (user/* :PalaceUser */)/* :void */ {
@@ -247,17 +245,17 @@ function PalaceCurrentRoom() {
 
     var removeUserById = this.removeUserById = function (id/* :int */)/* :void */ {
         var user/* :PalaceUser */ = getUserById(id);
-        var index/* :int */ = users.getItemIndex(user);
+        var index/* :int */ = that.users.getItemIndex(user);
         if (index != -1) {
-            users.removeItemAt(users.getItemIndex(user));
+            that.users.removeItemAt(that.users.getItemIndex(user));
         }
         var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.USER_LEFT, user);
         dispatchEvent(event);
     }
 
     var removeAllUsers = this.removeAllUsers = function ()/* :void */ {
-        usersHash = {};
-        users.removeAll();
+        that.usersHash = {};
+        that.users.removeAll();
         var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.ROOM_CLEARED);
         dispatchEvent(event);
     }
@@ -371,7 +369,3 @@ function PalaceCurrentRoom() {
 }
 
 module.exports = PalaceCurrentRoom;
-var PalaceCurrentRoomVar = new PalaceCurrentRoom();
-for (name in PalaceCurrentRoomVar.constants) {
-    module.exports[name] = PalaceCurrentRoomVar.constants[name];
-}
