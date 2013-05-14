@@ -66,7 +66,7 @@ net.createServer(function (clientSocket) {
   serverSocket.on("data", function(data) {
       fileNumber++;
       var writeableStream_received = fs.createWriteStream(folder + String('00000'+fileNumber).slice(-5) + "_received");
-      writeableStream_received.end(data);
+      writeableStream_received.end(hexView(data));
       clientSocket.write(data);
   });
   clientSocket.on("close", function(had_error) {
@@ -77,3 +77,40 @@ net.createServer(function (clientSocket) {
   });
 }).listen(clientPort)
 
+function hexView(bytes) {
+    var output = "";
+    var outputLineHex = "";
+    var outputLineAscii = "";
+    for (var byteNum = 0; byteNum < bytes.length; byteNum++) {
+        var hexNum = (bytes[byteNum]).toString(16).toUpperCase();
+        if (hexNum.length == 1) {
+            hexNum = "0" + hexNum;
+        }
+
+        if (byteNum % 16 == 0) {
+            output = output.concat(outputLineHex, "      ", outputLineAscii, "\n");
+            outputLineHex = "";
+            outputLineAscii = "";
+        }
+        else if (byteNum % 4 == 0) {
+            outputLineHex = outputLineHex.concat("  ");
+            outputLineAscii = outputLineAscii.concat(" ");
+        }
+        else {
+            outputLineHex = outputLineHex.concat(" ");
+        }
+        outputLineHex = outputLineHex.concat(hexNum);
+        outputLineAscii = outputLineAscii.concat(
+            (bytes[byteNum] >= 32 && bytes[byteNum] <= 126) ? String.fromCharCode(bytes[byteNum]) : " "
+        );
+    }
+
+    var bufferLength = 57 - outputLineHex.length;
+    var bufferString = "";
+    for (var i = 0; i < bufferLength; i++) {
+        bufferString += " ";
+    }
+
+    output = output.concat(outputLineHex, bufferString, outputLineAscii, "\n");
+    return(output);
+}
