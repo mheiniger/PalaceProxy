@@ -151,7 +151,7 @@ function PalaceClient() // extends EventDispatcher
     var serverInfo = new PalaceServerInfo();
 
     var population = 0;
-    var mediaServer = "";
+    var mediaServer = this.mediaServer = "";
     var userList = new ArrayCollection();
 
     var currentRoom = new PalaceCurrentRoom();
@@ -1362,7 +1362,7 @@ function PalaceClient() // extends EventDispatcher
         }
         dispatchEvent(new Event('currentUserChanged'));
         trace("Interesting... there is more to the user status message than just the documented flags:");
-        outputHexView(array)
+        //outputHexView(array)
     }
 
     //class c2
@@ -1656,7 +1656,7 @@ function PalaceClient() // extends EventDispatcher
 
         currentRoom.dimRoom(100);
         currentRoom.showAvatars = true;
-        trace(currentRoom);
+        //trace(currentRoom);
         var roomChangeEvent = new PalaceEvent(PalaceEvent.ROOM_CHANGED);
         dispatchEvent(roomChangeEvent);
     }
@@ -1931,7 +1931,7 @@ function PalaceClient() // extends EventDispatcher
             }
             var currentItem = chatQueue.shift();
             currentChatItem = currentItem;
-            traceObj(currentChatItem);
+            //traceObj(currentChatItem);
             whochat = currentItem.whochat;
             chatstr = currentItem.chatstr;
             if (currentItem.eventHandlers) {
@@ -2095,7 +2095,7 @@ function PalaceClient() // extends EventDispatcher
         //chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
         chatQueue.push(chatRecord);
         processChatQueue();
-		trace("Got xtalk from userID " + referenceId + ": " + message);
+		//trace("Got xtalk from userID " + referenceId + ": " + message);
     }
 
     function handleReceiveXWhisper(buffer, size, referenceId) {
@@ -2115,7 +2115,7 @@ function PalaceClient() // extends EventDispatcher
 //        chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
 //        chatQueue.push(chatRecord);
         processChatQueue();
-        trace("Got xwhisper from userID " + referenceId + ": " + message);
+//        trace("Got xwhisper from userID " + referenceId + ": " + message);
     }
 
     function handleMovement(buffer, size, referenceId) {
@@ -2249,7 +2249,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function handleUserDescription(buffer, size, referenceId) {
-        trace('userID: ' + referenceId);
+//        trace('userID: ' + referenceId);
         var user = currentRoom.getUserById(referenceId);
         user.face = buffer.readShort();
         user.color = buffer.readShort();

@@ -71,8 +71,8 @@ function extendSocket(socket) {
 //            socket.write(buffer);
     }
     socket.flush = function() {
-        console.log('write Data: 0x' + this.writeBuffer.toString('hex'));
-        console.log('write Bin :   ' + this.writeBuffer.toString('utf8'));
+        //console.log('write Data: 0x' + this.writeBuffer.toString('hex'));
+        //console.log('write Bin :   ' + this.writeBuffer.toString('utf8'));
         this.write(this.writeBuffer);
         this.writeBufferPos = 0;
         this.writeBuffer = new Buffer(0);
@@ -82,7 +82,7 @@ function extendSocket(socket) {
 
 function extendBuffer(socket){
     if (!Buffer.prototype.readInt) { // only extend it once
-        console.log('extend buffer');
+        //console.log('extend buffer');
         Buffer.prototype.position = 0;
         Buffer.prototype.readInt = function(){
 //            trace('position: ' + this.position);

@@ -43,14 +43,13 @@ function handler (req, res) {
 io.sockets.on('connection', function (socket) {
     var palaceClient = new PalaceClient();
     palaceClient.connect("TestUser", serverHost, serverPort, 0, socket);
-    socket.emit('log', { text: 'You\'re connected to ' + serverHost + ":" + serverPort});
     socket.on('text entered', function (data) {
         //console.log(data.text);
         //socket.emit('log', { text: 'you sent: ' + data.text });
         palaceClient.say(data.text);
     });
     palaceClient.on('connectComplete' , function(data){
-        socket.emit('log', { text: 'connected'});
+        socket.emit('log', { text: 'You\'re connected to ' + serverHost + ":" + serverPort});
         console.log(data);
     })
 });

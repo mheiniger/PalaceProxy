@@ -89,7 +89,7 @@ function PalaceCurrentRoom() {
     }
 
     function dispatchEvent(object) {
-        trace("dispatch event: " + object.type);
+        //trace("dispatch event: " + object.type);
         that.dispatchEvent(object.type, object);
     }
 

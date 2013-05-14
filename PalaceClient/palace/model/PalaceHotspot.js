@@ -315,7 +315,7 @@ function PalaceHotspot() //extends EventDispatcher
         else {
             name = "";
         }
-        trace("Hotspot name: " + name);
+        //trace("Hotspot name: " + name);
 
         // Script...
 //        if (scriptTextOffset > 0) {

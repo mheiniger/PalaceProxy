@@ -38,7 +38,7 @@ function PalaceEncryption() {
         else {
             var bytesIn = new ByteArray(message /* , 'Windows-1252' */);
         }
-        console.log('textLength: ' + bytesIn.getLength());
+        //console.log('textLength: ' + bytesIn.getLength());
 //        console.log('bytesWritten: ' + bytesWritten);
 
         if (bytesIn.getLength() > byteLimit) {
