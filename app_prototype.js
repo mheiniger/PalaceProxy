@@ -3,6 +3,8 @@ var io = require('socket.io').listen(app);
 var fs = require('fs');
 var PalaceClient = require("./PalaceClient/PalaceClient");
 
+var PalaceEvent = require("./PalaceClient/palace/event/PalaceEvent");
+
 process.on("uncaughtException", function (e) {
     console.log(e);
 });
@@ -51,6 +53,9 @@ io.sockets.on('connection', function (socket) {
     palaceClient.on('connectComplete' , function(data){
         socket.emit('log', { text: 'You\'re connected to ' + serverHost + ":" + serverPort});
         console.log(data);
-    })
+    });
+    palaceClient.on(PalaceEvent.ROOM_CHANGED, function(data){
+       socket.emit(PalaceEvent.ROOM_CHANGED, palaceClient.currentRoom, palaceClient.mediaServer);
+    });
 });
 

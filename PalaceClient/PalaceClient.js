@@ -154,7 +154,7 @@ function PalaceClient() // extends EventDispatcher
     var mediaServer = this.mediaServer = "";
     var userList = new ArrayCollection();
 
-    var currentRoom = new PalaceCurrentRoom();
+    var currentRoom = this.currentRoom = new PalaceCurrentRoom();
     var currentUser = {};
 
     var roomList = new ArrayCollection();
