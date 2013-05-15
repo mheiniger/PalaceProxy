@@ -43,7 +43,7 @@ var ArrayCollection = require("./adapter/collections/ArrayCollection");
 // var AccountServerClient = require("./openpalace/accountserver/rpc/AccountServerClient");
 var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
 var PalaceEvent =  require("./palace/event/PalaceEvent");
-// var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
+var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
 // var PropEvent = require("./palace/event/PropEvent");
 // var DebugData = require("./palace/iptscrae/DebugData");
 // var IptEventHandler = require("./palace/iptscrae/IptEventHandler");
@@ -359,6 +359,7 @@ function PalaceClient() // extends EventDispatcher
         }
     }
 
+    this.disconnect = disconnect;
     function disconnect() {
 //        palaceController.midiStop();
         if (socket && socket.connected) {
@@ -373,6 +374,7 @@ function PalaceClient() // extends EventDispatcher
         resetState();
     }
 
+    this.changeName = changeName;
     function changeName(newName) {
         this.userName = newName;
         if (socket && socket.connected) {
@@ -556,7 +558,7 @@ function PalaceClient() // extends EventDispatcher
         socket.flush();
     }
 
-    function move(x, y) {
+    this.move = function(x, y) {
         if (!connected || !currentUser) {
             return;
         }
@@ -604,6 +606,7 @@ function PalaceClient() // extends EventDispatcher
         socket.flush();
     }
 
+    this.requestRoomList = requestRoomList;
     function requestRoomList() {
         if (!connected) {
             return;
@@ -614,6 +617,7 @@ function PalaceClient() // extends EventDispatcher
         socket.flush();
     }
 
+    this.requestUserList = requestUserList;
     function requestUserList() {
         if (!connected) {
             return;
@@ -627,6 +631,7 @@ function PalaceClient() // extends EventDispatcher
     var leaveEventHandlers;
     var requestedRoomId = 0;
 
+    this.gotoRoom = gotoRoom;
     function gotoRoom(roomId) {
         if (!connected || currentRoom.id == roomId) {
             return;
@@ -829,6 +834,7 @@ function PalaceClient() // extends EventDispatcher
         socket.writeBytes(assetResponse);
     }
 
+    this.getCurrentUser = getCurrentUser;
     function getCurrentUser() {
         return currentRoom.getUserById(id);
     }
@@ -1548,7 +1554,7 @@ function PalaceClient() // extends EventDispatcher
             var imageOverlay = new PalaceImageOverlay();
             imageOverlay.addEventListener(PalaceSecurityErrorEvent.SECURITY_ERROR, handleImageOverlaySecurityError);
             imageOverlay.mediaServer = mediaServer;
-            var imageBA = new ByteArray();
+            var imageBA = new ByteArray(12);
             for (var j = imageOffset; j < imageOffset + 12; j++) {
                 imageBA.writeByte(rb[j]);
             }

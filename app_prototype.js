@@ -51,6 +51,13 @@ io.sockets.on('connection', function (socket) {
         //socket.emit('log', { text: 'you sent: ' + data.text });
         palaceClient.say(data.text);
     });
+    // todo: check if those are the right events for socket.io
+    socket.on("error", function (e) {
+        palaceClient.disconnect();
+    });
+    socket.on("close", function (e) {
+        palaceClient.disconnect();
+    });
     palaceClient.on('connectComplete' , function(data){
         socket.emit('log', { text: 'You\'re connected to ' + serverHost + ":" + serverPort});
         console.log(data);
