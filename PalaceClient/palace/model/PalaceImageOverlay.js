@@ -35,7 +35,7 @@ var EventDispatcher = require("../../adapter/events/EventDispatcher");
 
 //	import mx.core.FlexBitmap;
 
-//	import net.codecomposer.palace.event.PalaceSecurityErrorEvent;
+var PalaceSecurityErrorEvent = require("./../event/PalaceSecurityErrorEvent");
 //	import net.codecomposer.palace.rpc.PalaceClient;
 
 //	import org.openpalace.iptscrae.IptUtil;
@@ -49,13 +49,13 @@ util.inherits(PalaceImageOverlay, EventDispatcher); //extends EventDispatcher
 function PalaceImageOverlay() {
     PalaceImageOverlay.super_.call(this);
 
-    this.constants = {};
+    var that = this;
 
     var refCon = this.refCon/* :int */;
     var id = this.id/* :int */;
     var transparencyIndex = this.transparencyIndex/* :int */;
     var name = this.name/* :String */;
-    var filename = this.filename/* :String */;
+    this.filename/* :String */;
     var mediaServer = this.mediaServer/* :String */;
 
     var filenameWithoutExtension/* :String */;
@@ -77,7 +77,7 @@ function PalaceImageOverlay() {
     }
 
     var loadImage = this.loadImage = function ()/* :void */ {
-        var match/* :Array */ = filename.match(/^(.*)\.(.*)$/);
+        var match/* :Array */ = that.filename.match(/^(.*)\.(.*)$/);
         if (match && match[1]) {
             filenameWithoutExtension = match[1];
             extensionsToTry = ['png', 'jpg'];
@@ -85,7 +85,7 @@ function PalaceImageOverlay() {
         }
         else {
             extensionsToTry = null;
-            loadFileName(filename);
+            loadFileName(that.filename);
         }
     }
 
@@ -97,20 +97,21 @@ function PalaceImageOverlay() {
             }
             else {
                 extensionsToTry = null;
-                loadFileName(filename);
+                loadFileName(that.filename);
             }
         }
     }
 
     function loadFileName(filename/* :String */)/* :void */ {
-        loader = new Loader();
-        var urlRequest/* :URLRequest */ = new URLRequest(mediaServer + filename);
-        loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleImageLoadComplete);
-        loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, handleLoadError);
-        loader.contentLoaderInfo.addEventListener(HTTPStatusEvent.HTTP_STATUS, handleLoadHttpStatus);
-        loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
-        loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
-        loader.load(urlRequest, PalaceClient.loaderContext);
+        //todo: implement images (on client side)
+//        loader = new Loader();
+//        var urlRequest/* :URLRequest */ = new URLRequest(mediaServer + filename);
+//        loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleImageLoadComplete);
+//        loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, handleLoadError);
+//        loader.contentLoaderInfo.addEventListener(HTTPStatusEvent.HTTP_STATUS, handleLoadHttpStatus);
+//        loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
+//        loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
+//        loader.load(urlRequest, PalaceClient.loaderContext);
     }
 
     function handleSecurityError(error/* :SecurityErrorEvent = null */)/* :void */ {
@@ -121,7 +122,7 @@ function PalaceImageOverlay() {
     function processTransparency(bitmapData/* :BitmapData */)/* :void */ {
         var transparencyColor/* :uint */ = 0;
         var preExistingTransparency/* :Boolean */ = false;
-        trace(filename + ": Already Transparent: " + (bitmapData.transparent ? "true" : "false") + " - transparencyIndex: " + transparencyIndex);
+        trace(that.filename + ": Already Transparent: " + (bitmapData.transparent ? "true" : "false") + " - transparencyIndex: " + transparencyIndex);
 
         if (!bitmapData.transparent) {
             var newBd/* :BitmapData */ = new BitmapData(bitmapData.width, bitmapData.height, true, 0x00000000);
@@ -171,6 +172,14 @@ function PalaceImageOverlay() {
         dispatchEvent(new Event('imageLoaded'));
     }
 
+    function dispatchEvent(event){
+        that.dispatchEvent(event);
+    }
+
+    function trace(text){
+        console.log(text);
+    }
+
     function handleImageLoadComplete(event/* :Event */)/* :void */ {
         if (loader.content /*is Bitmap*/) {
             try {
@@ -192,13 +201,9 @@ function PalaceImageOverlay() {
     }
 
     function handleLoadHttpStatus(error/* :HTTPStatusEvent */)/* :void */ {
-        // trace("HTTP Status for hotspot image #" + id + " - " + filename + ": " + error.status);
+        // trace("HTTP Status for hotspot image #" + id + " - " + that.filename + ": " + error.status);
     }
 }
 //}
 
 module.exports = PalaceImageOverlay;
-var PalaceImageOverlayVar = new PalaceImageOverlay();
-for (name in PalaceImageOverlayVar.constants) {
-    module.exports[name] = PalaceImageOverlayVar.constants[name];
-}

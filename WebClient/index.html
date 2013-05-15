@@ -2,76 +2,24 @@
 <head>
     <title>Concept of Web-Palaceclient</title>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io.connect('http://localhost');
-        var users = {};
-        socket.on('log', function (data) {
-            var logWindow = document.getElementById('log');
-            logWindow.innerHTML = logWindow.innerHTML + data.text + '<br>';
-            logWindow.scrollTop = logWindow.scrollHeight;
-        });
-        socket.on('dev-log', function (data) {
-            console.log(data);
-        });
-        socket.on('roomChanged', function (roomData, mediaServer) {
-            console.log(roomData);
-            var room = document.getElementById('room');
-            var roomName = document.getElementById('room-name')
-            var stage = document.getElementById('room-stage');
-            var img = new Image();
-            stage.style.backgroundImage = "url('" + mediaServer + roomData.backgroundFile + "')";
-            img.src = mediaServer + roomData.backgroundFile;
-            roomName.innerHTML = roomData.name;
-            room.style.width = img.width;
-            stage.style.height = img.height;
-            stage.innerHTML = "";
-        });
-        socket.on('userEntered', function(data){
-            users[data.user.id] = data.user;
-            console.log(data.user.name);
-            var div = createUserDiv(data.user);
-            document.getElementById('room-stage').appendChild(div);
-        });
-
-        socket.on('userMoved', function(data){
-            console.log(data.user);
-            var user = data.user;
-            var userDiv = document.getElementById('user-' + user.id);
-            userDiv.style.top = user.y - 22;
-            userDiv.style.left = user.x - 22;
-        });
-
-        function createUserDiv(user){
-            var div = document.createElement("div");
-            div.style.width = '80px';
-            div.id = "user-" + user.id;
-            div.style.height = "20px";
-            div.style.background = "yellow";
-            div.style.color = "black";
-            div.innerHTML = user.name;
-            div.style.position = "relative";
-            div.style.top = user.y - 22;
-            div.style.left = user.x - 22;
-
-            return div;
-        }
-
-
-    </script>
+    <script src="client.js"></script>
+    <link type="text/css" rel="stylesheet" href="client.css">
 </head>
 <body>
-<div id="room" style="width: 300px; float: left;">
-    <div id="room-title" style="background-color:cornflowerblue; float: left; width: 100%">
+<div id="room">
+    <div id="room-title">
         Room-Name: <span id="room-name"></span>
     </div>
-    <div id="room-stage" style="width: 100%; height: 200px; background-color: #AEBDCC; float: left;">
-            Not Connected!
+    <div id="room-stage">
+        <img id="room-image" src="">
     </div>
 </div>
-<div style="float: left;">Log<br><div id="log" style="width: 300px; height: 384px; background-color: #eeeeee;  overflow:scroll;"></div></div>
-<textarea id="input" style="width: 512px; height: 50px; background-color: #eeeeee; float: left; clear:both; "></textarea>
+<div style="float: left;">Log<br>
 
-<script>
+    <div id="log"></div>
+</div>
+<textarea id="input"></textarea>
+<script type="text/javascript">
     document.getElementById('input').onkeypress = function(e){
         if (!e) e = window.event;
         if (e.keyCode == '13'){
