@@ -14,52 +14,38 @@
  You should have received a copy of the GNU General Public License
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-//package net.codecomposer.palace.model
-//{
 var ByteArray = Buffer;
-
 //	import net.codecomposer.palace.view.HotSpotImage;
+module.exports = PalaceHotspotState;
 
-/* \[Bindable\] */
+var UNLOCKED = module.exports.UNLOCKED /* :int */ = 0;
+var LOCKED = module.exports.LOCKED /* :int */ = 1;
+
+var size = module.exports.size = 8;
+
 function PalaceHotspotState() {
-    this.constants = {};
+    var that = this;
+    this.pictureId/* :int */;
+    this.x/* :int */;
+    this.y/* :int */;
+    this.opacity/* :Number */ = 1;
+    this.hotspotImage/* :HotSpotImage */;
 
-    var pictureId = this.pictureId/* :int */;
-    var x = this.x/* :int */;
-    var y = this.y/* :int */;
-    var opacity = this.opacity/* :Number */ = 1;
-    var hotspotImage = this.hotspotImage/* :HotSpotImage */;
-
-    var size = this.size = this.constants.size/* :int */ = 8;
-
-    var UNLOCKED = this.UNLOCKED = this.constants.UNLOCKED/* :int */ = 0;
-    var LOCKED = this.LOCKED = this.constants.LOCKED/* :int */ = 1;
-
-    var PalaceHotspotState = this.PalaceHotspotState = function () {
-    }
+    this.size = size;
 
     var readData = this.readData = function (endian/* :String */, roomBytes/* :Array */, offset/* :int */)/* :void */ {
 //        console.log("PalaceHotspotState size:" + size);
-        var ba/* :ByteArray */ = new ByteArray(size + 1);
-        for (var j/* :int */ = offset; j < offset + size + 1; j++) {
+        var ba/* :ByteArray */ = new ByteArray(that.size + 1);
+        for (var j/* :int */ = offset; j < offset + that.size + 1; j++) {
             ba.writeByte(roomBytes[j]);
         }
         ba.position = 0;
         ba.endian = endian;
 
-        pictureId = ba.readShort();
+        that.pictureId = ba.readShort();
         ba.readShort(); // Filler for alignment
-        y = ba.readShort();
-        x = ba.readShort();
-//        console.log("PalaceHotspotState pictureId: "+ pictureId + " x: " + x + " y: " + y);
+        that.y = ba.readShort();
+        that.x = ba.readShort();
+//        console.log("PalaceHotspotState pictureId: "+ that.pictureId + " x: " + x + " y: " + y);
     }
-
-}
-//}
-
-module.exports = PalaceHotspotState;
-var PalaceHotspotStateVar = new PalaceHotspotState();
-for (name in PalaceHotspotStateVar.constants) {
-    module.exports[name] = PalaceHotspotStateVar.constants[name];
 }

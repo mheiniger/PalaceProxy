@@ -15,8 +15,6 @@
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//package net.codecomposer.palace.model
-//{
 var util = require("util");
 
 var Event = require('./../../adapter/events/Event');
@@ -26,7 +24,7 @@ var Point = require("./Point");
 //	import flash.utils.ByteArray;
 var ByteArray = Buffer;
 
-var	ArrayCollection = require("../../adapter/collections/ArrayCollection");
+var ArrayCollection = require("../../adapter/collections/ArrayCollection");
 var PalaceHotspotState = require("./PalaceHotspotState");
 var FlexPoint = require("./FlexPoint");
 var PalaceClient = require("../../PalaceClient");
@@ -41,25 +39,28 @@ var PalaceClient = require("../../PalaceClient");
 
 //	[Event(name="stateChanged",type="net.codecomposer.palace.event.HotspotEvent")]
 //	[Event(name="moved",type="net.codecomposer.palace.event.HotspotEvent")]
-var constants = {};
 
-var TYPE_NORMAL = constants.TYPE_NORMAL/* :int */ = 0;
-var TYPE_PASSAGE = constants.TYPE_PASSAGE/* :int */ = 1;
-var TYPE_SHUTABLE_DOOR = constants.TYPE_SHUTABLE_DOOR/* :int */ = 2;
-var TYPE_LOCKABLE_DOOR = constants.TYPE_LOCKABLE_DOOR/* :int */ = 3;
-var TYPE_BOLT = constants.TYPE_BOLT/* :int */ = 4;
-var TYPE_NAVAREA = constants.TYPE_NAVAREA/* :int */ = 5;
+module.exports = PalaceHotspot;
 
-var STATE_UNLOCKED = constants.STATE_UNLOCKED/* :int */ = 0;
-var STATE_LOCKED = constants.STATE_LOCKED/* :int */ = 1;
+util.inherits(PalaceHotspot, EventDispatcher);
 
-var FLAG_SHOW_NAME = constants.FLAG_SHOW_NAME/* :int */ = 0x08;
-var FLAG_DONT_MOVE_HERE = constants.FLAG_DONT_MOVE_HERE/* :int */ = 0x02;
-var FLAG_DRAGGABLE = constants.FLAG_DRAGGABLE/* :int */ = 0x01;
-var FLAG_INVISIBLE = constants.FLAG_INVISIBLE/* :int */ = 0x04;
-var FLAG_DRAW_FRAME = constants.FLAG_DRAW_FRAME/* :int */ = 0x10;
-var FLAG_SHADOW = constants.FLAG_SHADOW/* :int */ = 0x20;
-var FLAG_FILL = constants.FLAG_FILL/* :int */ = 0x40;
+var TYPE_NORMAL = module.exports.TYPE_NORMAL/* :int */ = 0;
+var TYPE_PASSAGE = module.exports.TYPE_PASSAGE/* :int */ = 1;
+var TYPE_SHUTABLE_DOOR = module.exports.TYPE_SHUTABLE_DOOR/* :int */ = 2;
+var TYPE_LOCKABLE_DOOR = module.exports.TYPE_LOCKABLE_DOOR/* :int */ = 3;
+var TYPE_BOLT = module.exports.TYPE_BOLT/* :int */ = 4;
+var TYPE_NAVAREA = module.exports.TYPE_NAVAREA/* :int */ = 5;
+
+var STATE_UNLOCKED = module.exports.STATE_UNLOCKED/* :int */ = 0;
+var STATE_LOCKED = module.exports.STATE_LOCKED/* :int */ = 1;
+
+var FLAG_SHOW_NAME = module.exports.FLAG_SHOW_NAME/* :int */ = 0x08;
+var FLAG_DONT_MOVE_HERE = module.exports.FLAG_DONT_MOVE_HERE/* :int */ = 0x02;
+var FLAG_DRAGGABLE = module.exports.FLAG_DRAGGABLE/* :int */ = 0x01;
+var FLAG_INVISIBLE = module.exports.FLAG_INVISIBLE/* :int */ = 0x04;
+var FLAG_DRAW_FRAME = module.exports.FLAG_DRAW_FRAME/* :int */ = 0x10;
+var FLAG_SHADOW = module.exports.FLAG_SHADOW/* :int */ = 0x20;
+var FLAG_FILL = module.exports.FLAG_FILL/* :int */ = 0x40;
 
 
 //		PicturesAboveAll        0x00000001        /* was "Draggable" */
@@ -74,7 +75,7 @@ var FLAG_FILL = constants.FLAG_FILL/* :int */ = 0x40;
 //		Landingpad                0x00000200        /* Linux 4.5.1 PServer */
 
 // Hotspot records are 48 bytes
-var size = constants.size /* :int */ = 48;
+var size = module.exports.size /* :int */ = 48;
 
 
 /* \[Bindable\] */
@@ -105,40 +106,40 @@ function PalaceHotspot() //extends EventDispatcher
     var groupId = this.groupId/* :int */;
     var scriptRecordOffset = this.scriptRecordOffset/* :int */;
     var states = this.states/* :Array Collection */ = new ArrayCollection();
-    var eventHandlers = this.eventHandlers= {};
+    var eventHandlers = this.eventHandlers = {};
 
 //		[Bindable('idChanged')]
-    var set_id = this.set_id = function(newValue/* :int */)/* :void */ {
+    var set_id = this.set_id = function (newValue/* :int */)/* :void */ {
         if (_id != newValue) {
             _id = newValue;
             dispatchEvent(new Event('idChanged'));
         }
     }
-    var get_id = this.get_id = function()/* :int */ {
+    var get_id = this.get_id = function ()/* :int */ {
         return _id;
     }
 
 //		[Bindable('nameChanged')]
-    var set_name = this.set_name = function(newValue/* :String */)/* :void */ {
+    var set_name = this.set_name = function (newValue/* :String */)/* :void */ {
         if (_name != newValue) {
             _name = newValue;
             dispatchEvent(new Event('nameChanged'));
         }
     }
-    var get_name = this.get_name = function()/* :String */ {
+    var get_name = this.get_name = function ()/* :String */ {
         return _name;
     }
 
 //		[Bindable('flagsChanged')]
-    var set_flags = this.set_flags = function(newValue/* :int */)/* :void */ {
+    var set_flags = this.set_flags = function (newValue/* :int */)/* :void */ {
         _flags = newValue;
         dispatchEvent(new Event('flagsChanged'));
     }
-    var get_flags = this.get_flags = function()/* :int */ {
+    var get_flags = this.get_flags = function ()/* :int */ {
         return _flags;
     }
 
-    var get_label = this.get_label = function()/* :String */ {
+    var get_label = this.get_label = function ()/* :String */ {
         var string/* :String */ = "id " + id.toString() + ": ";
         string += (name) ? name : "(no name)";
 //			trace(string);
@@ -146,67 +147,67 @@ function PalaceHotspot() //extends EventDispatcher
     }
 
 //		[Bindable('flagsChanged')]
-    var get_showName = this.get_showName = function()/* :Boolean */ {
+    var get_showName = this.get_showName = function ()/* :Boolean */ {
         return Boolean(flags & FLAG_SHOW_NAME);
     }
 
 //		[Bindable('flagsChanged')]
-    var get_dontMoveHere = this.get_dontMoveHere = function()/* :Boolean */ {
+    var get_dontMoveHere = this.get_dontMoveHere = function ()/* :Boolean */ {
         return Boolean(flags & FLAG_DONT_MOVE_HERE);
     }
 
 //		[Bindable('flagsChanged')]
-    var get_draggable = this.get_draggable = function()/* :Boolean */ {
+    var get_draggable = this.get_draggable = function ()/* :Boolean */ {
         return Boolean(flags & FLAG_DRAGGABLE);
     }
 
 //		[Bindable('flagsChanged')]
-    var get_drawFrame = this.get_drawFrame = function()/* :Boolean */ {
+    var get_drawFrame = this.get_drawFrame = function ()/* :Boolean */ {
         return Boolean(flags & FLAG_DRAW_FRAME);
     }
 
 //		[Bindable('flagsChanged')]
-    var get_shadow = this.get_shadow = function()/* :Boolean */ {
+    var get_shadow = this.get_shadow = function ()/* :Boolean */ {
         return Boolean(flags & FLAG_SHADOW);
     }
 
 //		[Bindable('flagsChanged')]
-    var get_fill = this.get_fill = function()/* :Boolean */ {
+    var get_fill = this.get_fill = function ()/* :Boolean */ {
         return Boolean(flags & FLAG_FILL);
     }
 
 //		[Bindable('flagsChanged')]
-    var get_invisible = this.get_invisible = function()/* :Boolean */ {
+    var get_invisible = this.get_invisible = function ()/* :Boolean */ {
         return Boolean(flags & FLAG_INVISIBLE);
     }
 
 //		[Bindable('flagsChanged')]
-    var get_layerAboveAll = this.get_layerAboveAll = function()/* :Boolean */ {
+    var get_layerAboveAll = this.get_layerAboveAll = function ()/* :Boolean */ {
         return draggable;
     }
 
 //		[Bindable('flagsChanged')]
-    var get_layerAboveAvatars = this.get_layerAboveAvatars = function()/* :Boolean */ {
+    var get_layerAboveAvatars = this.get_layerAboveAvatars = function ()/* :Boolean */ {
         return invisible;
     }
 
 //		[Bindable('flagsChanged')]
-    var get_layerAboveNameTags = this.get_layerAboveNameTags = function()/* :Boolean */ {
+    var get_layerAboveNameTags = this.get_layerAboveNameTags = function ()/* :Boolean */ {
         return fill;
     }
 
 //		[Bindable('flagsChanged')]
-    var get_layerNormal = this.get_layerNormal = function()/* :Boolean */ {
+    var get_layerNormal = this.get_layerNormal = function ()/* :Boolean */ {
         return (!draggable && !invisible && !fill);
     }
 
-    var get_isDoor = this.get_isDoor = function()/* :Boolean */ {
+    var get_isDoor = this.get_isDoor = function ()/* :Boolean */ {
         return Boolean(type == TYPE_PASSAGE ||
             type == TYPE_LOCKABLE_DOOR ||
             type == TYPE_SHUTABLE_DOOR);
     }
 
-    var changeState = this.changeState = function(newState/* :int */)/* :void */ {
+    var changeState = this.changeState = function (newState/* :int */)/* :void */ {
         var previousState/* :int */ = state;
         if (newState != state) {
             state = newState;
@@ -217,7 +218,7 @@ function PalaceHotspot() //extends EventDispatcher
         dispatchEvent(event);
     }
 
-    var movePicForState = this.movePicForState = function(stateId/* :int */, x/* :int */, y/* :int */)/* :void */ {
+    var movePicForState = this.movePicForState = function (stateId/* :int */, x/* :int */, y/* :int */)/* :void */ {
         try {
             if (stateId < 0) {
                 stateId = this.state;
@@ -233,11 +234,11 @@ function PalaceHotspot() //extends EventDispatcher
         }
     }
 
-    var movePicTo = this.movePicTo = function(x/* :int */, y/* :int */)/* :void */ {
+    var movePicTo = this.movePicTo = function (x/* :int */, y/* :int */)/* :void */ {
         movePicForState(this.state, x, y);
     }
 
-    var setStateOpacity = this.setStateOpacity = function(state/* :int */, opacity/* :Number = 1*/ )/* :void */ {
+    var setStateOpacity = this.setStateOpacity = function (state/* :int */, opacity/* :Number = 1*/)/* :void */ {
         opacity = opacity || 1;
         try {
             if (state < 0) {
@@ -256,7 +257,7 @@ function PalaceHotspot() //extends EventDispatcher
         }
     }
 
-    var moveTo = this.moveTo = function(x/* :int */, y/* :int */)/* :void */ {
+    var moveTo = this.moveTo = function (x/* :int */, y/* :int */)/* :void */ {
         location.x = x;
         location.y = y;
         var event/* :HotspotEvent */ = new HotspotEvent(HotspotEvent.MOVED);
@@ -267,11 +268,11 @@ function PalaceHotspot() //extends EventDispatcher
         console.log(text);
     }
 
-    var readData = this.readData = function(endian/* :String */, roomBytes/* :Array */, offset/* :int */)/* :void */ {
+    var readData = this.readData = function (endian/* :String */, roomBytes/* :Array */, offset/* :int */)/* :void */ {
 //			trace("Hotspot offset " + offset);
         location = new FlexPoint();
 
-        var ba/* :ByteArray */ = new ByteArray(size+1);
+        var ba/* :ByteArray */ = new ByteArray(size + 1);
         for (var j/* :int */ = offset; j < offset + size; j++) {
             ba.writeByte(roomBytes[j]);
         }
@@ -306,7 +307,7 @@ function PalaceHotspot() //extends EventDispatcher
             var nameLength/* :int */ = roomBytes[nameOffset] || 0;
 //            trace("nameoffset: "+ nameOffset + "nameLength:" + nameLength);
             var nameByteArray/* :ByteArray */ = new ByteArray(nameLength);
-            for (var a/* :int */ = nameOffset+1; a < nameOffset+nameLength+1; a++) {
+            for (var a/* :int */ = nameOffset + 1; a < nameOffset + nameLength + 1; a++) {
                 nameByteArray.writeByte(roomBytes[a]);
             }
             nameByteArray.position = 0;
@@ -334,13 +335,13 @@ function PalaceHotspot() //extends EventDispatcher
 //        }
 //			trace("Script: " + scriptString);
         //loadScripts();
-        var endPos/* :int */ = pointsOffset+(numPoints*4);
+        var endPos/* :int */ = pointsOffset + (numPoints * 4);
 //        trace("pointsOffset:" + (pointsOffset));
         ba = new ByteArray(endPos + 1 - pointsOffset);
 //        for (j=pointsOffset; j < endPos+1; j++) {
 //            ba.writeByte(roomBytes[j]);
 //        }
-        roomBytes.copy(ba, 0, pointsOffset, endPos+1);
+        roomBytes.copy(ba, 0, pointsOffset, endPos + 1);
 
 //        outputHexView(ba);
 //        console.log(ba);
@@ -360,25 +361,23 @@ function PalaceHotspot() //extends EventDispatcher
         // Get States
         states.removeAll();
         var stateOffset/* :int */ = stateRecordOffset;
-        for (i=0; i < numStates; i++) {
+        for (i = 0; i < numStates; i++) {
             var state/* :PalaceHotspotState */ = new PalaceHotspotState();
             state.readData(endian, roomBytes, stateOffset);
             stateOffset += PalaceHotspotState.size;
             states.addItem(state);
         }
 
-    		//	trace("Got new hotspot: " + id + " - DestID: " + dest + " - name: '" + name + "' - PointCount: " + numPoints);
+        //	trace("Got new hotspot: " + id + " - DestID: " + dest + " - name: '" + name + "' - PointCount: " + numPoints);
     }
 
-    var hasEventHandler = this.hasEventHandler = function(eventType/* :int */)/* :Boolean */ {
+    var hasEventHandler = this.hasEventHandler = function (eventType/* :int */)/* :Boolean */ {
         return (nbrScripts > 0 && (scriptEventMask & 1 << eventType) != 0);
     }
 
-    var getEventHandler = this.getEventHandler = function(eventType/* :int */)/* :IptTokenList */ {
-        if(nbrScripts > 0 && (scriptEventMask & 1 << eventType) != 0)
-        {
-            for(var i/* :int */ = 0; i < nbrScripts; i++)
-            {
+    var getEventHandler = this.getEventHandler = function (eventType/* :int */)/* :IptTokenList */ {
+        if (nbrScripts > 0 && (scriptEventMask & 1 << eventType) != 0) {
+            for (var i/* :int */ = 0; i < nbrScripts; i++) {
                 var eventHandler/* :IptEventHandler */ = eventHandlers[i];
                 if (eventHandler.eventType == eventType) {
                     return eventHandler.tokenList;
@@ -427,12 +426,11 @@ function PalaceHotspot() //extends EventDispatcher
         trace(output);
     }
 
-    var loadScripts = this.loadScripts = function()/* :void */ {
+    var loadScripts = this.loadScripts = function ()/* :void */ {
         return; // TODO: send scripts to client
         nbrScripts = 0;
         scriptEventMask = 0;
-        if(scriptString)
-        {
+        if (scriptString) {
 //				trace("Hotspot " + id + " name: " + name + " script:\n" + scriptString);
 
             var manager/* :PalaceIptManager */ = PalaceClient.getInstance().palaceController.scriptManager;
@@ -445,18 +443,9 @@ function PalaceHotspot() //extends EventDispatcher
                     new IptEventHandler(eventType, handler.sourceScript, handler);
                 eventHandlers.push(eventHandler);
 //					trace("Got event handler.  Type: " + eventHandler.eventType + " Script: \n" + eventHandler.script);
-                nbrScripts ++;
+                nbrScripts++;
                 scriptEventMask |= (1 << eventType);
             }
         }
     }
-
-}
-//}
-util.inherits(PalaceHotspot, EventDispatcher);
-
-module.exports = PalaceHotspot;
-var PalaceHotspotVar = new PalaceHotspot();
-for (name in PalaceHotspotVar.constants) {
-    module.exports[name] = PalaceHotspotVar.constants[name];
 }
