@@ -18,6 +18,7 @@
 //package net.codecomposer.palace.crypto
 //{
 //	import flash.utils.ByteArray;
+var encoding = require("encoding");
 var _instance;
 
 function PalaceEncryption() {
@@ -36,7 +37,7 @@ function PalaceEncryption() {
             var bytesIn = new ByteArray(message, 'utf8');
         }
         else {
-            var bytesIn = new ByteArray(message /* , 'Windows-1252' */);
+            var bytesIn = new ByteArray(encoding.convert(message, 'Windows-1252'));
         }
         //console.log('textLength: ' + bytesIn.getLength());
 //        console.log('bytesWritten: ' + bytesWritten);
