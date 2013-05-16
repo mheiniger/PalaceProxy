@@ -2059,7 +2059,7 @@ function PalaceClient() // extends EventDispatcher
     }
 
     function handleReceiveWhisper(buffer, size, referenceId) {
-        var messageBytes = new ByteArray();
+        var messageBytes = new ByteArray(size);
         var message;
         if (utf8) {
             message = buffer.readUTFBytes(size - 1);
