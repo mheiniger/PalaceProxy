@@ -563,11 +563,11 @@ function PalaceClient() // extends EventDispatcher
             return;
         }
 
-        x = Math.max(x, 22);
-        x = Math.min(x, currentRoom.roomView.backgroundImage.width - 22);
-
-        y = Math.max(y, 22);
-        y = Math.min(y, currentRoom.roomView.backgroundImage.height - 22);
+//        x = Math.max(x, 22);
+//        x = Math.min(x, currentRoom.roomView.backgroundImage.width - 22);
+//
+//        y = Math.max(y, 22);
+//        y = Math.min(y, currentRoom.roomView.backgroundImage.height - 22);
 
         socket.writeInt(OutgoingMessageTypes.MOVE);
         socket.writeInt(4);

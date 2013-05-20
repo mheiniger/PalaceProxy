@@ -45,11 +45,12 @@ function handler (req, res) {
 
 io.sockets.on('connection', function (socket) {
     var palaceClient = new PalaceClient();
-    palaceClient.connect("TestUser", serverHost, serverPort, 0, socket);
-    socket.on('text entered', function (data) {
-        //console.log(data.text);
-        //socket.emit('log', { text: 'you sent: ' + data.text });
+    palaceClient.connect("JSPAL-Test", serverHost, serverPort, 0, socket);
+    socket.on('chat', function (data) {
         palaceClient.say(data.text);
+    });
+    socket.on('userMoved', function (data) {
+        palaceClient.move(data.x, data.y);
     });
     // todo: check if those are the right events for socket.io
     socket.on("error", function (e) {

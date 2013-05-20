@@ -4,23 +4,26 @@
 }
 
 #room-title {
-    background-color:cornflowerblue;
+    background-color: cornflowerblue;
     float: left;
     width: 100%;
 }
 
 #room-stage {
     /*width: 100%;*/
-    height: 200px;
+    position: relative;
+    /*height: 200px;*/
     background-color: #AEBDCC;
     float: left;
-    clear:left;
+    clear: left;
+    overflow: hidden;
 }
+
 #log {
     width: 300px;
     height: 384px;
     background-color: #eeeeee;
-    overflow:scroll;
+    overflow: scroll;
 }
 
 #input {
@@ -28,5 +31,14 @@
     height: 50px;
     background-color: #eeeeee;
     float: left;
-    clear:both;
+    clear: both;
+}
+
+.userDiv {
+    height: 20px;
+    background: yellow;
+    color: black;
+    position: absolute;
+    z-index: 10;
+    text-wrap: none;
 }
