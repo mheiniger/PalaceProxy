@@ -1,6 +1,8 @@
-#room {
+#room-window {
     /*width: 300px;*/
+    margin: 5px 0 0 5px;
     float: left;
+    border: 1px solid silver;
 }
 
 #room-title {
@@ -19,6 +21,11 @@
     overflow: hidden;
 }
 
+#log-window {
+    margin: 5px 0 0 5px;
+    border: 1px solid silver;
+}
+
 #log {
     width: 300px;
     height: 384px;
@@ -34,8 +41,33 @@
     clear: both;
 }
 
+#login-box {
+    position: absolute;
+    z-index: 12;
+    top: 200px;
+    left: 50px;
+    right: 50px;
+    border: 1px solid silver;
+    text-align: center;
+    padding: 10px;
+    background-color: lightblue;
+}
+
+#navigation {
+    height: 30px;
+    margin-left: 0px;
+    margin-right: 0px;
+    background-color: silver;
+    border-bottom: 1px solid black;
+}
+
+body {
+    margin: 0px;
+}
+
 .userDiv {
     height: 20px;
+    margin: 0;
     background: yellow;
     color: black;
     position: absolute;

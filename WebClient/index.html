@@ -6,19 +6,33 @@
     <link type="text/css" rel="stylesheet" href="client.css">
 </head>
 <body>
-<div id="room">
+<div id="navigation">
+    <button id="login">login</button>
+    <button id="logout">logout</button>
+    <span id="palace-name"></span>
+</div>
+<div id="room-window">
     <div id="room-title">
         Room-Name: <span id="room-name"></span>
     </div>
     <div id="room-stage">
-        <img id="room-image" src="">
+        <img id="room-image" src="assets/images/start-screen.png">
+
+        <div id="login-box">
+            <label>User name:<input type="text" id="user-name" value="JSPAL-Test"></label><br/>
+            <label>Address:<input type="text" id="palace-address" value="localhost"></label>
+            <label>Port:<input type="text" id="palace-port" value="9998" size="4"></label>
+            <button id="connect">Connect</button>
+        </div>
     </div>
+    <textarea id="input"></textarea>
 </div>
-<div style="float: left;">Log<br>
+
+<div style="float: left;" id="log-window">Log<br>
 
     <div id="log"></div>
 </div>
-<textarea id="input"></textarea>
+
 <script src="client.js"></script>
 </body>
 </html>

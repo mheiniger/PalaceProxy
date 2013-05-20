@@ -79,6 +79,9 @@ function extendSocket(socket) {
         this.writeBufferPos = 0;
         this.writeBuffer = new Buffer(0);
     };
+    socket.close = function() {
+        this.end();
+    };
 }
 
 

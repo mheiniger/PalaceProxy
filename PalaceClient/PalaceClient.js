@@ -326,6 +326,9 @@ function PalaceClient() // extends EventDispatcher
         BufferedSocket.extendSocket(socket);
         BufferedSocket.extendBuffer(socket);
         socket.timeout = 5000;
+        socket.on("connect", function(){
+            socket.connected = true;
+        });
         socket.on("close", onClose);
         socket.on("data", onSocketData);
         socket.on("error", onIOError);
@@ -371,7 +374,7 @@ function PalaceClient() // extends EventDispatcher
             socket.flush();
             socket.close();
         }
-        resetState();
+        //resetState();
     }
 
     this.changeName = changeName;
@@ -894,7 +897,7 @@ function PalaceClient() // extends EventDispatcher
 
     function onClose(event) {
         trace("Disconnected");
-        onSocketData(new Buffer(0));
+//        onSocketData(new Buffer(0));
         connected = false;
         disconnect();
         dispatchEvent(new PalaceEvent(PalaceEvent.DISCONNECTED));
@@ -2419,7 +2422,7 @@ function PalaceClient() // extends EventDispatcher
         if (!puidChanged) {
             // Don't show the disconnection error if the server dropped us
             // just to change our puid and ask us to reconnect.
-            Alert.show(reason, "Connection Dropped");
+           logText(reason);
         }
         trace("Connection Dropped: " + reason + " - Code: " + referenceId);
     }
