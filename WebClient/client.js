@@ -21,8 +21,6 @@ socket.on('roomChanged', function (roomData, mediaServer) {
     roomImage.attr('src', mediaServer + roomData.backgroundFile);
     roomName.html(roomData.name);
     $('.userDiv').remove();
-//    room.style.width = img.width;
-//    stage.style.height = img.height;
 });
 socket.on('userEntered', function (data) {
     users[data.user.id] = data.user;
@@ -79,6 +77,7 @@ $('#logout').on('click', function() {
 
 function clearStage(){
     $('.userDiv').remove();
+    $('#room-name').html('');
     var roomImage = $('#room-image');
     roomImage.attr('src', 'assets/images/start-screen.png');
 }
