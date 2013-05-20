@@ -49,6 +49,15 @@ $("#room-image").click(function(e){
     moveUser(me.id, x, y);
 });
 
+$('#input').on('keypress' ,function(e){
+    if (!e) e = window.event;
+    if (e.keyCode == '13'){
+        socket.emit('chat', { 'text': this.value });
+        this.value = '';
+        return false;
+    }
+});
+
 function moveUser(userId, x, y) {
     var roomImage = $('#room-image');
     x = Math.max(x, 22);
