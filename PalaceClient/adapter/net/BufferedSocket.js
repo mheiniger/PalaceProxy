@@ -86,14 +86,16 @@ function extendSocket(socket) {
 
 
 function extendBuffer(socket){
-    if (!Buffer.prototype.readInt) { // only extend it once
-        //console.log('extend buffer');
+    //if (!Buffer.prototype.readInt) { // only extend it once
+        console.log('extend buffer');
         Buffer.prototype.position = 0;
+        Buffer.prototype.endian = "bigEndian"; //default
         Buffer.prototype.readInt = function(){
 //            trace('position: ' + this.position);
-            if (socket.endian == "littleEndian") {
+            var endian = socket.endian || this.endian;
+            if (endian == "littleEndian") {
                 var value = this.readInt32LE(this.position);
-            } else if (socket.endian == "bigEndian"){
+            } else if (endian == "bigEndian"){
                 var value = this.readInt32BE(this.position);
             }
             this.position = this.position + 4;
@@ -101,9 +103,10 @@ function extendBuffer(socket){
         };
         Buffer.prototype.readUnsignedInt = function(){
 //            trace('position: ' + this.position);
-            if (socket.endian == "littleEndian") {
+            var endian = socket.endian || this.endian;
+            if (endian == "littleEndian") {
                 var value = this.readUInt32LE(this.position);
-            } else if (socket.endian == "bigEndian"){
+            } else if (endian == "bigEndian"){
                 var value = this.readUInt32BE(this.position);
             }
             this.position = this.position + 4;
@@ -111,9 +114,10 @@ function extendBuffer(socket){
         };
         Buffer.prototype.readShort = function(){
 //            trace('position: ' + this.position);
-            if (socket.endian == "littleEndian") {
+            var endian = socket.endian || this.endian;
+            if (endian == "littleEndian") {
                 var value = this.readInt16LE(this.position);
-            } else if (socket.endian == "bigEndian"){
+            } else if (endian == "bigEndian"){
                 var value = this.readInt16BE(this.position);
             }
             this.position = this.position + 2;
@@ -198,7 +202,7 @@ function extendBuffer(socket){
             return length;
         };
 
-    }
+//    }
 
 }
 

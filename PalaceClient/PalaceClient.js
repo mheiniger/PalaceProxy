@@ -913,6 +913,7 @@ function PalaceClient() // extends EventDispatcher
             buffer = newBuffer;
         }
         buffer.position = 0;
+        buffer.endian = socket.endian;
         var size;
         var p;
 
@@ -938,9 +939,18 @@ function PalaceClient() // extends EventDispatcher
                 p = messageP;
 
                 if (size > buffer.getLength()) {
-                    socket.bufferedReadData = buffer;
-                    console.log('packet for ' + intToText(messageID) + ' to big (' + size + '), collecting');
-                    return;
+                    var validMessageType = false;
+                    for(var key in IncomingMessageTypes){
+                        if(IncomingMessageTypes[key] == messageID){
+                            validMessageType = true;
+                        }
+                    }
+                    if (validMessageType) {
+                        socket.bufferedReadData = buffer;
+                        console.log('packet for ' + intToText(messageID) + ' to big (' + size + '), collecting');
+                        return;
+                    }
+
                 }
                 socket.bufferedReadData = null;
                 var messageID_txt = intToText(messageID);
