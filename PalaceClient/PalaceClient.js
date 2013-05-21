@@ -940,17 +940,18 @@ function PalaceClient() // extends EventDispatcher
                 p = messageP;
 
                 if (size > buffer.getLength()) {
-                    var validMessageType = false;
-                    for(var key in IncomingMessageTypes){
-                        if(IncomingMessageTypes[key] == messageID){
-                            validMessageType = true;
-                        }
-                    }
-                    if (validMessageType) {
+                    // check for invalid messages doesn't work correctly yet
+//                    var validMessageType = false;
+//                    for(var key in IncomingMessageTypes){
+//                        if(IncomingMessageTypes[key] == messageID){
+//                            validMessageType = true;
+//                        }
+//                    }
+//                    if (validMessageType) {
                         socket.bufferedReadData = buffer;
                         console.log('packet for ' + intToText(messageID) + ' to big (' + size + '), collecting');
                         return;
-                    }
+//                    }
 
                 }
                 socket.bufferedReadData = null;
