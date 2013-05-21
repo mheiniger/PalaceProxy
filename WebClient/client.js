@@ -29,7 +29,8 @@ socket.on('userEntered', function (data) {
     }
     var div = createUserDiv(data.user);
     $('#room-stage').append(div);
-    setFace(data.user.id, data.user.get_face());
+    setFace(data.user.id, data.user.face);
+    console.log(data);
 });
 
 socket.on('userMoved', function (data) {
@@ -42,9 +43,10 @@ socket.on('userLeft', function (data) {
     $('#user-' + user.id).remove();
 });
 
-socket.on('userFace', function (data) {
+socket.on('faceChanged', function (data) {
     var user = data.user;
-    setFace(user.id, user.get_face())
+    console.log(data);
+    setFace(user.id, data.face);
 });
 
 $("#room-image").click(function (e) {
@@ -93,7 +95,7 @@ function setFace(userId, nr) {
     var row = Math.floor(nr / 13);
     var column = nr - (row * 13);
     userDiv.css({
-        backgroundPosition : (45 * column * -1) +'px ' + (45 * row * -1) +'px'
+        'backgroundPosition' : (45 * column * -1) +'px ' + (45 * row * -1) +'px'
     });
 }
 

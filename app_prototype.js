@@ -44,17 +44,18 @@ io.sockets.on('connection', function (socket) {
         palaceClient.on(PalaceEvent.ROOM_CHANGED, function () {
             socket.emit(PalaceEvent.ROOM_CHANGED, palaceClient.currentRoom, palaceClient.get_mediaServer());
         });
-        palaceClient.currentRoom.on(PalaceRoomEvent.USER_ENTERED, function (user) {
-            socket.emit(PalaceRoomEvent.USER_ENTERED, user);
+        palaceClient.currentRoom.on(PalaceRoomEvent.USER_ENTERED, function (event) {
+            event.user.face = event.user.get_face();
+            socket.emit(PalaceRoomEvent.USER_ENTERED, event);
         });
-        palaceClient.currentRoom.on(PalaceRoomEvent.USER_MOVED, function (user) {
-            socket.emit(PalaceRoomEvent.USER_MOVED, user);
+        palaceClient.currentRoom.on(PalaceRoomEvent.USER_MOVED, function (event) {
+            socket.emit(PalaceRoomEvent.USER_MOVED, event);
         });
-        palaceClient.currentRoom.on(PalaceRoomEvent.USER_LEFT, function (user) {
-            socket.emit(PalaceRoomEvent.USER_LEFT, user);
+        palaceClient.currentRoom.on(PalaceRoomEvent.USER_LEFT, function (event) {
+            socket.emit(PalaceRoomEvent.USER_LEFT, event);
         });
-        palaceClient.currentRoom.on(PalaceRoomEvent.USER_FACE, function (user) {
-            socket.emit(PalaceRoomEvent.USER_FACE, user);
+        palaceClient.currentRoom.on('faceChanged', function (user) {
+            socket.emit('faceChanged', user);
         });
 
     });

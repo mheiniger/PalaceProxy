@@ -593,7 +593,7 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(id);
         face = Math.max(Math.min(face, 15), 0);
         socket.writeShort(face);
-        currentUser.face = face;
+        currentUser.set_face(face);
         socket.flush();
     }
 
@@ -1778,7 +1778,7 @@ function PalaceClient() // extends EventDispatcher
             user.y = y;
             user.propIds = propIds;
             user.propCrcs = propCrcs;
-            user.face = face;
+            user.set_face(face);
             user.color = color;
             user.loadProps();
 
@@ -1893,11 +1893,13 @@ function PalaceClient() // extends EventDispatcher
         user.propCount = propnum;
         user.name = userName;
         user.roomID = roomId;
-        user.face = face;
+        user.set_face(face);
         user.color = color;
         user.loadProps();
 
         currentRoom.addUser(user);
+
+
 
 //			trace("User " + user.name + " entered.");
 
@@ -2160,9 +2162,8 @@ function PalaceClient() // extends EventDispatcher
 
     function handleUserFace(buffer, size, referenceId) {
         var user = currentRoom.getUserById(referenceId);
-        user.face = buffer.readShort();
-        user.set_face(user.face);
-        dispatchEvent(new PalaceRoomEvent(PalaceRoomEvent.USER_FACE, user));
+        var face = buffer.readShort();
+        user.set_face(face);
 //			trace("User " + referenceId + " changed face to " + user.face);
     }
 
@@ -2280,7 +2281,8 @@ function PalaceClient() // extends EventDispatcher
     function handleUserDescription(buffer, size, referenceId) {
 //        trace('userID: ' + referenceId);
         var user = currentRoom.getUserById(referenceId);
-        user.face = buffer.readShort();
+        var face = buffer.readShort();
+        user.set_face(face);
         user.color = buffer.readShort();
         var propCount = buffer.readInt();
         var propIds = [];

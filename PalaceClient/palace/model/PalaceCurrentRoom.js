@@ -214,6 +214,14 @@ function PalaceCurrentRoom() {
     var addUser = this.addUser = function (user/* :PalaceUser */)/* :void */ {
         that.usersHash[user.id] = user;
         that.users.addItem(user);
+
+        user.on('faceChanged', function(){
+            var event = new Event("faceChanged");
+            event.user = user;
+            console.log('dispatching facechanged event..');
+            dispatchEvent(event);
+        });
+
         var event/* :PalaceRoom Event */ = new PalaceRoomEvent(PalaceRoomEvent.USER_ENTERED, user);
         dispatchEvent(event);
     }

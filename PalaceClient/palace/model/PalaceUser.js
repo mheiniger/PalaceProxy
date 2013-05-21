@@ -15,72 +15,70 @@
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
 var util = require("util");
-//package net.codecomposer.palace.model
-//{
-//	import flash.events.Event;
-var EventDispatcher = require("../../adapter/events/EventDispatcher");
-//	import flash.events.EventDispatcher;
 
+var Event = require("../../adapter/events/Event");
+var EventDispatcher = require("../../adapter/events/EventDispatcher");
 var ArrayCollection = require("../../adapter/collections/ArrayCollection");
 
-//	import net.codecomposer.palace.event.PropEvent;
+var PropEvent = require("./../event/PropEvent");
 //	import net.codecomposer.palace.rpc.PalaceClient;
 
-var constants = {};
+module.exports = PalaceUser;
 // wizard
-var SUPERUSER = constants.SUPERUSER/* :uint */ = 0x0001;
+module.exports.SUPERUSER/* :uint */ = 0x0001;
 // Total wizard
-var GOD = constants.GOD/* :uint */ = 0x0002;
+module.exports.GOD/* :uint */ = 0x0002;
 // Server should drop user at first opportunity
-var KILL = constants.KILL/* :uint */ = 0x0004;
+module.exports.KILL/* :uint */ = 0x0004;
 // user is a guest (no registration code)
-var GUEST = constants.GUEST/* :uint */ = 0x0008;
+module.exports.GUEST/* :uint */ = 0x0008;
 // Redundant with KILL.  Shouldn't be used
-var BANISHED = constants.BANISHED/* :uint */ = 0x0010;
+module.exports.BANISHED/* :uint */ = 0x0010;
 // historical artifact.  Shouldn't be used
-var PENALIZED = constants.PENALIZED/* :uint */ = 0x0020;
+module.exports.PENALIZED/* :uint */ = 0x0020;
 // Comm error, drop at first opportunity
-var COMM_ERROR = constants.COMM_ERROR/* :uint */ = 0x0040;
+module.exports.COMM_ERROR/* :uint */ = 0x0040;
 // Not allowed to speak
-var GAG = constants.GAG/* :uint */ = 0x0080;
+module.exports.GAG/* :uint */ = 0x0080;
 // Stuck in corner and not allowed to move
-var PIN = constants.PIN/* :uint */ = 0x0100;
+module.exports.PIN/* :uint */ = 0x0100;
 // Doesn't appear on user list
-var HIDE = constants.HIDE/* :uint */ = 0x0200;
+module.exports.HIDE/* :uint */ = 0x0200;
 // Not accepting whisper from outside room
-var REJECT_ESP = constants.REJECT_ESP/* :uint */ = 0x0400;
+module.exports.REJECT_ESP/* :uint */ = 0x0400;
 // Not accepting whisper from inside room
-var REJECT_PRIVATE = constants.REJECT_PRIVATE/* :uint */ = 0x0800;
+module.exports.REJECT_PRIVATE/* :uint */ = 0x0800;
 // Not allowed to wear props
-var PROPGAG = constants.PROPGAG/* :uint */ = 0x1000;
+module.exports.PROPGAG/* :uint */ = 0x1000;
 
 
-/* \[Bindable\] */
-function PalaceUser() //extends EventDispatcher
+util.inherits(PalaceUser, EventDispatcher); //extends EventDispatcher
+function PalaceUser()
 {
-    EventDispatcher.call(this);
+    PalaceUser.super_.call(this);
 
-    var isSelf = this.isSelf/* :Boolean */ = false;
-    var id = this.id/* :int */;
-    var name = this.name/* :String */ = "Uninitialized User";
-    var x = this.x/* :int */;
-    var y = this.y/* :int */;
-    var roomID = this.roomID/* :int */;
-    var roomName = this.roomName/* :String */;
-    var propCount = this.propCount/* :int */;
+    var that = this;
+
+    this.isSelf/* :Boolean */ = false;
+    this.id/* :int */ = 0;
+    this.name/* :String */ = "Uninitialized User";
+    this.x/* :int */ = 0;
+    this.y/* :int */ = 0;
+    this.roomID/* :int */ = 0;
+    this.roomName/* :String */ = "";
+    this.propCount/* :int */ = 0;
     var _face/* :int */ = 1;
-    var color = this.color/* :int */ = 2;
-    var flags = this.flags/* :int */ = 0;
-    var propIds = this.propIds/* :Array */ = [];
-    var propCrcs = this.propCrcs/* : Array */ = [];
-    var props = this.props/* :Array Collection */ = new ArrayCollection();
+    this.color/* :int */ = 2;
+    this.flags/* :int */ = 0;
+    this.propIds/* :Array */ = [];
+    this.propCrcs/* : Array */ = [];
+    this.props/* :Array Collection */ = new ArrayCollection();
 
-    var showFace = this.showFace/* :Boolean */ = true;
-// todo: mhe: implement propstore
+    this.showFace/* :Boolean */ = true;
+// todo: mhe: implement prop store
 //		var propStore/* :PalaceProp Store */ = PalacePropStore.getInstance();
 
-//		[Bindable(event="faceChanged")]
-    var set_face = this.set_face = function (newValue/* :int */)/* :void */ {
+    this.set_face = function (newValue/* :int */)/* :void */ {
         if (newValue > 12) {
             newValue = 0;
         }
@@ -89,10 +87,11 @@ function PalaceUser() //extends EventDispatcher
             _face = newValue;
             dispatchEvent(new Event("faceChanged"));
         }
-    }
-    var get_face = this.get_face = function ()/* :int */ {
+    };
+
+    this.get_face = function ()/* :int */ {
         return _face;
-    }
+    };
 
 
     function filterBadProps(object/* :Object */)/* :Boolean */ {
@@ -100,44 +99,44 @@ function PalaceUser() //extends EventDispatcher
         return !prop.badProp;
     }
 
-    var PalaceUser = this.PalaceUser = function () {
-        props.filterFunction = filterBadProps;
-        props.refresh();
-    }
+    this.PalaceUserConstructor = function () {
+        that.props.filterFunction = filterBadProps;
+        that.props.refresh();
+    };
 
-    var get_isWizard = this.get_isWizard = function ()/* :Boolean */ {
-        return Boolean((flags & SUPERUSER) > 0);
-    }
+    this.get_isWizard = function ()/* :Boolean */ {
+        return Boolean((that.flags & module.exports.SUPERUSER) > 0);
+    };
 
-    var get_isGod = this.get_isGod = function ()/* :Boolean */ {
-        return Boolean((flags & GOD) > 0);
-    }
+    this.get_isGod = function ()/* :Boolean */ {
+        return Boolean((that.flags & module.exports.GOD) > 0);
+    };
 
-    var get_isGuest = this.get_isGuest = function ()/* :Boolean */ {
-        return Boolean((flags & GUEST) > 0);
-    }
+    this.get_isGuest = function ()/* :Boolean */ {
+        return Boolean((that.flags & module.exports.GUEST) > 0);
+    };
 
-    var toggleProp = this.toggleProp = function (prop/* :PalaceProp */)/* :void */ {
-        var wearingProp/* :Boolean */ = (props.getItemIndex(prop) != -1);
+    this.toggleProp = function (prop/* :PalaceProp */)/* :void */ {
+        var wearingProp/* :Boolean */ = (that.props.getItemIndex(prop) != -1);
         if (wearingProp) {
-            removeProp(prop);
+            that.removeProp(prop);
         }
         else {
-            wearProp(prop);
+            that.wearProp(prop);
         }
-    }
+    };
 
-    var wearProp = this.wearProp = function (prop/* :PalaceProp */)/* :void */ {
+    this.wearProp = function (prop/* :PalaceProp */)/* :void */ {
         prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
-        if (props.length < 9 && props.getItemIndex(prop) == -1) {
-            props.addItem(prop);
+        if (that.props.length < 9 && that.props.getItemIndex(prop) == -1) {
+            that.props.addItem(prop);
         }
-        syncPropIdsToProps();
+        that.syncPropIdsToProps();
         checkFaceProps();
-        updatePropsOnServer();
-    }
+        that.updatePropsOnServer();
+    };
 
-    var setProps = this.setProps = function (props/* :Vector.<PalaceProp> */)/* :void */ {
+    this.setProps = function (props/* :Vector.<PalaceProp> */)/* :void */ {
         this.props.removeAll();
         for (var prop/* :PalaceProp */ in props) {
             // Fixing a bug where if you specified the same prop multiple
@@ -149,81 +148,82 @@ function PalaceUser() //extends EventDispatcher
                 this.props.addItem(prop);
             }
         }
-        syncPropIdsToProps();
+        that.syncPropIdsToProps();
         checkFaceProps();
-        updatePropsOnServer();
-    }
+        that.updatePropsOnServer();
+    };
 
-    var removeProp = this.removeProp = function (prop/* :PalaceProp */)/* :void */ {
-        var propIndex/* :int */ = props.getItemIndex(prop);
+    this.removeProp = function (prop/* :PalaceProp */)/* :void */ {
+        var propIndex/* :int */ = that.props.getItemIndex(prop);
         if (propIndex != -1) {
-            props.removeItemAt(propIndex);
+            that.props.removeItemAt(propIndex);
         }
-        syncPropIdsToProps();
+        that.syncPropIdsToProps();
         checkFaceProps();
-        updatePropsOnServer();
-    }
+        that.updatePropsOnServer();
+    };
 
-    var updatePropsOnServer = this.updatePropsOnServer = function ()/* :void */ {
+    this.updatePropsOnServer = function ()/* :void */ {
         PalaceClient.getInstance().updateUserProps();
-    }
+    };
 
-    var naked = this.naked = function ()/* :void */ {
-        props.removeAll();
-        syncPropIdsToProps();
+    this.naked = function ()/* :void */ {
+        that.props.removeAll();
+        that.syncPropIdsToProps();
         checkFaceProps();
-        updatePropsOnServer();
+        that.updatePropsOnServer();
     }
 
-    var syncPropIdsToProps = this.syncPropIdsToProps = function ()/* :void */ {
-        propCount = props.length;
-        propIds = [];
-        propCrcs = [];
-        for (var prop/* :PalaceProp */ in props) {
-            propIds.push(prop.asset.id);
-            propCrcs.push(prop.asset.crc);
+    this.syncPropIdsToProps = function ()/* :void */ {
+        that.propCount = that.props.length;
+        that.propIds = [];
+        that.propCrcs = [];
+        for (var prop/* :PalaceProp */ in that.props) {
+            that.propIds.push(prop.asset.id);
+            that.propCrcs.push(prop.asset.crc);
         }
-    }
+    };
 
-    var loadProps = this.loadProps = function ()/* :void */ {
+    this.loadProps = function ()/* :void */ {
 // todo mhe: later
 //			var i/* :int */ = 0;
 //			var prop/* :PalaceProp */;
-//			for (i=0; i < props.length; i++) {
-//				prop = PalaceProp(props.getItemAt(i));
+//			for (i=0; i < that.props.length; i++) {
+//				prop = PalaceProp(that.props.getItemAt(i));
 //				prop.removeEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
 //			}
-//			props.removeAll();
-//			for (i = 0; i < propCount; i ++) {
-//				prop = propStore.getProp(null, propIds[i], propCrcs[i]);
+//			that.props.removeAll();
+//			for (i = 0; i < that.propCount; i ++) {
+//				prop = that.propStore.getProp(null, that.propIds[i], that.propCrcs[i]);
 //				if (!prop.ready) {
 //					prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
 //				}
-//				props.addItem(prop);
+//				that.props.addItem(prop);
 //			}
 //			checkFaceProps();
-    }
+    };
 
     function handlePropLoaded(event/* :PropEvent */)/* :void */ {
         checkFaceProps();
     }
 
+    function dispatchEvent(event) {
+        event.user = that;
+        event.user.face = that.get_face();
+        that.dispatchEvent(event);
+        console.log('PalaceUser tries to dispatch event');
+        console.log(event);
+    }
+
     function checkFaceProps()/* :void */ {
         var showFace/* :Boolean */ = true;
-        for (var i/* :int */ = 0; i < props.length; i++) {
-            var prop/* :PalaceProp */ = PalaceProp(props.getItemAt(i));
+        for (var i/* :int */ = 0; i < that.props.length; i++) {
+            var prop/* :PalaceProp */ = PalaceProp(that.props.getItemAt(i));
             if (prop.head) {
                 showFace = false;
             }
         }
-        this.showFace = showFace;
+        that.showFace = showFace;
     }
 
-}
-//}
-util.inherits(PalaceUser, EventDispatcher);
-
-module.exports = PalaceUser;
-for (name in constants) {
-    module.exports[name] = constants[name];
 }
