@@ -17,7 +17,7 @@
 
 //package net.codecomposer.palace.event
 //{
-var Event = require("./../../adapter/events/Event.js"); //	import flash.events.Event;
+var Event = require("./../../adapter/events/Event"); //	import flash.events.Event;
 var util = require("util");
 
 //	import net.codecomposer.palace.model.PalaceLooseProp;
@@ -32,6 +32,7 @@ module.exports.LOOSE_PROP_REMOVED/* :String */ = "loosePropRemoved";
 module.exports.LOOSE_PROP_MOVED/* :String */ = "loosePropMoved";
 module.exports.LOOSE_PROPS_CLEARED/* :String */ = "loosePropsCleared";
 module.exports.USER_MOVED/* :String */ = "userMoved";
+module.exports.USER_FACE = "userFace";
 module.exports.SELECTED_USER_CHANGED/* :String */ = "selectedUserChanged";
 
 util.inherits(PalaceRoomEvent, Event);

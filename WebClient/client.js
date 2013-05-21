@@ -29,6 +29,7 @@ socket.on('userEntered', function (data) {
     }
     var div = createUserDiv(data.user);
     $('#room-stage').append(div);
+    setFace(data.user.id, data.user.get_face());
 });
 
 socket.on('userMoved', function (data) {
@@ -39,6 +40,11 @@ socket.on('userMoved', function (data) {
 socket.on('userLeft', function (data) {
     var user = data.user;
     $('#user-' + user.id).remove();
+});
+
+socket.on('userFace', function (data) {
+    var user = data.user;
+    setFace(user.id, user.get_face())
 });
 
 $("#room-image").click(function (e) {
@@ -82,6 +88,15 @@ function clearStage(){
     roomImage.attr('src', 'assets/images/start-screen.png');
 }
 
+function setFace(userId, nr) {
+    var userDiv = $('#user-' + userId + ' .face');
+    var row = Math.floor(nr / 13);
+    var column = nr - (row * 13);
+    userDiv.css({
+        backgroundPosition : (45 * column * -1) +'px ' + (45 * row * -1) +'px'
+    });
+}
+
 function moveUser(userId, x, y) {
     var roomImage = $('#room-image');
     x = Math.max(x, 22);
@@ -100,9 +115,25 @@ function createUserDiv(user) {
     //div.style.width = '80px';
     div.setAttribute("class", "userDiv");
     div.id = "user-" + user.id;
-    div.innerHTML = user.name;
+
     div.style.top = user.y - 22;
     div.style.left = user.x - 22;
 
+    var userFace = document.createElement("div");
+    userFace.setAttribute("class", "face");
+    userFace.style.width = '42px';
+    userFace.style.height = '42px';
+    userFace.style.backgroundImage = "url('assets/faces/defaultsmileys.png')";
+    userFace.style.backgroundRepeat = "no-repeat";
+    userFace.style.backgroundPosition = "-1px -1px";
+    div.appendChild(userFace);
+
+    var userName = document.createElement("div");
+    userName.setAttribute("class", "name");
+    userName.innerHTML = user.name;
+    div.appendChild(userName);
+
     return div;
 }
+
+

@@ -17,7 +17,7 @@
 
 //package net.codecomposer.palace.event
 //{
-var Event = require("./../../adapter/events/Event.js") //	import flash.events.Event;
+var Event = require("./../../adapter/events/Event.js"); //	import flash.events.Event;
 var util = require("util");
 
 

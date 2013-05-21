@@ -43,6 +43,7 @@ var ArrayCollection = require("./adapter/collections/ArrayCollection");
 // var AccountServerClient = require("./openpalace/accountserver/rpc/AccountServerClient");
 var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
 var PalaceEvent =  require("./palace/event/PalaceEvent");
+var PalaceRoomEvent = require("./palace/event/PalaceRoomEvent");
 var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
 // var PropEvent = require("./palace/event/PropEvent");
 // var DebugData = require("./palace/iptscrae/DebugData");
@@ -2013,6 +2014,9 @@ function PalaceClient() // extends EventDispatcher
 
                 if (currentChatItem.whisper) {
                     currentRoom.whisper(currentChatItem.whochat, currentChatItem.chatstr, currentChatItem.originalChatstr);
+                    var user = currentRoom.getUserById(currentChatItem.whochat);
+                    var logMessage = currentChatItem.chatstr || currentChatItem.originalChatstr;
+                    logText("<b><em>" + user.name + ":</em></b> " + logMessage + "\n");
                 }
                 else {
                     currentRoom.chat(currentChatItem.whochat, currentChatItem.chatstr, currentChatItem.originalChatstr);
@@ -2136,7 +2140,7 @@ function PalaceClient() // extends EventDispatcher
             true
         );
 //        chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_INCHAT);
-//        chatQueue.push(chatRecord);
+        chatQueue.push(chatRecord);
         processChatQueue();
 //        trace("Got xwhisper from userID " + referenceId + ": " + message);
     }
@@ -2157,6 +2161,8 @@ function PalaceClient() // extends EventDispatcher
     function handleUserFace(buffer, size, referenceId) {
         var user = currentRoom.getUserById(referenceId);
         user.face = buffer.readShort();
+        user.set_face(user.face);
+        dispatchEvent(new PalaceRoomEvent(PalaceRoomEvent.USER_FACE, user));
 //			trace("User " + referenceId + " changed face to " + user.face);
     }
 

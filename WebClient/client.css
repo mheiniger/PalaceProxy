@@ -66,11 +66,14 @@ body {
 }
 
 .userDiv {
-    height: 20px;
     margin: 0;
-    background: yellow;
-    color: black;
     position: absolute;
     z-index: 10;
+}
+
+.userDiv .name {
     text-wrap: none;
+    height: 20px;
+    background: yellow;
+    color: black;
 }

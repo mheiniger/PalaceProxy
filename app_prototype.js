@@ -53,6 +53,9 @@ io.sockets.on('connection', function (socket) {
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_LEFT, function (user) {
             socket.emit(PalaceRoomEvent.USER_LEFT, user);
         });
+        palaceClient.currentRoom.on(PalaceRoomEvent.USER_FACE, function (user) {
+            socket.emit(PalaceRoomEvent.USER_FACE, user);
+        });
 
     });
 
