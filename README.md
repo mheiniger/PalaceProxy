@@ -51,6 +51,9 @@ sudo apt-get install wine
 wget http://www.palaceaholic.com/downloads/client/windows32/PalaceUserWin.exe
 wine PalaceUserWin.exe
 ```
+If you're installation is during endless, it's possible that wine has mounted drive z to
+the linux root /. You can remove this drive with the tool `winecfg`
+
 After its installed you can start it with:
 ```
 ~/.wine/drive_c/Program\ Files/Communities.com/ThePalace/Palace32.exe
