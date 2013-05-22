@@ -210,9 +210,7 @@ function PalaceUser()
     function dispatchEvent(event) {
         event.user = that;
         event.user.face = that.get_face();
-        that.dispatchEvent(event);
-        console.log('PalaceUser tries to dispatch event');
-        console.log(event);
+        that.dispatchEvent(event.type, event);
     }
 
     function checkFaceProps()/* :void */ {

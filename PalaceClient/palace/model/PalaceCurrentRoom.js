@@ -42,7 +42,8 @@ var PalaceUser = require("../../palace/model/PalaceUser");
 //
 //        [Bindable]
 
-util.inherits(PalaceCurrentRoom, EventDispatcher); /* extends EventDispatcher */
+util.inherits(PalaceCurrentRoom, EventDispatcher);
+/* extends EventDispatcher */
 function PalaceCurrentRoom() {
     PalaceCurrentRoom.super_.call(this);
     var that = this;
@@ -215,10 +216,9 @@ function PalaceCurrentRoom() {
         that.usersHash[user.id] = user;
         that.users.addItem(user);
 
-        user.on('faceChanged', function(){
+        user.on('faceChanged', function () {
             var event = new Event("faceChanged");
             event.user = user;
-            console.log('dispatching facechanged event..');
             dispatchEvent(event);
         });
 

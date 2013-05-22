@@ -45,8 +45,8 @@ socket.on('userLeft', function (data) {
 
 socket.on('faceChanged', function (data) {
     var user = data.user;
-    console.log(data);
-    setFace(user.id, data.face);
+    console.log(user);
+    setFace(user.id, user.face);
 });
 
 $("#room-image").click(function (e) {
