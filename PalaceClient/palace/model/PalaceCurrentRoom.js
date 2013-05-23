@@ -50,7 +50,7 @@ function PalaceCurrentRoom() {
 
     var id = this.id/* :int */;
     var name = this.name/* :String */ = "Not Connected";
-    var backgroundFile = this.backgroundFile/* :String */;
+    this.backgroundFile/* :String */ = '';
     this.users/* :Array Collection */ = new ArrayCollection();
     this.usersHash/* :Object */ = {};
     var roomFlags = this.roomFlags/* :int */;
@@ -65,7 +65,7 @@ function PalaceCurrentRoom() {
     var looseProps = this.looseProps/* :Array Collection */ = new ArrayCollection();
     var drawFrontCommands = this.drawFrontCommands/* :Array Collection */ = new ArrayCollection();
     var drawBackCommands = this.drawBackCommands/* :Array Collection */ = new ArrayCollection();
-    var drawLayerHistory = this.drawLayerHistory/* :Vector.<uint> */ = {};
+    this.drawLayerHistory/* :Vector.<uint> */ = [];
     var _selectedUser = this._selectedUser/* :PalaceUser */;
     this.selfUserId/* :int */ = -1;
     var roomView = this.roomView/* :PalaceRoom View */;

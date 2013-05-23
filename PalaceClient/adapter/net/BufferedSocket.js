@@ -9,7 +9,7 @@ function extendSocket(socket) {
     socket.writeBuffer = new Buffer(0);
     socket.writeBufferPos = 0;
 
-    socket.extendWriteBuffer = function(num) {
+    socket.extendWriteBuffer = function (num) {
 
         var spaceLeft = this.writeBuffer.length - this.writeBufferPos - num;
         if (spaceLeft < 0) {
@@ -21,7 +21,7 @@ function extendSocket(socket) {
 //            console.log('buffer length: ' + this.writeBuffer.length + ' buffer pos: ' + this.writeBufferPos);
     };
 
-    socket.writeInt = function(data) {
+    socket.writeInt = function (data) {
 //            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
 //            console.log('writeInt Binary: ' + data.toString(2));
         this.extendWriteBuffer(4);
@@ -72,135 +72,149 @@ function extendSocket(socket) {
 //            console.log('sending Short: ', buffer.toString('hex'));
 //            socket.write(buffer);
     };
-    socket.flush = function() {
+    socket.flush = function () {
         //console.log('write Data: 0x' + this.writeBuffer.toString('hex'));
         //console.log('write Bin :   ' + this.writeBuffer.toString('utf8'));
         this.write(this.writeBuffer);
         this.writeBufferPos = 0;
         this.writeBuffer = new Buffer(0);
     };
-    socket.close = function() {
+    socket.close = function () {
         this.end();
     };
 }
 
 
-function extendBuffer(socket){
+function extendBuffer(socket) {
     //if (!Buffer.prototype.readInt) { // only extend it once
-        console.log('extend buffer');
-        Buffer.prototype.position = 0;
-        Buffer.prototype.endian = "bigEndian"; //default
-        Buffer.prototype.readInt = function(){
+    console.log('extend buffer');
+    Buffer.prototype.position = 0;
+    Buffer.prototype.endian = "bigEndian"; //default
+    Buffer.prototype.readInt = function () {
 //            trace('position: ' + this.position);
-            var endian = socket.endian || this.endian;
-            if (endian == "littleEndian") {
-                var value = this.readInt32LE(this.position);
-            } else if (endian == "bigEndian"){
-                var value = this.readInt32BE(this.position);
-            }
-            this.position = this.position + 4;
-            return value;
-        };
-        Buffer.prototype.readUnsignedInt = function(){
+        var endian = socket.endian || this.endian;
+        if (endian == "littleEndian") {
+            var value = this.readInt32LE(this.position);
+        } else if (endian == "bigEndian") {
+            var value = this.readInt32BE(this.position);
+        }
+        this.position = this.position + 4;
+        return value;
+    };
+    Buffer.prototype.readUnsignedInt = function () {
 //            trace('position: ' + this.position);
-            var endian = socket.endian || this.endian;
-            if (endian == "littleEndian") {
-                var value = this.readUInt32LE(this.position);
-            } else if (endian == "bigEndian"){
-                var value = this.readUInt32BE(this.position);
-            }
-            this.position = this.position + 4;
-            return value;
-        };
-        Buffer.prototype.readShort = function(){
+        var endian = socket.endian || this.endian;
+        if (endian == "littleEndian") {
+            var value = this.readUInt32LE(this.position);
+        } else if (endian == "bigEndian") {
+            var value = this.readUInt32BE(this.position);
+        }
+        this.position = this.position + 4;
+        return value;
+    };
+    Buffer.prototype.readShort = function () {
 //            trace('position: ' + this.position);
-            var endian = socket.endian || this.endian;
-            if (endian == "littleEndian") {
-                var value = this.readInt16LE(this.position);
-            } else if (endian == "bigEndian"){
-                var value = this.readInt16BE(this.position);
-            }
-            this.position = this.position + 2;
-            return value;
-        };
-        Buffer.prototype.readUnsignedByte = function(){
-//            trace('position: ' + this.position);
-            var value = this.readUInt8(this.position);
-            this.position = this.position + 1;
-            return value;
-        };
-        Buffer.prototype.readByte = function(){
-//            trace('position: ' + this.position);
-            var value = this.readUInt8(this.position);
-            this.position = this.position + 1;
-            return value;
-        };
-        Buffer.prototype.readBytes = function(outBuffer, start, end){
-//            trace('position: ' + this.position);
-            //outBuffer = new Buffer(end - start);
-            this.copy(outBuffer, 0, this.position + start, this.position + end);
-            this.position = this.position + end;
-            //console.log(outBuffer);
-        };
+        var endian = socket.endian || this.endian;
+        if (endian == "littleEndian") {
+            var value = this.readInt16LE(this.position);
+        } else if (endian == "bigEndian") {
+            var value = this.readInt16BE(this.position);
+        }
+        this.position = this.position + 2;
+        return value;
+    };
 
-        Buffer.prototype.readMultiByte = function(length, charset){
+    Buffer.prototype.readUnsignedShort = function () {
 //            trace('position: ' + this.position);
-            var stringLength = this.getCstringLength(this, length);
+        var endian = socket.endian || this.endian;
+        if (endian == "littleEndian") {
+            var value = this.readUInt16LE(this.position);
+        } else if (endian == "bigEndian") {
+            var value = this.readUInt16BE(this.position);
+        }
+        this.position = this.position + 2;
+        return value;
+    };
 
-            var tmpBuffer = new Buffer(stringLength);
-            this.copy(tmpBuffer, 0, this.position, this.position + stringLength);
-            var value = encoding.convert(tmpBuffer, 'utf-8', charset).toString('utf-8');;
-
-                        //var valueHex = this.toString('hex', this.position, this.position + length );
-            //console.log("multibyte-length " +length + ", string: " + value + ", hex: " + valueHex);
-            this.position = this.position + length;
-            return value;
-        };
-
-        Buffer.prototype.readUTFBytes = function(number){
+    Buffer.prototype.readUnsignedByte = function () {
 //            trace('position: ' + this.position);
-            var value = this.toString('utf-8', this.position, this.position + number);
-            this.position = this.position + number;
-            return value;
-        };
+        var value = this.readUInt8(this.position);
+        this.position = this.position + 1;
+        return value;
+    };
+    Buffer.prototype.readByte = function () {
+//            trace('position: ' + this.position);
+        var value = this.readUInt8(this.position);
+        this.position = this.position + 1;
+        return value;
+    };
+    Buffer.prototype.readBytes = function (outBuffer, start, end) {
+//            trace('position: ' + this.position);
+        //outBuffer = new Buffer(end - start);
+        this.copy(outBuffer, 0, this.position + start, this.position + end);
+        this.position = this.position + end;
+        //console.log(outBuffer);
+    };
+
+    Buffer.prototype.readMultiByte = function (length, charset) {
+//            trace('position: ' + this.position);
+        var stringLength = this.getCstringLength(this, length);
+
+        var tmpBuffer = new Buffer(stringLength);
+        this.copy(tmpBuffer, 0, this.position, this.position + stringLength);
+        var value = encoding.convert(tmpBuffer, 'utf-8', charset).toString('utf-8');
+        ;
+
+        //var valueHex = this.toString('hex', this.position, this.position + length );
+        //console.log("multibyte-length " +length + ", string: " + value + ", hex: " + valueHex);
+        this.position = this.position + length;
+        return value;
+    };
+
+    Buffer.prototype.readUTFBytes = function (number) {
+//            trace('position: ' + this.position);
+        var value = this.toString('utf-8', this.position, this.position + number);
+        this.position = this.position + number;
+        return value;
+    };
 
 
-        Buffer.prototype.getLength = function(){
+    Buffer.prototype.getLength = function () {
 //            trace('getLength: ' + (this.length - this.position));
-            return (this.length - this.position);
-        };
+        return (this.length - this.position);
+    };
 
-        Buffer.prototype.writeByte = function(oneByte){
-            this.writeUInt8(oneByte, this.position);
-            this.position++;
-        };
+    Buffer.prototype.writeByte = function (oneByte) {
+        this.writeUInt8(oneByte, this.position);
+        this.position++;
+    };
 
-        Buffer.prototype.writeUTFBytes = function(string){
-            var bytesWritten = this.write(string, this.position);
-            this.position = this.position + bytesWritten;
-            return bytesWritten;
-        };
+    Buffer.prototype.writeUTFBytes = function (string) {
+        var bytesWritten = this.write(string, this.position);
+        this.position = this.position + bytesWritten;
+        return bytesWritten;
+    };
 
-        Buffer.prototype.writeMultiByte = function (data, charset) {
-            //console.log('sending MultyByte: ', data);
-            data = encoding.convert(data, charset);
-            var bytesWritten = this.write(data, this.position);
-            this.position = this.position + bytesWritten;
-            return bytesWritten;
-        };
+    Buffer.prototype.writeMultiByte = function (data, charset) {
+        //console.log('sending MultyByte: ', data);
+        data = encoding.convert(data, charset);
+        var bytesWritten = this.write(data, this.position);
+        this.position = this.position + bytesWritten;
+        return bytesWritten;
+    };
 
-        /**
-         * Gets the length of a null-terminated C-String (or full length if not terminated)
-         **/
-        Buffer.prototype.getCstringLength = function(buffer, length) {
-            for (var i = 0; i < length ; i++) {
-                if (buffer[buffer.position + i] === 0) {
-                    length = i;
-                    break;
-                }
+    /**
+     * Gets the length of a null-terminated C-String (or full length if not terminated)
+     **/
+    Buffer.prototype.getCstringLength = function (buffer, length) {
+        for (var i = 0; i < length; i++) {
+            if (buffer[buffer.position + i] === 0) {
+                length = i;
+                break;
             }
-            return length;
-        };
+        }
+        return length;
+    };
 
 //    }
 

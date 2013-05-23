@@ -106,7 +106,7 @@ function PalaceHotspot() //extends EventDispatcher
     var groupId = this.groupId/* :int */;
     var scriptRecordOffset = this.scriptRecordOffset/* :int */;
     var states = this.states/* :Array Collection */ = new ArrayCollection();
-    var eventHandlers = this.eventHandlers = {};
+    var eventHandlers = this.eventHandlers = [];
 
 //		[Bindable('idChanged')]
     var set_id = this.set_id = function (newValue/* :int */)/* :void */ {

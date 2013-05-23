@@ -66,7 +66,7 @@ var PalaceServerInfo =  require("./palace/model/PalaceServerInfo");
 
 var PalaceUser = require("./palace/model/PalaceUser");
 var PalaceChatRecord = require("./palace/record/PalaceChatRecord");
-// var PalaceDrawRecord = require("./palace/record/PalaceDrawRecord");
+var PalaceDrawRecord = require("./palace/record/PalaceDrawRecord");
 // var PalaceSoundPlayer = require("./palace/view/PalaceSoundPlayer");
 //
 // var IptEngineEvent = require("./org/openpalace/iptscrae/IptEngineEvent");
@@ -275,7 +275,7 @@ function PalaceClient() // extends EventDispatcher
         currentRoom.hotSpotsAboveNothing.removeAll();
         currentRoom.drawBackCommands.removeAll();
         currentRoom.drawFrontCommands.removeAll();
-        currentRoom.drawLayerHistory = {};
+        currentRoom.drawLayerHistory = [];
         currentRoom.showAvatars = true;
         currentRoom.id = 0;
         population = 0;
@@ -1658,7 +1658,7 @@ function PalaceClient() // extends EventDispatcher
             var drawRecord = new PalaceDrawRecord();
             drawRecord.readData(socket.endian, rb, drawCommandOffset);
             drawCommandOffset = drawRecord.nextOffset;
-            if (drawRecord.layer == PalaceDrawRecord.LAYER_FRONT) {
+            if (drawRecord.get_layer() == PalaceDrawRecord.LAYER_FRONT) {
 //					trace("Draw front layer command at offset: " + drawCommandOffset);
                 currentRoom.drawFrontCommands.addItem(drawRecord);
                 currentRoom.drawLayerHistory.push(PalaceDrawRecord.LAYER_FRONT);
@@ -1721,13 +1721,13 @@ function PalaceClient() // extends EventDispatcher
             //delete all
             currentRoom.drawFrontCommands.removeAll();
             currentRoom.drawBackCommands.removeAll();
-            currentRoom.drawLayerHistory = {};
+            currentRoom.drawLayerHistory = [];
             return;
         }
 
         var drawCommandOffset = drawRecord.nextOffset;
 
-        if (drawRecord.layer == PalaceDrawRecord.LAYER_FRONT) {
+        if (drawRecord.get_layer() == PalaceDrawRecord.LAYER_FRONT) {
             currentRoom.drawFrontCommands.addItem(drawRecord);
             currentRoom.drawLayerHistory.push(PalaceDrawRecord.LAYER_FRONT);
         }
