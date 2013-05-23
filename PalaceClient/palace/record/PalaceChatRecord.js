@@ -9,7 +9,7 @@ function PalaceChatRecord(direction/* :int */, whochat/* :int */, whotarget/* :i
     this.whotarget = whotarget || 0/* :int */;
     this.chatstr = chatstr || ""/* :String */;
     this.whisper = isWhisper || false/* :Boolean */;
-    this.eventHandlers = []/* :Vector.<IptTokenList> */;
+    this.eventHandlers /* :Vector.<IptTokenList> */; // todo: something's still wrong: can't be initialized with [] yet
     var _originalChatstr = chatstr/* :String */;
 
    this.get_originalChatstr = function ()/* :String */ {
