@@ -81,7 +81,7 @@ var size = module.exports.size /* :int */ = 48;
 /* \[Bindable\] */
 function PalaceHotspot() //extends EventDispatcher
 {
-    EventDispatcher.call(this);
+    PalaceHotspot.super_.call(this);
 
     // Hotspot records are 48 bytes
     this.size/* :int */ = size;

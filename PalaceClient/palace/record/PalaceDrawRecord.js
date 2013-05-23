@@ -45,7 +45,7 @@ function PalaceDrawRecord()
     this.polygon = []/* :Vector.<Point>  = new Vector. < Point > ();*/;
 
 //		[Bindable(event="fillChanged")]
-    var set_useFill = this.set_useFill = function (newValue/* :Boolean */)/* :void */ {
+    this.set_useFill = function (newValue/* :Boolean */)/* :void */ {
         var startFlags/* :uint */ = flags;
         if (newValue) {
             flags |= USE_FILL;
@@ -56,10 +56,10 @@ function PalaceDrawRecord()
         if (startFlags != flags) {
             dispatchEvent(new Event('fillChanged'));
         }
-    }
-    var get_useFill = this.get_useFill = function ()/* :Boolean */ {
+    };
+    this.get_useFill = function ()/* :Boolean */ {
         return Boolean(flags & USE_FILL);
-    }
+    };
 
 //		[Bindable(event="ellipseChanged")]
     var set_isEllipse = this.set_isEllipse = function (newValue/* :Boolean */)/* :void */ {
@@ -73,10 +73,10 @@ function PalaceDrawRecord()
         if (startFlags != flags) {
             dispatchEvent(new Event('ellipseChanged'));
         }
-    }
+    };
     var get_isEllipse = this.get_isEllipse = function ()/* :Boolean */ {
         return Boolean(flags & IS_ELLIPSE);
-    }
+    };
 
 //		[Bindable(event="layerChanged")]
     var set_layer = this.set_layer = function (newValue/* :uint */)/* :void */ {
@@ -251,7 +251,7 @@ function PalaceDrawRecord()
         else {
             fillColor = lineColor = penColor;
             fillAlpha = lineAlpha = penAlpha;
-            if (get_isEllipse() || get_useFill()) {
+            if (that.get_isEllipse() || that.get_useFill()) {
                 // No more bytes available, must be PalaceChat 3 style
                 // packets.
                 penSize = 0;
