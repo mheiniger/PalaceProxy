@@ -17,16 +17,16 @@
 
 var net = require('net');
 var util = require('util');
-var BufferedSocket = require("./adapter/net/BufferedSocket");
+var BufferedSocket = require('./adapter/net/BufferedSocket');
 
-var Event = require("./adapter/events/Event");
-var EventDispatcher = require("./adapter/events/EventDispatcher");
-var EventEmitter = require("events").EventEmitter;
+var Event = require('./adapter/events/Event');
+var EventDispatcher = require('./adapter/events/EventDispatcher');
+var EventEmitter = require('events').EventEmitter;
 //import flash.events.EventDispatcher;
 //import flash.events.IOErrorEvent;
 //import flash.events.ProgressEvent;
 //import flash.events.SecurityErrorEvent;
-//import flash.events.TimerEvent;
+var TimerEvent = require('./adapter/events/TimerEvent');
 //import flash.net.SharedObject;
 //import flash.net.Socket;
 //import flash.net.XMLSocket;
@@ -34,7 +34,7 @@ var EventEmitter = require("events").EventEmitter;
 //import flash.utils.ByteArray;
 var ByteArray = Buffer;
 //import flash.utils.Endian;
-//import flash.utils.Timer;
+var Timer = require('./adapter/utils/Timer');
 //import flash.utils.setTimeout;
 //import com.adobe.net.URI;
 
@@ -1394,14 +1394,14 @@ function PalaceClient() // extends EventDispatcher
     function handleReceiveUserLog(buffer, size, referenceId) {
         population = buffer.readInt();
         recentLogonUserIds.addItem(referenceId);
-//        var timer = new Timer(15000, 1);
-//        timer.addEventListener(TimerEvent.TIMER, function(event) {
-//            var index = recentLogonUserIds.getItemIndex(referenceId);
-//            if (index != -1) {
-//                recentLogonUserIds.removeItemAt(index);
-//            }
-//        });
-//        timer.start();
+        var timer = new Timer(15000, 1);
+        timer.addEventListener(TimerEvent.TIMER, function(event) {
+            var index = recentLogonUserIds.getItemIndex(referenceId);
+            if (index != -1) {
+                recentLogonUserIds.removeItemAt(index);
+            }
+        });
+        timer.start();
         logText("User ID: " + referenceId + " just logged on.  Population: " + population);
         //logText(currentRoom.getUserById(referenceId).name + "just logged on");
     }
