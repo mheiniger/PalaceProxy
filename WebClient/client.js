@@ -10,6 +10,22 @@ function startSocket() {
         logWindow.append(data.text + '<br>');
         logWindow.animate({"scrollTop":$('#log')[0].scrollHeight}, "slow");
     });
+
+    socket.on('roomList', function (data) {
+        var roomList = $('#room-list');
+        var rooms = data.data;
+
+        for (var i = 0; i < rooms.length; i++) {
+            roomList.append('<option value="' + rooms[i].id + '">' + rooms[i].name + '</option>' + '<br>');
+        }
+
+        roomList.on('change', function (event) {
+            var roomId = $("#room-list option:selected").val();
+            var roomName = $("#room-list option:selected").text();
+            socket.emit('gotoRoom', { 'roomName': roomName, 'roomId': roomId });
+        });
+    });
+
     socket.on('chat', function (data) {
         console.log(data);
         var logWindow = $('#log');
