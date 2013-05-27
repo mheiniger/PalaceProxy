@@ -28,6 +28,7 @@ Timer.prototype.start = function () {
             if(that.currentCount === that.repeatCount) {
                 var timerCompleteEvent = new TimerEvent(TimerEvent.TIMER_COMPLETE);
                 that.dispatchEvent(timerCompleteEvent.type, timerCompleteEvent);
+                that.stop();
             }
         }, this.delay, this);
         this.running = true;
