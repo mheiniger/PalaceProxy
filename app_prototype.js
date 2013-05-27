@@ -1,5 +1,5 @@
-var app = require('http').createServer(handler);
-var io = require('socket.io').listen(app);
+var http = require('http');
+var io = require('socket.io');
 var fs = require('fs');
 var PalaceClient = require("./PalaceClient/PalaceClient");
 
@@ -10,11 +10,13 @@ process.on("uncaughtException", function (e) {
     console.log(e);
 });
 
-io.set('log level', 1);
-app.listen(3000);
+
+
 
 // handle normal files
-function handler(req, res) {
+var app = http.createServer(palaceHandler);
+app.listen(3000);
+function palaceHandler(req, res) {
     var url = req.url;
     if (url == '/') {
         url = '/index.html';
@@ -31,7 +33,28 @@ function handler(req, res) {
         });
 }
 
-io.sockets.on('connection', function (socket) {
+var appMedia = http.createServer(mediaHandler);
+appMedia.listen(9990);
+function mediaHandler(req, res) {
+    var url = req.url;
+    if (url.search(/^\/palace\/media\//) !== 0) {
+        res.writeHead(404);
+        res.end('file not found');
+    }
+    fs.readFile('/usr/local/palace' + url,
+        function (err, data) {
+            if (err) {
+                res.writeHead(500);
+                res.end('Error loading' + url);
+            }
+
+            res.writeHead(200);
+            res.end(data);
+        });
+}
+var appPalace = io.listen(app);
+appPalace.set('log level', 1);
+appPalace.sockets.on('connection', function (socket) {
     var palaceClient = null;
     socket.on('connect', function (host, port, userName) {
         palaceClient = new PalaceClient();

@@ -1,7 +1,6 @@
 PalaceProxy
 ===========
 
-First experiments to write a proxy for ThePalace in NodeJs.
 Purpose:
 Having a proxy which deals with the (ugly) palace protocol on the server side, we can start building a fully html5 based chat client which connects with Websockets and uses much less ugly json data to communicate.
 
@@ -23,7 +22,7 @@ nodejs app_test.js localhost 9998
 
 There is also a little protoype of a web-chat-client, to try out sending commands to the server:
 ```
-nodejs app_prototype.js localhost 9998
+nodejs app_prototype.js
 ```
 Afterwards open http://localhost:3000 in your Browser to connect.
 
@@ -83,22 +82,6 @@ cd /usr/local/palace/bin
 ```
 
 pserver will listen on port 9998 by default.
-
-To be able to deliver background images, you should set up a webserver on port 9990 which points to /usr/local/palace
-
-Example for Nginx:
-```
-server {
-        listen localhost:9990;
-        server_name localhost;
-        root /usr/local/palace;
-        index index.html index.htm;
-
-        location / {
-                try_files $uri $uri/ =404;
-        }
-}
-```
 
 Dev helper
 ----------
