@@ -5,6 +5,7 @@ var PalaceClient = require("./PalaceClient/PalaceClient");
 
 var PalaceEvent = require("./PalaceClient/palace/event/PalaceEvent");
 var PalaceRoomEvent = require("./PalaceClient/palace/event/PalaceRoomEvent");
+var ChatEvent = require("./PalaceClient/palace/event/ChatEvent");
 
 process.on("uncaughtException", function (e) {
     console.log(e);
@@ -77,6 +78,13 @@ appPalace.sockets.on('connection', function (socket) {
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_LEFT, function (event) {
             socket.emit(PalaceRoomEvent.USER_LEFT, event);
         });
+        palaceClient.currentRoom.on(ChatEvent.CHAT, function(event, message, user){
+            socket.emit(ChatEvent.CHAT, event, message, user);
+        });
+        palaceClient.currentRoom.on(ChatEvent.WHISPER, function(event, message, user){
+            socket.emit(ChatEvent.WHISPER, event, message, user);
+        });
+
         palaceClient.currentRoom.on('faceChanged', function (user) {
             socket.emit('faceChanged', user);
         });

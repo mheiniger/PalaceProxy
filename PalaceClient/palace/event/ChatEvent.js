@@ -23,54 +23,39 @@ var util = require("util");
 
 //	import net.codecomposer.palace.model.PalaceUser;
 
-//constants:
-var CHAT /* :String */ = "chat";
-var WHISPER /* :String */ = "whisper";
-var ROOM_MESSAGE /* :String */ = "roomMessage";
+module.exports = ChatEvent;
+var CHAT = module.exports.CHAT /* :String */ = "chat";
+var WHISPER = module.exports.WHISPER /* :String */ = "whisper";
+var ROOM_MESSAGE = module.exports.ROOM_MESSAGE /* :String */ = "roomMessage";
 
 util.inherits(ChatEvent, Event);
-function ChatEvent(type/* :String */, chatText/* :String */, user/* :PalaceUser = null*/ ) //extends Event
+function ChatEvent(type/* :String */, chatText/* :String */, user/* :PalaceUser = null*/) //extends Event
 {
-    var logText = this.logText/* :String */;
-    var user = this.user/* :PalaceUser */;
-    var soundName = this.soundName/* :String */;
-    var whisper = this.whisper/* :Boolean */;
-    var logOnly = this.logOnly/* :Boolean */ = false;
+    this.logText/* :String */ = chatText;
+    this.user/* :PalaceUser */;
+    this.soundName/* :String */;
+    this.whisper/* :Boolean */;
+    this.logOnly/* :Boolean */ = false;
 
+    var match/* :Array */;
+    if (chatText.charAt(0) == ';' || chatText.charAt(0) == "%") {
+        this.logOnly = true;
+    }
 
-
-    var ChatEventConstructor = function () {
-        logText = chatText;
-
-        var match/* :Array */;
-        if (chatText.charAt(0) == ';' || chatText.charAt(0) == "%") {
-            logOnly = true;
+    match = chatText.match(/^\s*(@\d+,\d+){0,1}\s*\)([^\s]+)\s*(.*)$/);
+    if (match && match.length > 1) {
+        this.soundName = match[2];
+        chatText = "";
+        if (match[1]) {
+            chatText += match[1];
         }
-
-        match = chatText.match(/^\s*(@\d+,\d+){0,1}\s*\)([^\s]+)\s*(.*)$/);
-        if (match && match.length > 1) {
-            soundName = match[2];
-            chatText = "";
-            if (match[1]) {
-                chatText += match[1];
-            }
-            if (match[3]) {
-                chatText += match[3];
-            }
+        if (match[3]) {
+            chatText += match[3];
         }
+    }
 
-        this.chatText = chatText;
-        this.user = user || null;
-        this.whisper = Boolean(type == WHISPER);
-        ChatEvent.super_.call(this, type);
-        //super(type, false, true);
-    }();
-
+    this.chatText = chatText;
+    this.user = user || null;
+    this.whisper = Boolean(type == WHISPER);
+    ChatEvent.super_.call(this, type);
 }
-//}
-
-module.exports = ChatEvent;
-
-module.exports.CHAT = CHAT;
-module.exports.WHISPER = WHISPER;
-module.exports.ROOM_MESSAGE = ROOM_MESSAGE;

@@ -6,6 +6,18 @@ socket.on('log', function (data) {
     logWindow.append(data.text + '<br>');
     logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
 });
+socket.on('chat' , function (data){
+    console.log(data);
+    var logWindow = $('#log');
+    logWindow.append('<b>' + data.user.name + ':</b> ' + data.chatText + '<br>');
+    logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
+});
+socket.on('whisper' , function (data){
+    console.log(data);
+    var logWindow = $('#log');
+    logWindow.append('<b><em>' + data.user.name + ':</em></b> ' + data.chatText + '<br>');
+    logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
+});
 socket.on('dev-log', function (data) {
     console.log(data);
 });

@@ -21,9 +21,9 @@ var util = require('util');
 var Event = require("../../adapter/events/Event");
 var EventDispatcher = require("../../adapter/events/EventDispatcher");
 //import flash.events.EventDispatcher;
-//import flash.events.TimerEvent;
+var TimerEvent = require("../../adapter/events/TimerEvent");
 //import flash.utils.Dictionary;
-//import flash.utils.Timer;
+var Timer = require("../../adapter/utils/Timer");
 
 var ArrayCollection = require("../../adapter/collections/ArrayCollection");
 var PalaceRoomEvent = require("../../palace/event/PalaceRoomEvent");

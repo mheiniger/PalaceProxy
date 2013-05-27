@@ -2017,15 +2017,15 @@ function PalaceClient() // extends EventDispatcher
 
                 if (currentChatItem.whisper) {
                     currentRoom.whisper(currentChatItem.whochat, currentChatItem.chatstr, currentChatItem.originalChatstr);
-                    var user = currentRoom.getUserById(currentChatItem.whochat);
-                    var logMessage = currentChatItem.chatstr || currentChatItem.originalChatstr;
-                    logText("<b><em>" + user.name + ":</em></b> " + logMessage + "\n");
+//                    var user = currentRoom.getUserById(currentChatItem.whochat);
+//                    var logMessage = currentChatItem.chatstr || currentChatItem.originalChatstr;
+//                    logText("<b><em>" + user.name + ":</em></b> " + logMessage + "\n");
                 }
                 else {
                     currentRoom.chat(currentChatItem.whochat, currentChatItem.chatstr, currentChatItem.originalChatstr);
-                    var user = currentRoom.getUserById(currentChatItem.whochat);
-                    var logMessage = currentChatItem.chatstr || currentChatItem.originalChatstr;
-                    logText("<b>" + user.name + ":</b> " + logMessage + "\n");
+//                    var user = currentRoom.getUserById(currentChatItem.whochat);
+//                    var logMessage = currentChatItem.chatstr || currentChatItem.originalChatstr;
+//                    logText("<b>" + user.name + ":</b> " + logMessage + "\n");
                 }
 
             }
