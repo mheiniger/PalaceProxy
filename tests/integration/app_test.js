@@ -3,6 +3,7 @@ var net = require('net');
 var fs = require('fs');
 var http = require('http');
 var PalaceClient = require("./../../PalaceClient/PalaceClient");
+var PalaceEvent = require("./../../PalaceClient/palace/event/PalaceEvent");
 
 process.on("uncaughtException", function (e) {
     console.log(e);
@@ -43,4 +44,8 @@ var palaceClient = new PalaceClient();
 
 palaceClient.connect("TestUser", serverHost, serverPort, 0);
 
-
+palaceClient.on(PalaceEvent.ROOM_CHANGED, function () {
+    palaceClient.disconnect();
+    // do this after the last test:
+    process.exit(0);
+});
