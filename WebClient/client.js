@@ -11,6 +11,7 @@ socket.on('chat' , function (data){
     var logWindow = $('#log');
     logWindow.append('<b>' + data.user.name + ':</b> ' + data.chatText + '<br>');
     logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
+    showChatBubble(data.user, data.chatText);
 });
 socket.on('whisper' , function (data){
     console.log(data);
@@ -122,6 +123,23 @@ function moveUser(userId, x, y) {
         'top': y - 22,
         'left': x - 22
     });
+}
+
+function showChatBubble(user, message) {
+    var bubbleDiv = $("#user-" + user.id + " .chatBubble");
+    if (bubbleDiv.length > 0) {
+        bubbleDiv.html(message);
+        bubbleDiv.show();
+    } else {
+        bubbleDiv = $('<div/>', {
+            class: 'chatBubble',
+            html: message
+        });
+        bubbleDiv.appendTo("#user-" + user.id);
+    }
+    setTimeout(function() {
+        bubbleDiv.hide();
+    }, 3000);
 }
 
 function createUserDiv(user) {
