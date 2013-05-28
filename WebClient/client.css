@@ -72,19 +72,76 @@ body {
 }
 
 .userDiv .name {
-    text-wrap: none;
+    white-space: nowrap;
     height: 20px;
     background: yellow;
     color: black;
+    position: relative;
 }
 
 .chatBubble {
     border: 1px solid black;
-    background-color: rgba(255,255,255,0.7);
+    background-color: rgba(255, 255, 255, 0.7);
     position: absolute;
     top: -10px;
     left: 30px;
     padding: 4px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
+}
+
+.bubble {
+    background-color: #F2F2F2;
+    border-radius: 6px;
+    box-shadow: 0 0 6px #B2B2B2;
+    display: inline-block;
+    padding: 4px 4px;
+    position: absolute;
+    top: 4px;
+    /*left: 30px;*/
+    vertical-align: top;
+}
+
+.bubble p {
+    padding: 0 0;
+    position: relative;
+    top: 0;
+    left: 0;
+    margin: 0;
+    /*z-index: 20;*/
+}
+
+.spike {
+    background-color: #F2F2F2;
+    content: "\00a0";
+    display: block;
+    height: 16px;
+    position: absolute;
+    top: 12px;
+    transform: rotate(29deg) skew(-35deg);
+    -moz-transform: rotate(29deg) skew(-35deg);
+    -ms-transform: rotate(29deg) skew(-35deg);
+    -o-transform: rotate(29deg) skew(-35deg);
+    -webkit-transform: rotate(29deg) skew(-35deg);
+    width: 20px;
+}
+
+.bubble.right {
+    float: left;
+    left: 52px;
+}
+
+.spike.right {
+    box-shadow: -2px 2px 2px 0 rgba(178, 178, 178, .4);
+    left: 45px;
+}
+
+.bubble.left {
+    float: right;
+    right: 94px;
+}
+
+.spike.left {
+    box-shadow: 2px -2px 2px 0 rgba(178, 178, 178, .4);
+    right: 90px;
 }

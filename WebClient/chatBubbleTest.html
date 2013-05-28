@@ -1,0 +1,35 @@
+<html>
+<head>
+    <title>ChatBubbleTest</title>
+    <script src="jquery-1.9.1.js"></script>
+    <link type="text/css" rel="stylesheet" href="client.css">
+</head>
+<body>
+<div id="room-window">
+    <div id="room-title">
+        Room-Name: <span id="room-name"></span>
+    </div>
+    <div id="room-stage">
+        <img id="room-image" src="assets/images/start-screen.png">
+    </div>
+    <textarea id="input"></textarea>
+</div>
+
+
+<script src="client.js"></script>
+<script type="text/javascript">
+    var data = {
+        user : {
+            x: 250,
+            y: 250,
+            id: 1,
+            name: 'cssTestUserasdfasdfasdfasdf'
+        }
+    };
+    var div = createUserDiv(data.user);
+    $('#room-stage').append(div);
+    showChatBubble(data.user, 'testmessage blabla', 'chat');
+</script>
+</body>
+</html>
+
