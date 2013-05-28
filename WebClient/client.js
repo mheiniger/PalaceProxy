@@ -11,13 +11,14 @@ socket.on('chat' , function (data){
     var logWindow = $('#log');
     logWindow.append('<b>' + data.user.name + ':</b> ' + data.chatText + '<br>');
     logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
-    showChatBubble(data.user, data.chatText);
+    showChatBubble(data.user, data.chatText, 'chat');
 });
 socket.on('whisper' , function (data){
     console.log(data);
     var logWindow = $('#log');
     logWindow.append('<b><em>' + data.user.name + ':</em></b> ' + data.chatText + '<br>');
     logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
+    showChatBubble(data.user, data.chatText, 'whisper');
 });
 socket.on('dev-log', function (data) {
     console.log(data);
@@ -125,16 +126,27 @@ function moveUser(userId, x, y) {
     });
 }
 
-function showChatBubble(user, message) {
-    var bubbleDiv = $("#user-" + user.id + " .chatBubble");
+function showChatBubble(user, message, type) {
+    var bubbleClass = 'oval-speech';
+    if (type == 'whisper') {
+        message = '<em>'+message+'</em>';
+    }
+    if (message.search(/^:/) === 0) {
+        bubbleClass = 'oval-thought';
+    }
+    var bubbleDiv = $("#user-" + user.id + "-chatBubble");
     if (bubbleDiv.length > 0) {
-        bubbleDiv.html(message);
+        bubbleDiv.find('p').html(message);
+        bubbleDiv.attr('class', bubbleClass);
         bubbleDiv.show();
     } else {
-        bubbleDiv = $('<div><p></p></div>', {
-            class: 'chatBubble',
-            html: message
+        bubbleDiv = $('<div></div>', {
+            class: bubbleClass,
+            id: 'user-' + user.id + '-chatBubble'
         });
+        var p = $('<p>'+message+'</p>');
+        bubbleDiv.append(p);
+
         bubbleDiv.appendTo("#user-" + user.id);
     }
     setTimeout(function() {

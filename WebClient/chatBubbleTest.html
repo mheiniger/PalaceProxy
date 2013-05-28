@@ -1,0 +1,89 @@
+<html>
+<head>
+    <title>ChatBubbleTest</title>
+    <script src="jquery-1.9.1.js"></script>
+    <link type="text/css" rel="stylesheet" href="client.css">
+</head>
+<body>
+<div id="room-window">
+    <div id="room-title">
+        Room-Name: <span id="room-name"></span>
+    </div>
+    <div id="room-stage">
+        <img id="room-image" src="assets/images/start-screen.png">
+    </div>
+    <textarea id="input"></textarea>
+</div>
+
+
+<!--<script src="client.js"></script>-->
+<script type="text/javascript">
+    var data = {
+        user : {
+            x: 250,
+            y: 250,
+            id: 1,
+            name: 'cssTestUser'
+        }
+    };
+    var div = createUserDiv(data.user);
+    $('#room-stage').append(div);
+    showChatBubble(data.user, 'testmessage blabla', 'chat');
+
+    function createUserDiv(user) {
+        var div = document.createElement("div");
+        //div.style.width = '80px';
+        div.setAttribute("class", "userDiv");
+        div.id = "user-" + user.id;
+
+        div.style.top = user.y - 22;
+        div.style.left = user.x - 22;
+
+        var userFace = document.createElement("div");
+        userFace.setAttribute("class", "face");
+        userFace.style.width = '42px';
+        userFace.style.height = '42px';
+        userFace.style.backgroundImage = "url('assets/faces/defaultsmileys.png')";
+        userFace.style.backgroundRepeat = "no-repeat";
+        userFace.style.backgroundPosition = "-1px -1px";
+        div.appendChild(userFace);
+
+        var userName = document.createElement("div");
+        userName.setAttribute("class", "name");
+        userName.innerHTML = user.name;
+        div.appendChild(userName);
+
+        return div;
+    }
+
+    function showChatBubble(user, message, type) {
+        var bubbleClass = 'oval-speech';
+        if (type == 'whisper') {
+            message = '<em>'+message+'</em>';
+        }
+        if (message.search(/^:/) === 0) {
+            bubbleClass = 'oval-thought';
+        }
+        var bubbleDiv = $("#user-" + user.id + "-chatBubble");
+        if (bubbleDiv.length > 0) {
+            bubbleDiv.find('p').html(message);
+            bubbleDiv.attr('class', bubbleClass);
+            bubbleDiv.show();
+        } else {
+            bubbleDiv = $('<div></div>', {
+                class: bubbleClass,
+                id: 'user-' + user.id + '-chatBubble'
+            });
+            var p = $('<p>'+message+'</p>');
+            bubbleDiv.append(p);
+
+            bubbleDiv.appendTo("#user-" + user.id);
+        }
+//        setTimeout(function() {
+//            bubbleDiv.hide();
+//        }, 3000);
+    }
+</script>
+</body>
+</html>
+
