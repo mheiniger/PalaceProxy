@@ -2157,7 +2157,8 @@ function PalaceClient() // extends EventDispatcher
 
     function handleUserColor(buffer, size, referenceId) {
         var user = currentRoom.getUserById(referenceId);
-        user.color = buffer.readShort();
+        var color = buffer.readShort();
+        user.set_color(color);
 //			trace("User " + referenceId + " changed color to " + user.color); 
     }
 

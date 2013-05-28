@@ -89,6 +89,13 @@ function PalaceUser()
         }
     };
 
+    this.set_color = function(newValue) {
+        if (that.color != newValue) {
+            that.color = newValue;
+            dispatchEvent(new Event("faceChanged"));
+        }
+    };
+
     this.get_face = function ()/* :int */ {
         return _face;
     };
