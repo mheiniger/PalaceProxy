@@ -28,7 +28,7 @@ timer.on(TimerEvent.TIMER_COMPLETE, function() {
     result.endTime = new Date().getTime();
     assert.equal(result.numberOfCalls, 6, 'Timer should be called 6 times, but is called ' + result.numberOfCalls + ' times');
     var timeUsed = result.endTime - result.startTime;
-    assert.equal(timeUsed > 500 && timeUsed < 601, true, 'Used time should be 400 but is ' + timeUsed);
+    assert.equal(timeUsed > 400 && timeUsed < 601, true, 'Used time should be 600 but is ' + timeUsed);
     console.log('tests ok');
 });
 
