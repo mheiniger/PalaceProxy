@@ -1,3 +1,7 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 #room-window {
     /*width: 300px;*/
     margin: 5px 0 0 5px;
@@ -27,6 +31,7 @@
 }
 
 #log {
+    font-size: 13px;
     width: 300px;
     height: 384px;
     background-color: #eeeeee;
@@ -72,11 +77,17 @@ body {
 }
 
 .userDiv .name {
+    font-size: 14px;
     white-space: nowrap;
-    height: 20px;
     background: yellow;
     color: black;
     position: relative;
+    border: 1px solid silver;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    padding-left: 1px;
+    padding-right: 3px;
+    box-shadow: 0 0 6px #B2B2B2;
 }
 
 .chatBubble {
@@ -108,6 +119,7 @@ body {
     top: 0;
     left: 0;
     margin: 0;
+    font-size: 14px;
     /*z-index: 20;*/
 }
 
