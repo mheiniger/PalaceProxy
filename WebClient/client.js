@@ -131,7 +131,7 @@ function showChatBubble(user, message) {
         bubbleDiv.html(message);
         bubbleDiv.show();
     } else {
-        bubbleDiv = $('<div/>', {
+        bubbleDiv = $('<div><p></p></div>', {
             class: 'chatBubble',
             html: message
         });
