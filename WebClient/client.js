@@ -1,5 +1,6 @@
 var users = {};
 var me = {};
+me.isWhisperingTo = null;
 var socket = null;
 
 function startSocket() {
@@ -51,6 +52,7 @@ function startSocket() {
         div.click(function () {
             handleClickOnUser(data.user);
         });
+        data.user.div = div;
         console.log(data);
     });
 
@@ -203,25 +205,36 @@ function setUserName(id, name) {
 }
 
 function handleClickOnUser(user) {
+    // clicking on yourself stops whispering
     if (user.id === me.id) {
-        alert('you clicked on yourself');
         me.isWhispering = false;
         setUsersToSolid(users);
     } else {
-        alert('you clicked on ' + user.name);
-        // clicking on a person you're alreadiy whispering with: turning whispering off
+//        alert('you clicked on ' + user.name);
+        // clicking on a person you're already whispering with stops whispering
         if (me.isWhispering && me.isWhisperingTo == user.id){
-
+            me.isWhipering = false;
+            setUsersToSolid(users);
         } else {
-
+            setUsersToTransparent(users);
+            var whisperingUsers = {};
+            whisperingUsers[user.id] = users[user.id];
+            whisperingUsers[me.id] = me;
+            setUsersToSolid(whisperingUsers);
+            me.isWhispering = true;
+            me.isWhisperingTo = user.id;
         }
     }
 }
 
 function setUsersToSolid(users){
-
+    for (var user in users) {
+        users[user].div.css('opacity', '1');
+    }
 }
 
 function setUsersToTransparent(users){
-
+    for (var user in users) {
+        users[user].div.css('opacity', '0.5');
+    }
 }
