@@ -84,7 +84,11 @@ $("#room-image").click(function (e) {
 $('#input').on('keypress', function (e) {
     if (!e) e = window.event;
     if (e.keyCode == '13') {
-        socket.emit('chat', { 'text':this.value });
+        if (me.isWhispering === true){
+            socket.emit('whisper', { 'text': this.value, 'user': me.isWhisperingTo });
+        } else {
+            socket.emit('chat', { 'text':this.value });
+        }
         this.value = '';
         return false;
     }
