@@ -3,7 +3,7 @@ var me = {};
 var socket = null;
 
 function startSocket() {
-    socket = io.connect('http://localhost');
+    socket = io.connect();
     socket.on('log', function (data) {
         var logWindow = $('#log');
         logWindow.append(data.text + '<br>');
