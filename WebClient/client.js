@@ -1,5 +1,6 @@
 var users = {};
 var me = {};
+me.isWhisperingTo = null;
 var socket = null;
 
 function startSocket() {
@@ -7,20 +8,20 @@ function startSocket() {
     socket.on('log', function (data) {
         var logWindow = $('#log');
         logWindow.append(data.text + '<br>');
-        logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
+        logWindow.animate({"scrollTop":$('#log')[0].scrollHeight}, "slow");
     });
-    socket.on('chat' , function (data){
+    socket.on('chat', function (data) {
         console.log(data);
         var logWindow = $('#log');
         logWindow.append('<b>' + data.user.name + ':</b> ' + data.chatText + '<br>');
-        logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
+        logWindow.animate({"scrollTop":$('#log')[0].scrollHeight}, "slow");
         showChatBubble(data.user, data.chatText, 'chat');
     });
-    socket.on('whisper' , function (data){
+    socket.on('whisper', function (data) {
         console.log(data);
         var logWindow = $('#log');
-        logWindow.append('<b><em>' + data.user.name + ':</em></b> ' + data.chatText + '<br>');
-        logWindow.animate({"scrollTop": $('#log')[0].scrollHeight}, "slow");
+        logWindow.append('<em><b>' + data.user.name + ':</b> ' + data.chatText + '</em><br>');
+        logWindow.animate({"scrollTop":$('#log')[0].scrollHeight}, "slow");
         showChatBubble(data.user, data.chatText, 'whisper');
     });
     socket.on('dev-log', function (data) {
@@ -48,6 +49,10 @@ function startSocket() {
         $('#room-stage').append(div);
         setUserName(data.user.id, data.user.name);
         setFace(data.user.id, data.user.face, data.user.color);
+        div.click(function () {
+            handleClickOnUser(data.user);
+        });
+        data.user.div = div;
         console.log(data);
     });
 
@@ -72,21 +77,25 @@ function startSocket() {
 $("#room-image").click(function (e) {
     var x = e.pageX - e.currentTarget.x;
     var y = e.pageY - e.currentTarget.y;
-    socket.emit('userMoved', { 'x': x, 'y': y });
+    socket.emit('userMoved', { 'x':x, 'y':y });
     moveUser(me.id, x, y);
 });
 
 $('#input').on('keypress', function (e) {
     if (!e) e = window.event;
     if (e.keyCode == '13') {
-        socket.emit('chat', { 'text': this.value });
+        if (me.isWhispering === true){
+            socket.emit('whisper', { 'text': this.value, 'user': me.isWhisperingTo });
+        } else {
+            socket.emit('chat', { 'text':this.value });
+        }
         this.value = '';
         return false;
     }
     return true;
 });
 
-$('#login').on('click', function() {
+$('#login').on('click', function () {
     $('#login-box').show(500);
 });
 
@@ -98,12 +107,12 @@ $('#connect').on('click', function () {
     );
 });
 
-$('#logout').on('click', function() {
+$('#logout').on('click', function () {
     socket.emit('logout');
     clearStage();
 });
 
-function clearStage(){
+function clearStage() {
     $('.userDiv').remove();
     $('#room-name').html('');
     var roomImage = $('#room-image');
@@ -115,7 +124,7 @@ function setFace(userId, face, color) {
     var row = color;
     var column = face;
     userDiv.css({
-        'backgroundPosition' : (45 * column * -1) +'px ' + (45 * row * -1) +'px'
+        'backgroundPosition':(45 * column * -1) + 'px ' + (45 * row * -1) + 'px'
     });
 }
 
@@ -127,16 +136,16 @@ function moveUser(userId, x, y) {
     y = Math.min(y, roomImage.height() - 22);
     var userDiv = $('#user-' + userId);
     userDiv.css({
-        'top': y - 22,
-        'left': x - 22
+        'top':y - 22,
+        'left':x - 22
     });
 }
 
 function showChatBubble(user, message, type) {
     var bubbleClass = 'bubble right';
-//        if (type == 'whisper') {
-//            message = '<em>'+message+'</em>';
-//        }
+        if (type == 'whisper') {
+            message = '<em>'+message+'</em>';
+        }
 //        if (message.search(/^:/) === 0) {
 //            bubbleClass = 'oval-thought';
 //        }
@@ -149,33 +158,33 @@ function showChatBubble(user, message, type) {
         spike.show();
     } else {
         bubbleDiv = $('<div/>', {
-            class: bubbleClass,
-            id: 'user-' + user.id + '-chatBubble'
+            class:bubbleClass,
+            id:'user-' + user.id + '-chatBubble'
         });
         var spike = $('<div/>', {
-            'class' : 'spike right'
+            'class':'spike right'
         });
-        var p = $('<p>'+message+'</p>');
+        var p = $('<p>' + message + '</p>');
         bubbleDiv.append(p);
 
         var userDiv = $("#user-" + user.id);
         spike.appendTo(userDiv);
         bubbleDiv.appendTo(userDiv);
     }
-    setTimeout(function() {
+    setTimeout(function () {
         spike.hide();
         bubbleDiv.hide();
     }, 3000);
 }
 
 function createUserDiv(user) {
-    var div = document.createElement("div");
+    var div = $('<div/>');
     //div.style.width = '80px';
-    div.setAttribute("class", "userDiv");
-    div.id = "user-" + user.id;
+    div.attr("class", "userDiv");
+    div.attr("id", "user-" + user.id);
 
-    div.style.top = user.y - 22;
-    div.style.left = user.x - 22;
+    div.css("top", user.y - 22);
+    div.css("left", user.x - 22);
 
     var userFace = document.createElement("div");
     userFace.setAttribute("class", "face");
@@ -184,7 +193,7 @@ function createUserDiv(user) {
     userFace.style.backgroundImage = "url('assets/faces/defaultsmileys.png')";
     userFace.style.backgroundRepeat = "no-repeat";
     userFace.style.backgroundPosition = "-1px -1px";
-    div.appendChild(userFace);
+    div.append(userFace);
 
     var userName = $('<div/>');
     userName.attr("class", "name");
@@ -194,7 +203,42 @@ function createUserDiv(user) {
     return div;
 }
 
-function setUserName(id, name){
+function setUserName(id, name) {
     var div = $("#user-" + id + " .name")
     div.css('left', (div.outerWidth() / -2) + 22);
+}
+
+function handleClickOnUser(user) {
+    // clicking on yourself stops whispering
+    if (user.id === me.id) {
+        me.isWhispering = false;
+        setUsersToSolid(users);
+    } else {
+//        alert('you clicked on ' + user.name);
+        // clicking on a person you're already whispering with stops whispering
+        if (me.isWhispering && me.isWhisperingTo == user.id){
+            me.isWhipering = false;
+            setUsersToSolid(users);
+        } else {
+            setUsersToTransparent(users);
+            var whisperingUsers = {};
+            whisperingUsers[user.id] = users[user.id];
+            whisperingUsers[me.id] = me;
+            setUsersToSolid(whisperingUsers);
+            me.isWhispering = true;
+            me.isWhisperingTo = user.id;
+        }
+    }
+}
+
+function setUsersToSolid(users){
+    for (var user in users) {
+        users[user].div.css('opacity', '1');
+    }
+}
+
+function setUsersToTransparent(users){
+    for (var user in users) {
+        users[user].div.css('opacity', '0.5');
+    }
 }
