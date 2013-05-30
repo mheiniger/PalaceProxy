@@ -92,6 +92,13 @@ appPalace.sockets.on('connection', function (socket) {
     });
 
     socket.on('chat', function (data) {
+        console.log('chat');
+        palaceClient.currentRoom.set_selectedUser(null);
+        palaceClient.say(data.text);
+    });
+    socket.on('whisper', function (data) {
+        var selectedUser = palaceClient.currentRoom.getUserById(data.user);
+        palaceClient.currentRoom.set_selectedUser(selectedUser);
         palaceClient.say(data.text);
     });
     socket.on('userMoved', function (data) {

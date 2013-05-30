@@ -66,7 +66,7 @@ function PalaceCurrentRoom() {
     var drawFrontCommands = this.drawFrontCommands/* :Array Collection */ = new ArrayCollection();
     var drawBackCommands = this.drawBackCommands/* :Array Collection */ = new ArrayCollection();
     this.drawLayerHistory/* :Vector.<uint> */ = [];
-    var _selectedUser = this._selectedUser/* :PalaceUser */;
+    var _selectedUser = 0;
     this.selfUserId/* :int */ = -1;
     var roomView = this.roomView/* :PalaceRoom View */;
     var dimLevel = this.dimLevel/* :Number */ = 1;
@@ -100,16 +100,16 @@ function PalaceCurrentRoom() {
     }()
 
 //		[Bindable(event="selectedUserChanged")]
-    var set_selectedUser = this.set_selectedUser = function (newValue/* :PalaceUser */)/* :void */ {
+    this.set_selectedUser = function (newValue/* :PalaceUser */)/* :void */ {
         if (_selectedUser !== newValue) {
             _selectedUser = newValue;
             dispatchEvent(new Event("selectedUserChanged"));
         }
-    }
+    };
 
-    var get_selectedUser = this.get_selectedUser = function ()/* :PalaceUser */ {
+    this.get_selectedUser = function ()/* :PalaceUser */ {
         return _selectedUser;
-    }
+    };
 
     /* private */
     function handleLastMessageTimer(event/* :Timer Event */)/* :void */ {

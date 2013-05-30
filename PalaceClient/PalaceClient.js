@@ -409,6 +409,7 @@ function PalaceClient() // extends EventDispatcher
         socket.flush();
     }
 
+    this.privateMessage = privateMessage;
     function privateMessage(message, userId) {
         if (!connected || message === null || message.length === 0) {
             return;
@@ -448,15 +449,14 @@ function PalaceClient() // extends EventDispatcher
             return;
         }
 
-        var selectedUserId = currentRoom.selectedUser ?
-            currentRoom.selectedUser.id : 0;
-
+        var selectedUserId = currentRoom.get_selectedUser() ?
+            currentRoom.get_selectedUser().id : 0;
         var chatRecord = new PalaceChatRecord(
             PalaceChatRecord.OUTCHAT,
             currentUser.id,
             selectedUserId,
             message,
-            currentRoom.selectedUser ? true : false
+            currentRoom.get_selectedUser() ? true : false
         );
         // todo:
         // chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_OUTCHAT);
