@@ -20,7 +20,7 @@ function startSocket() {
     socket.on('whisper', function (data) {
         console.log(data);
         var logWindow = $('#log');
-        logWindow.append('<b><em>' + data.user.name + ':</em></b> ' + data.chatText + '<br>');
+        logWindow.append('<em><b>' + data.user.name + ':</b> ' + data.chatText + '</em><br>');
         logWindow.animate({"scrollTop":$('#log')[0].scrollHeight}, "slow");
         showChatBubble(data.user, data.chatText, 'whisper');
     });
@@ -143,9 +143,9 @@ function moveUser(userId, x, y) {
 
 function showChatBubble(user, message, type) {
     var bubbleClass = 'bubble right';
-//        if (type == 'whisper') {
-//            message = '<em>'+message+'</em>';
-//        }
+        if (type == 'whisper') {
+            message = '<em>'+message+'</em>';
+        }
 //        if (message.search(/^:/) === 0) {
 //            bubbleClass = 'oval-thought';
 //        }
