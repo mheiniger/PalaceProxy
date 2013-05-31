@@ -59,7 +59,7 @@ var PalaceConfig =  require("./palace/model/PalaceConfig");
 var PalaceCurrentRoom = require("./palace/model/PalaceCurrentRoom");
 var PalaceHotspot = require("./palace/model/PalaceHotspot");
 var PalaceImageOverlay = require("./palace/model/PalaceImageOverlay");
-// var PalaceLooseProp = require("./palace/model/PalaceLooseProp");
+var PalaceLooseProp = require("./palace/model/PalaceLooseProp");
 // var PalaceProp = require("./palace/model/PalaceProp");
 // var PalacePropStore = require("./palace/model/PalacePropStore");
 var PalaceRoom = require("./palace/model/PalaceRoom");
@@ -125,8 +125,13 @@ function PalaceClient() // extends EventDispatcher
     var DLCAPS_FILES_HTTPSRVR = 0x00000100;
     var DLCAPS_EXTEND_PKT = 0x00000200;
 
+    // States
+    var STATE_DISCONNECTED = 0;
+    var STATE_HANDSHAKING = 1;
+    var STATE_READY = 2;
+
+
     var socket = null;
-    var webSocket = null;
 
 //    var accountClient = AccountServerClient.getInstance();
 
@@ -141,7 +146,7 @@ function PalaceClient() // extends EventDispatcher
     var waitingForMore = false;
 
 
-    var debugData;
+    var debugData = "";
     var utf8 = false;
     var port = 0;
     var host = null;
@@ -188,26 +193,22 @@ function PalaceClient() // extends EventDispatcher
     var temporaryUserFlags;
     // We get the user flags before we have the current user
 
-    function getUserName() {
+    that.getUserName = function() {
         return _userName;
-    }
+    };
 
-    function setUserName(newValue) {
+    that.setUserName = function(newValue) {
         if (newValue.length > 31) {
             newValue = newValue.slice(0, 31);
         }
         _userName = newValue;
         dispatchEvent(new Event('userNameChange'));
-    }
+    };
 
-    var get_mediaServer = this.get_mediaServer = function(){
+    this.get_mediaServer = function(){
         return mediaServer;
-    }
+    };
 
-    // States
-    var STATE_DISCONNECTED = 0;
-    var STATE_HANDSHAKING = 1;
-    var STATE_READY = 2;
 
 //    var getInstance = this.getInstance = function() {
 //        if (PalaceClient.instance == null) {
@@ -289,7 +290,7 @@ function PalaceClient() // extends EventDispatcher
         if (puidChanged) {
             trace("Server changed our puid and needs us to reconnect.");
             puidChanged = false;
-            connect(userName, host, port);
+            connect(that.getUserName(), host, port);
         }
     }
 
@@ -313,7 +314,7 @@ function PalaceClient() // extends EventDispatcher
         that.host = host;
         that.port = port;
         that.initialRoom = initialRoom;
-        that.userName = userName;
+        that.setUserName(userName);
 
         if (connected || (socket && socket.connected)) {
             disconnect();
@@ -381,13 +382,13 @@ function PalaceClient() // extends EventDispatcher
 
     this.changeName = changeName;
     function changeName(newName) {
-        this.userName = newName;
+        that.setUserName(newName);
         if (socket && socket.connected) {
             socket.writeInt(OutgoingMessageTypes.CHANGE_NAME);
-            socket.writeInt(this.userName.length + 1);
+            socket.writeInt(that.getUserName().length + 1);
             socket.writeInt(0);
-            socket.writeByte(this.userName.length);
-            socket.writeMultiByte(this.userName, 'Windows-1252');
+            socket.writeByte(that.getUserName().length);
+            socket.writeMultiByte(that.getUserName(), 'Windows-1252');
             socket.flush();
         }
     }
@@ -429,7 +430,7 @@ function PalaceClient() // extends EventDispatcher
         socket.flush();
     }
 
-    var say = this.say = function(message) {
+    this.say = function(message) {
         if (!connected || message === null || message.length === 0) {
             return;
         }
@@ -463,7 +464,7 @@ function PalaceClient() // extends EventDispatcher
         // chatRecord.eventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_OUTCHAT);
         chatQueue.push(chatRecord);
         processChatQueue();
-    }
+    };
 
     function globalMessage(message) {
         if (!connected || message === null || message.length === 0) {
@@ -473,7 +474,7 @@ function PalaceClient() // extends EventDispatcher
         if (message.length > 254) {
             message = message.substr(0, 254);
         }
-        trace("GLOBALMSG");
+        //trace("GLOBALMSG");
         var messageBytes = new ByteArray();
         messageBytes.writeMultiByte(message, "Windows-1252");
         messageBytes.position = 0;
@@ -583,7 +584,7 @@ function PalaceClient() // extends EventDispatcher
 
         currentUser.x = x;
         currentUser.y = y;
-    }
+    };
 
     function setFace(face) {
         if (!connected || currentUser.face == face) {
@@ -650,7 +651,7 @@ function PalaceClient() // extends EventDispatcher
         // leaveEventHandlers = palaceController.getHotspotEvents(IptEventHandler.TYPE_LEAVE);
         if (leaveEventHandlers) {
             for (var handler in leaveEventHandlers) {
-                handler.addEventListener(IptEngineEvent.FINISH, handleLeaveEventHandlersFinish);
+                //handler.addEventListener(IptEngineEvent.FINISH, handleLeaveEventHandlersFinish);
             }
             // todo:
             // palaceController.triggerHotspotEvents(IptEventHandler.TYPE_LEAVE);
@@ -908,17 +909,20 @@ function PalaceClient() // extends EventDispatcher
 
     function onSocketData(buffer) {
         trace("\nGot data: " + buffer.length + " bytes available");
-        if (socket.bufferedReadData) {
-            buffer = Buffer.concat([socket.bufferedReadData, buffer]);
-        }
+
         buffer.position = 0;
         buffer.endian = socket.endian;
+
+        if (socket.bufferedReadData) {
+            buffer = Buffer.concat([socket.bufferedReadData, buffer]);
+            buffer.position = socket.bufferedReadData.position;
+        }
         var size;
         var p;
 
 //			try {
-        var bufferLength = buffer.getLength();
-        while (bufferLength > 0) {
+//        var bufferLength = buffer.getLength();
+        while (buffer.getLength() > 0) {
 //                trace ('state: ' + state);
             if (state == STATE_HANDSHAKING) {
                 handshake(buffer);
@@ -1163,7 +1167,7 @@ function PalaceClient() // extends EventDispatcher
         trace("IO Error!");
         if (connecting) {
             var e = new PalaceEvent(PalaceEvent.CONNECT_FAILED);
-            e.text = "Unable to connect to " + host + ":" + port + ".\n(" + event.text + ")"
+            e.text = "Unable to connect to " + host + ":" + port + ".\n(" + event.text + ")";
             dispatchEvent(e);
         }
     }
@@ -1228,13 +1232,15 @@ function PalaceClient() // extends EventDispatcher
         // regCode counter 0xcf07309c;
         socket.writeInt(regCounter);  // Guest regCode counter
         // Username has to be Windows-1252 and up to 31 characters
-        if (that.userName.length > 31) {
-            that.userName = that.userName.slice(0, 31);
+        var userName = that.getUserName();
+        if (userName.length > 31) {
+            userName = userName.slice(0, 31);
         }
+        that.setUserName(userName);
 
-        socket.writeByte(that.userName.length);
-        socket.writeMultiByte(that.userName, 'Windows-1252');
-        i = 31 - (that.userName.length);
+        socket.writeByte(userName.length);
+        socket.writeMultiByte(userName, 'Windows-1252');
+        i = 31 - (userName.length);
         for (; i > 0; i--) {
             socket.writeByte(0);
         }
@@ -1354,7 +1360,7 @@ function PalaceClient() // extends EventDispatcher
         serverInfo = new PalaceServerInfo();
         //traceObj(serverInfo);
         serverInfo.permissions = buffer.readInt();
-        var size = Math.abs(buffer.readByte());
+        size = Math.abs(buffer.readByte());
         serverName = serverInfo.name = buffer.readMultiByte(size, 'Windows-1252');
 
         // Weird -- this message is supposed to include options,
@@ -1484,13 +1490,14 @@ function PalaceClient() // extends EventDispatcher
         //palaceController.clearAlarms();
         //palaceController.midiStop();
         currentRoom.clearStatusMessage();
-//        trace('size: ' + size);
+//        console.log('size: ' + size);
 //        trace('bufferlength' + buffer.length + 'bufferrest ' + (buffer.length - buffer.position));
         var messageBytes = new Buffer(size);
         messageBytes.position = 0;
-        //messageBytes.endian = socket.endian;
+        messageBytes.endian = socket.endian;
+//        trace("bufferposition: " + buffer.position);
         buffer.readBytes(messageBytes, 0, size);
-
+//        outputHexView(messageBytes);
         // FIXME: modularize this... but for now we don't need to decode
         // everything twice.
 //			var roomDescription:RoomDescription = new RoomDescription();
@@ -1501,7 +1508,9 @@ function PalaceClient() // extends EventDispatcher
         var roomFlags = messageBytes.readInt();
         var face = messageBytes.readInt();
         var roomID = messageBytes.readShort();
+//        trace("roomID: " + roomID);
         currentRoom.id = roomID;
+//        trace("roomnameOffset: " + roomNameOffset);
         var roomNameOffset = messageBytes.readShort();
 //        trace("roomnameOffset: " + roomNameOffset);
         var imageNameOffset = messageBytes.readShort();
@@ -1546,7 +1555,7 @@ function PalaceClient() // extends EventDispatcher
         }
         ba.position = 0;
         roomName = ba.readMultiByte(roomNameLength, 'Windows-1252');
-        trace('roomname: ' + roomName);
+//        trace('roomname: ' + roomName);
         // Image Name
         var imageNameLength = rb[imageNameOffset];
         var imageName = "";
@@ -1611,13 +1620,13 @@ function PalaceClient() // extends EventDispatcher
             hs.readData(socket.endian, rb, hotSpotOffset);
             hotSpotOffset += hs.size;
 
-            if (hs.layerAboveAvatars) {
+            if (hs.getLayerAboveAvatarsFlag()) {
                 currentRoom.hotSpotsAboveAvatars.addItem(hs);
             }
-            else if (hs.layerAboveNameTags) {
+            else if (hs.getLayerAboveNameTagsFlag()) {
                 currentRoom.hotSpotsAboveNametags.addItem(hs);
             }
-            else if (hs.layerAboveAll) {
+            else if (hs.getLayerAboveAllFlag()) {
                 currentRoom.hotSpotsAboveEverything.addItem(hs);
             }
             else {
