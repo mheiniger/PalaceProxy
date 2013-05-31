@@ -17,6 +17,7 @@
 
 var net = require('net');
 var util = require('util');
+require('./adapter/net/BufferModernizer');
 var BufferedSocket = require('./adapter/net/BufferedSocket');
 
 var Event = require('./adapter/events/Event');
@@ -908,10 +909,7 @@ function PalaceClient() // extends EventDispatcher
     function onSocketData(buffer) {
         trace("\nGot data: " + buffer.length + " bytes available");
         if (socket.bufferedReadData) {
-            var newBuffer = new Buffer(buffer.length + socket.bufferedReadData.length);
-            socket.bufferedReadData.copy(newBuffer, 0);
-            buffer.copy(newBuffer, socket.bufferedReadData.length);
-            buffer = newBuffer;
+            buffer = Buffer.concat([socket.bufferedReadData, buffer]);
         }
         buffer.position = 0;
         buffer.endian = socket.endian;
