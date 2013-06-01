@@ -11,12 +11,9 @@ process.on("uncaughtException", function (e) {
     console.log(e);
 });
 
-
-
-
 // handle normal files
 var app = http.createServer(palaceHandler);
-if (process.env.PORT) {
+if (process.env.PORT) { // needed in cloud9 environment
     app.listen(process.env.PORT);
 } else {
     app.listen(3000);    
@@ -40,10 +37,9 @@ function palaceHandler(req, res) {
         });
 }
 
-if (!process.env.PORT) {
+if (!process.env.PORT) { // can't open a second port in cloud9 environment
     var appMedia = http.createServer(mediaHandler);
     appMedia.listen(9990);
-    
 }
 
 function mediaHandler(req, res) {
