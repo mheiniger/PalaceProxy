@@ -11,12 +11,15 @@ process.on("uncaughtException", function (e) {
     console.log(e);
 });
 
-
-
-
 // handle normal files
 var app = http.createServer(palaceHandler);
-app.listen(3000);
+if (process.env.PORT) { // needed in cloud9 environment
+    app.listen(process.env.PORT);
+} else {
+    app.listen(3000);    
+}
+
+
 function palaceHandler(req, res) {
     var url = req.url;
     if (url == '/') {
@@ -34,25 +37,29 @@ function palaceHandler(req, res) {
         });
 }
 
-var appMedia = http.createServer(mediaHandler);
-appMedia.listen(9990);
-function mediaHandler(req, res) {
-    var url = req.url;
-    if (url.search(/^\/palace\/media\//) !== 0) {
-        res.writeHead(404);
-        res.end('file not found');
-    }
-    fs.readFile('/usr/local/palace' + url,
-        function (err, data) {
-            if (err) {
-                res.writeHead(500);
-                res.end('Error loading' + url);
-            }
-
-            res.writeHead(200);
-            res.end(data);
-        });
+if (!process.env.PORT) { // can't open a second port in cloud9 environment
+    var appMedia = http.createServer(mediaHandler);
+    appMedia.listen(9990);
 }
+
+function mediaHandler(req, res) {
+        var url = req.url;
+        if (url.search(/^\/palace\/media\//) !== 0) {
+            res.writeHead(404);
+            res.end('file not found');
+        }
+        fs.readFile('/usr/local/palace' + url,
+            function (err, data) {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error loading' + url);
+                }
+    
+                res.writeHead(200);
+                res.end(data);
+            });
+    }
+
 var appPalace = io.listen(app);
 appPalace.set('log level', 1);
 appPalace.sockets.on('connection', function (socket) {
