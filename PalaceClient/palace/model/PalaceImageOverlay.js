@@ -15,8 +15,6 @@
  along with OpenPalace.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//package net.codecomposer.palace.model
-//{
 var util = require('util');
 
 //	import flash.display.Bitmap;
@@ -30,6 +28,7 @@ var EventDispatcher = require("../../adapter/events/EventDispatcher");
 //	import flash.events.HTTPStatusEvent;
 //	import flash.events.IOErrorEvent;
 //	import flash.events.SecurityErrorEvent;
+var Point = require("./Point");
 //	import flash.geom.Point;
 //	import flash.net.URLRequest;
 
@@ -51,32 +50,30 @@ function PalaceImageOverlay() {
 
     var that = this;
 
-    var refCon = this.refCon/* :int */;
-    var id = this.id/* :int */;
-    var transparencyIndex = this.transparencyIndex/* :int */;
-    var name = this.name/* :String */;
-    this.filename/* :String */;
-    var mediaServer = this.mediaServer/* :String */;
+    this.refCon/* :int */ = 0;
+    this.id/* :int */ = 0;
+    this.transparencyIndex/* :int */ = 0;
+    this.name/* :String */ = "";
+    this.filename/* :String */ = "";
+    this.mediaServer/* :String */ = "";
 
     var filenameWithoutExtension/* :String */;
     var extensionsToTry/* :Array */;
     var _bitmapData/* :BitmapData */;
     var loader/* :Loader */;
 
-//		[Bindable(event="bitmapDataChange")]
-    var get_bitmapData = this.get_bitmapData = function ()/* :BitmapData */ {
+    this.get_bitmapData = function ()/* :BitmapData */ {
         return _bitmapData;
-    }
+    };
 
-//		[Bindable(event="bitmapDataChange")]
-    var get_bitmap = this.get_bitmap = function ()/* :FlexBitmap */ {
+    this.get_bitmap = function ()/* :FlexBitmap */ {
         if (_bitmapData) {
             return new FlexBitmap(_bitmapData, "auto", true);
         }
         return null;
-    }
+    };
 
-    var loadImage = this.loadImage = function ()/* :void */ {
+    this.loadImage = function ()/* :void */ {
         var match/* :Array */ = that.filename.match(/^(.*)\.(.*)$/);
         if (match && match[1]) {
             filenameWithoutExtension = match[1];
@@ -87,7 +84,7 @@ function PalaceImageOverlay() {
             extensionsToTry = null;
             loadFileName(that.filename);
         }
-    }
+    };
 
     function tryFormatFallback()/* :void */ {
         // null extensionsToTry means we've exhausted all possibilities
@@ -122,7 +119,7 @@ function PalaceImageOverlay() {
     function processTransparency(bitmapData/* :BitmapData */)/* :void */ {
         var transparencyColor/* :uint */ = 0;
         var preExistingTransparency/* :Boolean */ = false;
-        trace(that.filename + ": Already Transparent: " + (bitmapData.transparent ? "true" : "false") + " - transparencyIndex: " + transparencyIndex);
+        trace(that.filename + ": Already Transparent: " + (bitmapData.transparent ? "true" : "false") + " - transparencyIndex: " + that.transparencyIndex);
 
         if (!bitmapData.transparent) {
             var newBd/* :BitmapData */ = new BitmapData(bitmapData.width, bitmapData.height, true, 0x00000000);
@@ -142,9 +139,9 @@ function PalaceImageOverlay() {
             trace("Pixel scan found transparency: " + preExistingTransparency);
         }
 
-        if (transparencyIndex > -1 && !preExistingTransparency) {
+        if (that.transparencyIndex > -1 && !preExistingTransparency) {
             // Transparency index of -1 means "no transparency"
-            if (transparencyIndex > 0) {
+            if (that.transparencyIndex > 0) {
                 // process transparency color from Palace
                 // Palette Index Lookup
                 transparencyColor = PalacePalette.imageClutARGB[transparencyIndex];
