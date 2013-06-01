@@ -34,6 +34,7 @@ function extendSocket(socket) {
         this.writeBufferPos += 4;
         //socket.write(buffer);
     };
+    socket.writeUnsignedInt = socket.writeInt;
 
     socket.writeByte = function (data) {
 //            var buffer = new Buffer(1);
@@ -152,7 +153,7 @@ function extendBuffer(socket) {
 //            trace('position: ' + this.position);
         //outBuffer = new Buffer(end - start);
         this.copy(outBuffer, 0, this.position + start, this.position + end);
-        this.position = this.position + end;
+        this.position = this.position + end - start;
         //console.log(outBuffer);
     };
 
@@ -163,7 +164,6 @@ function extendBuffer(socket) {
         var tmpBuffer = new Buffer(stringLength);
         this.copy(tmpBuffer, 0, this.position, this.position + stringLength);
         var value = encoding.convert(tmpBuffer, 'utf-8', charset).toString('utf-8');
-        ;
 
         //var valueHex = this.toString('hex', this.position, this.position + length );
         //console.log("multibyte-length " +length + ", string: " + value + ", hex: " + valueHex);

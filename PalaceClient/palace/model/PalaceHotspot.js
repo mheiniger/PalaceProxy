@@ -83,147 +83,138 @@ function PalaceHotspot() //extends EventDispatcher
 {
     PalaceHotspot.super_.call(this);
 
+    var that = this;
+
     // Hotspot records are 48 bytes
     this.size/* :int */ = size;
 
-    var type = this.type/* :int */ = 0;
-    var dest = this.dest/* :int */ = 0;
+    this.type/* :int */ = 0;
+    this.dest/* :int */ = 0;
     var _id/* :int */ = 0;
     var _flags/* :int */ = 0;
-    var state = this.state/* :int */ = 0;
-    var numStates = this.numStates/* :int */ = 0;
-    var polygon = this.polygon/* :Array */ = []; // Array of points
+    this.state/* :int */ = 0;
+    this.numStates/* :int */ = 0;
+    this.polygon/* :Array */ = []; // Array of points
     var _name/* :String */ = null;
-    var location = this.location/* :FlexPoint */;
-    var scriptEventMask = this.scriptEventMask/* :int */ = 0;
-    var nbrScripts = this.nbrScripts/* :int */ = 0;
-    var scriptString = this.scriptString/* :String */ = "";
-    var scriptCursor = this.scriptCursor/* :int */ = 0;
+    this.location/* :FlexPoint */ = null;
+    this.scriptEventMask/* :int */ = 0;
+    this.nbrScripts/* :int */ = 0;
+    this.scriptString/* :String */ = "";
+    this.scriptCursor/* :int */ = 0;
     var ungetFlag/* :Boolean */ = false;
     var gToken/* :String */;
-    var secureInfo = this.secureInfo/* :int */;
-    var refCon = this.refCon/* :int */;
-    var groupId = this.groupId/* :int */;
-    var scriptRecordOffset = this.scriptRecordOffset/* :int */;
-    var states = this.states/* :Array Collection */ = new ArrayCollection();
-    var eventHandlers = this.eventHandlers = [];
+    this.secureInfo/* :int */ = 0;
+    this.refCon/* :int */ = 0;
+    this.groupId/* :int */ = 0;
+    this.scriptRecordOffset/* :int */ = 0;
+    this.states/* :Array Collection */ = new ArrayCollection();
+    this.eventHandlers = [];
 
 //		[Bindable('idChanged')]
-    var set_id = this.set_id = function (newValue/* :int */)/* :void */ {
+    this.setId = function (newValue/* :int */)/* :void */ {
         if (_id != newValue) {
             _id = newValue;
             dispatchEvent(new Event('idChanged'));
         }
-    }
-    var get_id = this.get_id = function ()/* :int */ {
+    };
+    this.getId = function ()/* :int */ {
         return _id;
-    }
+    };
 
-//		[Bindable('nameChanged')]
-    var set_name = this.set_name = function (newValue/* :String */)/* :void */ {
+    this.setName = function (newValue/* :String */)/* :void */ {
         if (_name != newValue) {
             _name = newValue;
             dispatchEvent(new Event('nameChanged'));
         }
-    }
-    var get_name = this.get_name = function ()/* :String */ {
-        return _name;
-    }
+    };
 
-//		[Bindable('flagsChanged')]
-    var set_flags = this.set_flags = function (newValue/* :int */)/* :void */ {
+    this.getName = function ()/* :String */ {
+        return _name;
+    };
+
+    this.setFlags = function (newValue/* :int */)/* :void */ {
         _flags = newValue;
         dispatchEvent(new Event('flagsChanged'));
-    }
-    var get_flags = this.get_flags = function ()/* :int */ {
-        return _flags;
-    }
+    };
 
-    var get_label = this.get_label = function ()/* :String */ {
+    this.getFlags = function ()/* :int */ {
+        return _flags;
+    };
+
+    this.getLabel = function ()/* :String */ {
         var string/* :String */ = "id " + id.toString() + ": ";
-        string += (name) ? name : "(no name)";
+        string += (that.getName()) ? that.getName() : "(no name)";
 //			trace(string);
         return string;
-    }
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_showName = this.get_showName = function ()/* :Boolean */ {
-        return Boolean(flags & FLAG_SHOW_NAME);
-    }
+    this.getShowNameFlag = function ()/* :Boolean */ {
+        return Boolean(that.getFlags() & FLAG_SHOW_NAME);
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_dontMoveHere = this.get_dontMoveHere = function ()/* :Boolean */ {
-        return Boolean(flags & FLAG_DONT_MOVE_HERE);
-    }
+    this.getDontMoveHereFlag = function ()/* :Boolean */ {
+        return Boolean(that.getFlags() & FLAG_DONT_MOVE_HERE);
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_draggable = this.get_draggable = function ()/* :Boolean */ {
-        return Boolean(flags & FLAG_DRAGGABLE);
-    }
+    this.getDraggableFlag = function ()/* :Boolean */ {
+        return Boolean(that.getFlags() & FLAG_DRAGGABLE);
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_drawFrame = this.get_drawFrame = function ()/* :Boolean */ {
-        return Boolean(flags & FLAG_DRAW_FRAME);
-    }
+    this.getDrawFrameFlag = function ()/* :Boolean */ {
+        return Boolean(that.getFlags() & FLAG_DRAW_FRAME);
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_shadow = this.get_shadow = function ()/* :Boolean */ {
-        return Boolean(flags & FLAG_SHADOW);
-    }
+    this.getShadowFlag = function ()/* :Boolean */ {
+        return Boolean(that.getFlags() & FLAG_SHADOW);
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_fill = this.get_fill = function ()/* :Boolean */ {
-        return Boolean(flags & FLAG_FILL);
-    }
+    this.getFillFlag = function ()/* :Boolean */ {
+        return Boolean(that.getFlags() & FLAG_FILL);
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_invisible = this.get_invisible = function ()/* :Boolean */ {
-        return Boolean(flags & FLAG_INVISIBLE);
-    }
+    this.getInvisibleFlag = function ()/* :Boolean */ {
+        return Boolean(that.getFlags() & FLAG_INVISIBLE);
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_layerAboveAll = this.get_layerAboveAll = function ()/* :Boolean */ {
-        return draggable;
-    }
+    this.getLayerAboveAllFlag = function ()/* :Boolean */ {
+        return that.getDraggableFlag();
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_layerAboveAvatars = this.get_layerAboveAvatars = function ()/* :Boolean */ {
-        return invisible;
-    }
+    this.getLayerAboveAvatarsFlag = function ()/* :Boolean */ {
+        return that.getInvisibleFlag();
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_layerAboveNameTags = this.get_layerAboveNameTags = function ()/* :Boolean */ {
-        return fill;
-    }
+    this.getLayerAboveNameTagsFlag = function ()/* :Boolean */ {
+        return that.getFillFlag();
+    };
 
-//		[Bindable('flagsChanged')]
-    var get_layerNormal = this.get_layerNormal = function ()/* :Boolean */ {
-        return (!draggable && !invisible && !fill);
-    }
+    this.getLayerNormalFlag = function ()/* :Boolean */ {
+        return (!that.getDraggableFlag() && !that.getInvisibleFlag() && !that.getFillFlag());
+    };
 
-    var get_isDoor = this.get_isDoor = function ()/* :Boolean */ {
-        return Boolean(type == TYPE_PASSAGE ||
-            type == TYPE_LOCKABLE_DOOR ||
-            type == TYPE_SHUTABLE_DOOR);
-    }
+    this.getIsDoorFlag = function ()/* :Boolean */ {
+        return Boolean(that.type == TYPE_PASSAGE ||
+            that.type == TYPE_LOCKABLE_DOOR ||
+            that.type == TYPE_SHUTABLE_DOOR);
+    };
 
-    var changeState = this.changeState = function (newState/* :int */)/* :void */ {
-        var previousState/* :int */ = state;
-        if (newState != state) {
-            state = newState;
+    this.changeState = function (newState/* :int */)/* :void */ {
+        var previousState/* :int */ = that.state;
+        if (newState != that.state) {
+            that.state = newState;
         }
         var event/* :HotspotEvent */ = new HotspotEvent(HotspotEvent.STATE_CHANGED);
         event.state = state;
         event.previousState = previousState;
         dispatchEvent(event);
-    }
+    };
 
-    var movePicForState = this.movePicForState = function (stateId/* :int */, x/* :int */, y/* :int */)/* :void */ {
+    this.movePicForState = function (stateId/* :int */, x/* :int */, y/* :int */)/* :void */ {
         try {
             if (stateId < 0) {
-                stateId = this.state;
+                stateId = that.state;
             }
-            var stateObj/* :PalaceHotspotState */ = PalaceHotspotState(states.getItemAt(stateId));
+            var stateObj/* :PalaceHotspotState */ = PalaceHotspotState(that.states.getItemAt(stateId));
             stateObj.x = x;
             stateObj.y = y;
             var event/* :HotspotEvent */ = new HotspotEvent(HotspotEvent.MOVED);
@@ -232,19 +223,19 @@ function PalaceHotspot() //extends EventDispatcher
         catch (e/* :Error */) {
             // do nothing.
         }
-    }
+    };
 
-    var movePicTo = this.movePicTo = function (x/* :int */, y/* :int */)/* :void */ {
-        movePicForState(this.state, x, y);
-    }
+    this.movePicTo = function (x/* :int */, y/* :int */)/* :void */ {
+        that.movePicForState(that.state, x, y);
+    };
 
-    var setStateOpacity = this.setStateOpacity = function (state/* :int */, opacity/* :Number = 1*/)/* :void */ {
+    this.setStateOpacity = function (state/* :int */, opacity/* :Number = 1*/)/* :void */ {
         opacity = opacity || 1;
         try {
             if (state < 0) {
-                state = this.state;
+                state = that.state;
             }
-            var stateObj/* :PalaceHotspotState */ = PalaceHotspotState(states.getItemAt(state));
+            var stateObj/* :PalaceHotspotState */ = PalaceHotspotState(that.states.getItemAt(state));
             if (stateObj) {
                 stateObj.opacity = opacity;
                 var event/* :HotspotEvent */ = new HotspotEvent(HotspotEvent.OPACITY_CHANGED);
@@ -255,22 +246,23 @@ function PalaceHotspot() //extends EventDispatcher
         catch (e/* :Error */) {
             // do nothing.
         }
-    }
+    };
 
-    var moveTo = this.moveTo = function (x/* :int */, y/* :int */)/* :void */ {
-        location.x = x;
-        location.y = y;
+    this.moveTo = function (x/* :int */, y/* :int */)/* :void */ {
+        that.location.x = x;
+        that.location.y = y;
         var event/* :HotspotEvent */ = new HotspotEvent(HotspotEvent.MOVED);
         dispatchEvent(event);
-    }
+    };
 
     function trace(text) {
         console.log(text);
     }
 
-    var readData = this.readData = function (endian/* :String */, roomBytes/* :Array */, offset/* :int */)/* :void */ {
-//			trace("Hotspot offset " + offset);
-        location = new FlexPoint();
+    this.readData = function (endian/* :String */, roomBytes/* :Array */, offset/* :int */)/* :void */ {
+
+			trace("Hotspot offset " + offset);
+        that.location = new FlexPoint();
 
         var ba/* :ByteArray */ = new ByteArray(size + 1);
         for (var j/* :int */ = offset; j < offset + size; j++) {
@@ -279,26 +271,27 @@ function PalaceHotspot() //extends EventDispatcher
         ba.position = 0;
         ba.endian = endian;
 //        outputHexView(ba);
-        scriptEventMask = ba.readInt();
-        flags = ba.readInt();
+        that.scriptEventMask = ba.readInt();
+        that.setFlags(ba.readInt());
 //			trace("Hotspot Flags: 0x" + flags.toString(16));
-        secureInfo = ba.readInt();
-        refCon = ba.readInt();
-        location.y = ba.readShort();
-        location.x = ba.readShort();
-//			trace("Location X: " + location.x + " - Location Y: " + location.y);
-        id = ba.readShort();
-        dest = ba.readShort();
+        that.secureInfo = ba.readInt();
+        that.refCon = ba.readInt();
+        trace('set location');
+        that.location.y = ba.readShort();
+        that.location.x = ba.readShort();
+//			trace("Location X: " + that.location.x + " - Location Y: " + that.location.y);
+        that.id = ba.readShort();
+        that.dest = ba.readShort();
         var numPoints/* :int */ = ba.readShort();
 //			trace("Number points: " + numPoints);
         var pointsOffset/* :int */ = ba.readShort();
 //			trace("Points offset: " + pointsOffset);
-        type = ba.readShort();
-        groupId = ba.readShort();
-        nbrScripts = ba.readShort();
-        scriptRecordOffset = ba.readShort();
+        that.type = ba.readShort();
+        that.groupId = ba.readShort();
+        that.nbrScripts = ba.readShort();
+        that.scriptRecordOffset = ba.readShort();
         state = ba.readShort();
-        numStates = ba.readShort();
+        that.numStates = ba.readShort();
         var stateRecordOffset/* :int */ = ba.readShort();
         var nameOffset/* :int */ = ba.readShort();
         var scriptTextOffset/* :int */ = ba.readShort();
@@ -311,10 +304,12 @@ function PalaceHotspot() //extends EventDispatcher
                 nameByteArray.writeByte(roomBytes[a]);
             }
             nameByteArray.position = 0;
-            name = nameByteArray.readMultiByte(nameLength, 'Windows-1252');
+
+            var name = nameByteArray.readMultiByte(nameLength, 'Windows-1252');
+            that.setName(name);
         }
         else {
-            name = "";
+            that.setName("");
         }
         //trace("Hotspot name: " + name);
 
@@ -355,30 +350,30 @@ function PalaceHotspot() //extends EventDispatcher
             var y/* :int */ = ba.readShort();
             var x/* :int */ = ba.readShort();
 //            trace("----- X: " + x + " (" + (x).toString(16) + ")    Y: " + y + "(" + (y).toString(16) +")");
-            polygon.push(new Point(x, y));
+            that.polygon.push(new Point(x, y));
         }
 
         // Get States
-        states.removeAll();
+        that.states.removeAll();
         var stateOffset/* :int */ = stateRecordOffset;
-        for (i = 0; i < numStates; i++) {
+        for (i = 0; i < that.numStates; i++) {
             var state/* :PalaceHotspotState */ = new PalaceHotspotState();
             state.readData(endian, roomBytes, stateOffset);
             stateOffset += PalaceHotspotState.size;
-            states.addItem(state);
+            that.states.addItem(state);
         }
 
         //	trace("Got new hotspot: " + id + " - DestID: " + dest + " - name: '" + name + "' - PointCount: " + numPoints);
-    }
+    };
 
-    var hasEventHandler = this.hasEventHandler = function (eventType/* :int */)/* :Boolean */ {
-        return (nbrScripts > 0 && (scriptEventMask & 1 << eventType) != 0);
-    }
+    this.hasEventHandler = function (eventType/* :int */)/* :Boolean */ {
+        return (that.nbrScripts > 0 && (that.scriptEventMask & 1 << eventType) != 0);
+    };
 
-    var getEventHandler = this.getEventHandler = function (eventType/* :int */)/* :IptTokenList */ {
-        if (nbrScripts > 0 && (scriptEventMask & 1 << eventType) != 0) {
-            for (var i/* :int */ = 0; i < nbrScripts; i++) {
-                var eventHandler/* :IptEventHandler */ = eventHandlers[i];
+    this.getEventHandler = function (eventType/* :int */)/* :IptTokenList */ {
+        if (that.nbrScripts > 0 && (that.scriptEventMask & 1 << eventType) != 0) {
+            for (var i/* :int */ = 0; i < that.nbrScripts; i++) {
+                var eventHandler/* :IptEventHandler */ = that.eventHandlers[i];
                 if (eventHandler.eventType == eventType) {
                     return eventHandler.tokenList;
                 }
@@ -386,7 +381,7 @@ function PalaceHotspot() //extends EventDispatcher
 
         }
         return null;
-    }
+    };
 
     function outputHexView(bytes) {
         var output = "";
@@ -426,11 +421,11 @@ function PalaceHotspot() //extends EventDispatcher
         trace(output);
     }
 
-    var loadScripts = this.loadScripts = function ()/* :void */ {
+    this.loadScripts = function ()/* :void */ {
         return; // TODO: send scripts to client
-        nbrScripts = 0;
-        scriptEventMask = 0;
-        if (scriptString) {
+        that.nbrScripts = 0;
+        that.scriptEventMask = 0;
+        if (that.scriptString) {
 //				trace("Hotspot " + id + " name: " + name + " script:\n" + scriptString);
 
             var manager/* :PalaceIptManager */ = PalaceClient.getInstance().palaceController.scriptManager;
@@ -441,11 +436,16 @@ function PalaceHotspot() //extends EventDispatcher
                 var eventType/* :int */ = IptEventHandler.getEventType(eventName)
                 var eventHandler/* :IptEventHandler */ =
                     new IptEventHandler(eventType, handler.sourceScript, handler);
-                eventHandlers.push(eventHandler);
+                that.eventHandlers.push(eventHandler);
 //					trace("Got event handler.  Type: " + eventHandler.eventType + " Script: \n" + eventHandler.script);
-                nbrScripts++;
-                scriptEventMask |= (1 << eventType);
+                that.nbrScripts++;
+                that.scriptEventMask |= (1 << eventType);
             }
         }
+    };
+
+    function dispatchEvent(object) {
+        trace("dispatch event: " + object.type);
+        that.dispatchEvent(object.type, object);
     }
 }
