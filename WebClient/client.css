@@ -25,6 +25,27 @@ body {
     overflow: hidden;
 }
 
+#notification-area {
+    float: left;
+    clear: both;
+    height: 20px;
+    background-color: lightblue;
+    border: 1px solid cornflowerblue;
+    border-radius: 3px;
+    padding: 1px 2px;
+    margin: 1px;
+}
+
+#notification-area a {
+    text-decoration: none;
+    border: 1px solid darkblue;
+    border-radius: 10px;
+    font-size: 14px;
+    padding: 0px 5px 1px 5px;
+    margin-left: 5px;
+    margin-right: 3px;
+}
+
 #log-window {
     margin: 5px 0 0 5px;
     border: 1px solid silver;

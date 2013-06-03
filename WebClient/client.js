@@ -87,6 +87,10 @@ $("#room-image").click(function (e) {
     moveUser(me.id, x, y);
 });
 
+$("#notification-area").click(function(e) {
+   stopWhispering();
+});
+
 $('#input').on('keypress', function (e) {
     if (!e) e = window.event;
     if (e.keyCode == '13') {
@@ -218,14 +222,12 @@ function setUserName(id, name) {
 function handleClickOnUser(user) {
     // clicking on yourself stops whispering
     if (user.id === me.id) {
-        me.isWhispering = false;
-        setUsersToSolid(users);
+        stopWhispering();
     } else {
 //        alert('you clicked on ' + user.name);
         // clicking on a person you're already whispering with stops whispering
         if (me.isWhispering && me.isWhisperingTo == user.id){
-            me.isWhipering = false;
-            setUsersToSolid(users);
+            stopWhispering();
         } else {
             setUsersToTransparent(users);
             var whisperingUsers = {};
@@ -234,8 +236,15 @@ function handleClickOnUser(user) {
             setUsersToSolid(whisperingUsers);
             me.isWhispering = true;
             me.isWhisperingTo = user.id;
+            $('#notification-area').html('Whispering to: ' + user.name + '<a href="#">x</a>');
         }
     }
+}
+
+function stopWhispering() {
+    setUsersToSolid(users);
+    $('#notification-area').html('');
+    me.isWhispering = false;
 }
 
 function setUsersToSolid(users){
