@@ -43,7 +43,7 @@ function startSocket() {
 
     socket.on('serverInfoChanged', function(data){
         var serverName = data.serverInfo.name;
-        $('palace-name').html(serverName);
+        $('#palace-name').html(serverName);
     });
 
     socket.on('userEntered', function (data) {
@@ -121,6 +121,7 @@ $('#logout').on('click', function () {
 function clearStage() {
     $('.userDiv').remove();
     $('#room-name').html('');
+    $('#palace-name').html('');
     var roomImage = $('#room-image');
     roomImage.attr('src', 'assets/images/start-screen.png');
 }
