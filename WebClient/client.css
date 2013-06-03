@@ -1,5 +1,6 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    /*font-family: Arial, Helvetica, sans-serif;*/
+    padding-top: 50px;
 }
 
 #room-window {
@@ -26,6 +27,7 @@ body {
 }
 
 #notification-area {
+    visibility: hidden;
     float: left;
     clear: both;
     height: 20px;
@@ -37,13 +39,13 @@ body {
 }
 
 #notification-area a {
-    text-decoration: none;
-    border: 1px solid darkblue;
-    border-radius: 10px;
-    font-size: 14px;
-    padding: 0px 5px 1px 5px;
-    margin-left: 5px;
-    margin-right: 3px;
+    /*text-decoration: none;*/
+    /*float: right;*/
+    /*font-size: 14px;*/
+    /*font-weight: bolder;*/
+    /*padding: 0px 5px 1px 5px;*/
+    margin-left: 10px;
+    /*margin-right: 3px;*/
 }
 
 #log-window {
@@ -60,7 +62,8 @@ body {
 }
 
 #input {
-    width: 512px;
+    width: 490px;
+    margin: 0 4px 4px 4px;
     height: 50px;
     background-color: #eeeeee;
     float: left;
@@ -71,8 +74,8 @@ body {
     position: absolute;
     z-index: 12;
     top: 200px;
-    left: 50px;
-    right: 50px;
+    left: 100px;
+    width: 300px;
     border: 1px solid silver;
     text-align: center;
     padding: 10px;
@@ -87,9 +90,6 @@ body {
     border-bottom: 1px solid black;
 }
 
-body {
-    margin: 0px;
-}
 
 .userDiv {
     margin: 0;

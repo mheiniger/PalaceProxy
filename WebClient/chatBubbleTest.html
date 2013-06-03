@@ -1,26 +1,36 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>ChatBubbleTest</title>
-    <script src="jquery-1.9.1.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link type="text/css" rel="stylesheet" href="client.css">
 </head>
 <body>
-<div id="room-window">
-    <div id="room-title">
-        Room-Name: <span id="room-name"></span>
+<div id="navigation">
+    <button id="login">login</button>
+    <button id="logout">logout</button>
+    <span id="palace-name"></span>
+</div>
+<div class="container">
+    <div id="room-window">
+        <div id="room-title">
+            Room-Name: <span id="room-name"></span>
+        </div>
+        <div id="room-stage">
+            <img id="room-image" src="assets/images/start-screen.png">
+        </div>
+        <div id="notification-area">Notification text<a href="">x</a></div>
+        <textarea id="input"></textarea>
     </div>
-    <div id="room-stage">
-        <img id="room-image" src="assets/images/start-screen.png">
-    </div>
-    <div id="notification-area">Notification text<a href="">x</a></div>
-    <textarea id="input"></textarea>
 </div>
 
-
+<script src="jquery-1.9.1.js"></script>
+<script src="js/bootstrap.min.js"></script>
 <script src="client.js"></script>
 <script type="text/javascript">
     var data = {
-        user : {
+        user: {
             x: 250,
             y: 250,
             id: 1,

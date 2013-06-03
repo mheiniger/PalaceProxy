@@ -1,41 +1,71 @@
+<!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>Concept of Web-Palaceclient</title>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="jquery-1.9.1.js"></script>
-    <link type="text/css" rel="stylesheet" href="client.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="client.css" rel="stylesheet">
+
 </head>
 <body>
-<div id="navigation">
-    <button id="login">login</button>
-    <button id="logout">logout</button>
-    <span id="palace-name"></span>
-</div>
-<div id="room-window">
-    <div id="room-title">
-        Room-Name: <span id="room-name"></span>
-    </div>
-    <div id="room-stage">
-        <img id="room-image" src="assets/images/start-screen.png">
 
-        <div id="login-box">
-            <label>User name:<input type="text" id="user-name" value="JSPAL-Test"></label><br/>
-            <label>Address:<input type="text" id="palace-address" value="localhost"></label>
-            <label>Port:<input type="text" id="palace-port" value="9998" size="4"></label>
-            <button id="connect">Connect</button>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="#" onclick="return false;">JS-Palace</a>
+            <ul class="nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Palaces
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="disabled"><a tabindex="-1" href="#">localhost</a></li>
+                        <li class="disabled"><a tabindex="-1" href="#">creationgroup</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <button id="login" class="btn btn-small btn-primary">login</button>
+            <button id="logout" class="btn btn-small">logout</button>
+            <span id="palace-name" class="text-center"></span>
         </div>
     </div>
-    <div id="notification-area"></div>
-    <textarea id="input"></textarea>
 </div>
 
-<div style="float: left;" id="log-window">Log<br>
+<div class="container">
+    <div id="room-window">
+        <div id="room-title">
+            Room-Name: <span id="room-name"></span>
+        </div>
+        <div id="room-stage">
+            <img id="room-image" src="assets/images/start-screen.png">
 
-    <div id="log"></div>
+            <form id="login-box">
+                <fieldset>
+                    <div style="text-align: right">
+                        <label>User name: <input type="text" id="user-name" value="JSPAL-Test"></label>
+                        <label>Address: <input type="text" id="palace-address" value="localhost"></label>
+                        <label>Port: <input type="text" id="palace-port" value="9998" size="4"></label>
+                    </div>
+                    <button id="connect" class="btn btn-success" onclick="return false;">Connect</button>
+                </fieldset>
+            </form>
+        </div>
+        <div id="notification-area"></div>
+        <textarea id="input"></textarea>
+    </div>
+    <div style="float: left;" id="log-window">Log<br>
+
+        <div id="log"></div>
+    </div>
 </div>
-
+<script src="jquery-1.9.1.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
 <script type="text/javascript">startSocket();</script>
 </body>
 </html>
-
+</body>
+</html>

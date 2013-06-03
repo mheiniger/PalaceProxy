@@ -236,14 +236,14 @@ function handleClickOnUser(user) {
             setUsersToSolid(whisperingUsers);
             me.isWhispering = true;
             me.isWhisperingTo = user.id;
-            $('#notification-area').html('Whispering to: ' + user.name + '<a href="#">x</a>');
+            $('#notification-area').html('Whispering to: ' + user.name + '<a class="close" href="#">&times;</a>').css('visibility', 'visible');
         }
     }
 }
 
 function stopWhispering() {
     setUsersToSolid(users);
-    $('#notification-area').html('');
+    $('#notification-area').html('').css('visibility', 'hidden');
     me.isWhispering = false;
 }
 
