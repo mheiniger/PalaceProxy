@@ -40,6 +40,12 @@ function startSocket() {
         roomName.html(roomData.name);
         $('.userDiv').remove();
     });
+
+    socket.on('serverInfoChanged', function(data){
+        var serverName = data.serverInfo.name;
+        $('palace-name').html(serverName);
+    });
+
     socket.on('userEntered', function (data) {
         users[data.user.id] = data.user;
         if (data.user.isSelf === true) {
