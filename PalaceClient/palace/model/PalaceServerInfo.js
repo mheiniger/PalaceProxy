@@ -23,7 +23,7 @@
 function PalaceServerInfo()
 {
     this.constants = {};
-    var name = this.name/* :String */;
+    this.name/* :String */;
     var _permissions = this._permissions/* :int */ = 0;
     var _options = this._options/* :uint */ = 0;
     var _uploadCapabilities = this._uploadCapabilities/* :uint */ = 0;
@@ -170,6 +170,6 @@ function PalaceServerInfo()
 
 module.exports = PalaceServerInfo;
 var PalaceServerInfoVar = new PalaceServerInfo();
-for (name in PalaceServerInfoVar.constants) {
+for (var name in PalaceServerInfoVar.constants) {
     module.exports[name] = PalaceServerInfoVar.constants[name];
 }

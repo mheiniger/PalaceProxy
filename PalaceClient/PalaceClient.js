@@ -1368,7 +1368,10 @@ function PalaceClient() // extends EventDispatcher
 //			serverInfo.options = buffer.readUnsignedInt();
 //			serverInfo.uploadCapabilities = buffer.readUnsignedInt();
 //			serverInfo.downloadCapabilities = buffer.readUnsignedInt();
-			//trace("Server name: " + serverName);
+			trace("Server name: " + serverName + " " + serverInfo.name);
+        var serverInfoEvent = new PalaceEvent(PalaceEvent.SERVER_INFO_CHANGED);
+        serverInfoEvent.serverInfo = serverInfo;
+        dispatchEvent(serverInfoEvent);
     }
 
     function handleAuthenticate(size, referenceId) {
