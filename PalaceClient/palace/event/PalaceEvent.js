@@ -2,6 +2,7 @@ var util = require("util");
 var Event = require("./../../adapter/events/Event.js"); //	import flash.events.Event;
 
 module.exports = PalaceEvent;
+module.exports.SERVER_INFO_CHANGED = "serverInfoChanged";
 module.exports.ROOM_CHANGED /* :String */ = "roomChanged";
 
 module.exports.CONNECT_START/* :String */ = "connectStart";

@@ -95,6 +95,9 @@ appPalace.sockets.on('connection', function (socket) {
         palaceClient.currentRoom.on('faceChanged', function (user) {
             socket.emit('faceChanged', user);
         });
+        palaceClient.on(PalaceEvent.SERVER_INFO_CHANGED, function(event){
+           socket.emit(PalaceEvent.SERVER_INFO_CHANGED, event);
+        });
 
     });
 
