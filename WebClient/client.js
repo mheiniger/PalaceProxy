@@ -26,6 +26,20 @@ function startSocket() {
         });
     });
 
+    socket.on('userList', function (data) {
+        var userList = $('#user-list');
+        var users = data.data;
+
+        for (var i = 0; i < users.length; i++) {
+            userList.append('<option value="' + users[i].id + '">' + users[i].name + '</option>' + '<br>');
+        }
+
+        userList.on('change', function (event) {
+            var userId = $("#user-list option:selected").val();
+            socket.emit('gotoRoomByUser', { 'userId': userId });
+        });
+    });
+
     socket.on('chat', function (data) {
         console.log(data);
         var logWindow = $('#log');
@@ -33,6 +47,7 @@ function startSocket() {
         logWindow.animate({"scrollTop":$('#log')[0].scrollHeight}, "slow");
         showChatBubble(data.user, data.chatText, 'chat');
     });
+
     socket.on('whisper', function (data) {
         console.log(data);
         var logWindow = $('#log');
@@ -40,9 +55,11 @@ function startSocket() {
         logWindow.animate({"scrollTop":$('#log')[0].scrollHeight}, "slow");
         showChatBubble(data.user, data.chatText, 'whisper');
     });
+
     socket.on('dev-log', function (data) {
         console.log(data);
     });
+
     socket.on('connectComplete', function () {
         $('#login-box').hide(1000);
     });
