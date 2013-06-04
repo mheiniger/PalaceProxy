@@ -193,7 +193,12 @@ function PalaceClient() // extends EventDispatcher
     var temporaryUserFlags;
     // We get the user flags before we have the current user
 
-    that.getUserName = function() {
+    this.getRoomList = getRoomList;
+    function getRoomList() {
+        return roomList;
+    }
+
+    that.getUserName = function getUserName() {
         return _userName;
     };
 
@@ -1813,6 +1818,9 @@ function PalaceClient() // extends EventDispatcher
             roomList.addItem(room);
             roomById[room.id] = room;
         }
+
+        var roomListEvent = new Event('roomList');
+        dispatchEvent(roomListEvent);
 //			trace("There are " + roomCount + " rooms in this palace.");
     }
 
