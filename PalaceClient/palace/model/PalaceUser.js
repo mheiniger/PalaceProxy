@@ -193,21 +193,21 @@ function PalaceUser()
 
     this.loadProps = function ()/* :void */ {
 // todo mhe: later
-//			var i/* :int */ = 0;
-//			var prop/* :PalaceProp */;
-//			for (i=0; i < that.props.length; i++) {
-//				prop = PalaceProp(that.props.getItemAt(i));
-//				prop.removeEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
-//			}
-//			that.props.removeAll();
-//			for (i = 0; i < that.propCount; i ++) {
-//				prop = that.propStore.getProp(null, that.propIds[i], that.propCrcs[i]);
-//				if (!prop.ready) {
-//					prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
-//				}
-//				that.props.addItem(prop);
-//			}
-//			checkFaceProps();
+			var i/* :int */ = 0;
+			var prop/* :PalaceProp */;
+			for (i=0; i < that.props.length; i++) {
+				prop = PalaceProp(that.props.getItemAt(i));
+				prop.removeEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
+			}
+			that.props.removeAll();
+			for (i = 0; i < that.propCount; i ++) {
+				prop = that.propStore.getProp(null, that.propIds[i], that.propCrcs[i]);
+				if (!prop.ready) {
+					prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
+				}
+				that.props.addItem(prop);
+			}
+			checkFaceProps();
     };
 
     function handlePropLoaded(event/* :PropEvent */)/* :void */ {
