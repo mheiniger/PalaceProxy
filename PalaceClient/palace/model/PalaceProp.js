@@ -5,6 +5,7 @@ var util = require("util");
 //	import flash.display.Loader;
 var Event = require("./../../adapter/events/Event");
 var EventDispatcher = require('./../../adapter/events/EventDispatcher');
+var Rectangle = require("./../../adapter/geom/Rectangle");
 //	import flash.geom.Rectangle;
 //	import flash.net.URLRequest;
 //	import flash.system.LoaderContext;
@@ -72,8 +73,8 @@ util.inherits(PalaceProp, EventDispatcher);
 
 		
 		var formatMask/* :uint */ = PROP_FORMAT_20BIT |
-							 				 PROP_FORMAT_S20BIT |
-							  	 			 PROP_FORMAT_32BIT;
+        	    	 			   PROP_FORMAT_S20BIT |
+	                               PROP_FORMAT_32BIT;
 		
 		var itemsToRender/* :int */ = 0;
 		
@@ -117,7 +118,7 @@ util.inherits(PalaceProp, EventDispatcher);
 			setTimeout(renderBitmap, 20+10*(++itemsToRender));
 		};
 		
-		var loadBitmapFromURL = this.loadBitmapFromURL = function(url/* :String  = null)/* :void */ {
+		var loadBitmapFromURL = this.loadBitmapFromURL = function(url/* :String  = null*/) /*:void */ {
 			if (url == null) {
 				url = that.asset.imageDataURL;
 			}
@@ -133,7 +134,7 @@ util.inherits(PalaceProp, EventDispatcher);
 		function handleBitmapLoadedFromURLComplete(event/* :Event */)/* :void */ {
 			if (loader.content && loader.content /*is Bitmap*/) {
 				that.setBitmap(Bitmap(loader.content).bitmapData);
-				ready = true;
+				that.ready = true;
 				dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, this));
 			}
 		}
@@ -197,7 +198,7 @@ util.inherits(PalaceProp, EventDispatcher);
             }
 			
 			if (!badProp) {
-				ready = true;
+				that.ready = true;
 				dispatchEvent(new PropEvent(PropEvent.PROP_DECODED, this));
 			}
 			
@@ -585,8 +586,8 @@ util.inherits(PalaceProp, EventDispatcher);
                     x -= mc + pc;
                     if (x < 0) {
                     	badProp = true;
-                    	ready = false;
-                    	asset.data = null
+                    	that.ready = false;
+                    	that.asset.data = null
                     	return;
                     }
                 	if (counter++ > 6000) {
