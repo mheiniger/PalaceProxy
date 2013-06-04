@@ -74,8 +74,8 @@ util.inherits(PalaceProp, EventDispatcher);
 		
 		var formatMask/* :uint */ = PROP_FORMAT_20BIT |
         	    	 			   PROP_FORMAT_S20BIT |
-	                               PROP_FORMAT_32BIT;
-		
+                                   PROP_FORMAT_32BIT;
+    		
 		var itemsToRender/* :int */ = 0;
 		
 		var loader/* :Loader */ = null;
@@ -88,30 +88,44 @@ util.inherits(PalaceProp, EventDispatcher);
             that.asset.guid = guid;
 		};
 		
-
+        /* 
+        this.__defineGetter__("value", function(){
+        return value;
+        });
+       
+        this.__defineSetter__("value", function(val){
+            value = val;
+        });
+        
+        */
+		Object.defineProperty(this, "bitmap", {
+            get : function ()/* :ByteArray */ {
+                if (_bitmap) {
+    			return new FlexBitmap(_bitmap);
+    			}
+    			else {
+    				return null;
+    			}
+            },
+            set : function(newBitmap/* :Object */) {
+                that._bitmap = BitmapData(newBitmap);
+            }
+        });
 		
-		this.setBitmap = function(newBitmap/* :Object */)/* :void */ {
-			that._bitmap = BitmapData(newBitmap);
-		};
-		
-		this.getBitmap = function()/* :Object */ {
-			if (_bitmap) {
-				return new FlexBitmap(_bitmap);
-			}
-			else {
-				return null;
-			}
-		};
-		
-		var get_pngData = this.get_pngData = function()/* :ByteArray */ {
-			if (_bitmap != null) {
-				var encoder /*:PNGEncoder*/ = new PNGEncoder();
-				return encoder.encode(_bitmap);
-			}
-			else {
-				return null;
-			}
-		};
+        Object.defineProperty(this, "pngData", {
+            get : function ()/* :ByteArray */ {
+        		if (_bitmap != null) {
+        			var encoder /*:PNGEncoder*/ = new PNGEncoder();
+    				return encoder.encode(_bitmap);
+    			}
+    			else {
+    				return null;
+    			}
+        	},
+        	set : function (value) {
+        		this._bitmap = value;
+        	}
+        });
 		
 		var decodeProp = this.decodeProp = function()/* :void */ {			
 			// Try not to block the UI while props are rendering.
