@@ -62,7 +62,7 @@ function extendSocket(socket) {
     };
 
     socket.writeShort = function (data) {
-//            var buffer = new Buffer(2);
+        data = parseInt(data);
         this.extendWriteBuffer(2);
         if (socket.endian == "littleEndian") {
             this.writeBuffer.writeInt16LE(data, this.writeBufferPos);
