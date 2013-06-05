@@ -6,8 +6,6 @@ var Loader = require("./../../adapter/display/Loader");
 var Event = require("./../../adapter/events/Event");
 var EventDispatcher = require('./../../adapter/events/EventDispatcher');
 var Rectangle = require("./../../adapter/geom/Rectangle");
-var PalaceAsset = require("./PalaceAsset");
-var PalacePropFormat = require("./PalacePropFormat");
 var URLRequest = require("./../../adapter/net/URLRequest");
 var LoaderContext = require("./../../adapter/system/LoaderContext");
 var ByteArray = Buffer;
@@ -16,6 +14,9 @@ var setTimeout = require("./../../adapter/system/setTimeout");
 
 var FlexBitmap = require("./../../adapter/core/FlexBitmap");
 var PNGEncoder = require("./../../adapter/graphics/codec/PNGEncoder");
+var PalaceAsset = require("./PalaceAsset");
+var PalacePropFormat = require("./PalacePropFormat");
+var PalacePalette = require("./PalacePalette");
 
 var PropEvent = require("../event/PropEvent");
 
@@ -44,10 +45,10 @@ var rect/*:Rectangle*/ = new Rectangle(0, 0, 44, 44);
 
 var mask/* :uint */ = 0xFFC1; // Original palace prop flags.
 
-util.inherits(PalaceProp, EventDispatcher);
-
-function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) //extends EventDispatcher
+util.inherits(PalaceProp, EventDispatcher);//extends EventDispatcher
+function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 {
+    PalaceProp.super_.call(this);
     var that = this;
 
     this.asset = new PalaceAsset();
@@ -121,16 +122,16 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
             }
         },
         set: function (value) {
-            this._bitmap = value;
+            that._bitmap = value;
         }
     });
 
-    var decodeProp = this.decodeProp = function ()/* :void */ {
+    this.decodeProp = function ()/* :void */ {
         // Try not to block the UI while props are rendering.
         setTimeout(renderBitmap, 20 + 10 * (++itemsToRender));
     };
 
-    var loadBitmapFromURL = this.loadBitmapFromURL = function (url/* :String  = null*/) /*:void */ {
+    this.loadBitmapFromURL = function (url/* :String  = null*/) /*:void */ {
         if (url == null) {
             url = that.asset.imageDataURL;
         }
@@ -141,7 +142,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
 
         loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleBitmapLoadedFromURLComplete);
         loader.load(request, context);
-    }
+    };
 
     function handleBitmapLoadedFromURLComplete(event/* :Event */)/* :void */ {
         if (loader.content && loader.content /*is Bitmap*/) {
@@ -236,7 +237,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
         return crc;
     }
 
-    var assetData = this.assetData = function (endian/* :String = Endian.LITTLE_ENDIAN */)/* :ByteArray */ {
+    this.assetData = function (endian/* :String = Endian.LITTLE_ENDIAN */)/* :ByteArray */ {
 //			trace("Generating asset for server...");
         var ba/* :ByteArray */ = new ByteArray();
         ba.endian = endian;
@@ -315,7 +316,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
         ba.writeBytes(imageData);
 
         return ba;
-    }
+    };
 
     function decode32BitProp()/* :void */ {
         // Implementation thanks to Phalanx team
@@ -331,7 +332,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
 
         var bd/* :BitmapData */ = new BitmapData(that.width, that.height);
         var ba/* :Vector.<uint> */ = []; //new Vector. < uint > (width * height, true);
-        var C/* :uint */;
+        var C/* :uint */ = 0;
         var x/* :int */ = 0;
         var y/* :int */ = 0;
         var ofst/* :int */ = 0;
@@ -371,7 +372,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
 
         var bd/* :BitmapData */ = new BitmapData(that.width, that.height);
         var ba/* :Vector.<uint> */ = []; // new Vector.< uint > (width * height, true);
-        var C/* :uint */;
+        var C/* :uint */ = 0;
         var x/* :int */ = 0;
         var y/* :int */ = 0;
         var ofst/* :int */ = 0;
@@ -616,7 +617,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
                 index += mc;
                 while (pc-- > 0) {
                     if (that.asset.data.length > n) {
-                        pixData[index++] = PalacePalette.clutARGB[asset.data[n++] & 0xff];
+                        pixData[index++] = PalacePalette.clutARGB[that.asset.data[n++] & 0xff];
                     }
                 }
             }
@@ -636,6 +637,14 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
         bitmapData.setVector(rect, bitmapBytes);
 
         that.bitmap = bitmapData;
+    }
+
+    function trace(data) {
+        console.log(data);
+    }
+
+    function dispatchEvent(event) {
+        that.dispatchEvent(event.type, event);
     }
 }
 

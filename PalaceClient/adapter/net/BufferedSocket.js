@@ -184,6 +184,10 @@ function extendBuffer(socket) {
         return (this.length - this.position);
     };
 
+    Buffer.prototype.__defineGetter__("bytesAvailable", function(){
+        return (this.length - this.position);
+    });
+
     Buffer.prototype.writeByte = function (oneByte) {
         this.writeUInt8(oneByte, this.position);
         this.position++;
