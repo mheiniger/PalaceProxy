@@ -18,5 +18,4 @@ function PalaceAsset() {
     this.blockOffset/* :int */ = 0;
     this.blockNumber/* :int */= 0;
     this.data/* :Array */ = [];
-
 }

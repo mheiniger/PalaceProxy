@@ -1,13 +1,13 @@
 var Event = require("../../adapter/events/Event");
 //	import flash.events.Event;
-//	import flash.events.IOErrorEvent;
+var IOErrorEvent = require("../../adapter/events/IOErrorEvent");
 //	import flash.events.SecurityErrorEvent;
 var TimerEvent = require("../../adapter/events/TimerEvent");
 
-//	import flash.net.URLLoader;
-//	import flash.net.URLLoaderDataFormat;
-//	import flash.net.URLRequest;
-//	import flash.net.URLRequestMethod;
+var URLLoader = require("../../adapter/net/URLLoader");
+var URLLoaderDataFormat = require("../../adapter/net/URLLoaderDataFormat");
+var URLRequest = require("../../adapter/net/URLRequest");
+var URLRequestMethod = require("../../adapter/net/URLRequestMethod");
 var Timer = require("../../adapter/utils/Timer");
 
 var PalaceConfig = require("./PalaceConfig");
@@ -15,21 +15,21 @@ var PalaceProp = require("./PalaceProp");
 var PropEvent = require("../event/PropEvent");
 //	import net.codecomposer.palace.rpc.PalaceClient;
 //	import net.codecomposer.palace.rpc.webservice.OPWSConfirmPropsUpload;
-//	import net.codecomposer.palace.rpc.webservice.OPWSEvent;
+var OPWSEvent = require("../webservice/OPWSEvent");
 //	import net.codecomposer.palace.rpc.webservice.OPWSGetProps;
+var OPWSNewProps = require("../webservice/OPWSNewProps");
 //	import net.codecomposer.palace.rpc.webservice.OPWSNewProps;
 //	import net.codecomposer.util.MultiPartFormBuilder;
-var _instance/* :PalaceProp Store */ = null;
 
 module.exports = PalacePropStore;
 
-function PalacePropStore() {
+function PalacePropStore(palaceClient) {
     var that = this;
 
     var props/* :Object */ = {}; //new Object();
     var propsArray/* :Array */ = [];
 
-    var client/* :PalaceClient */ = PalaceClient.getInstance();
+    var client/* :PalaceClient */ = palaceClient;
 
     var assetsToRequest/* :Array */ = [];
     var assetRequestTimer/* :Timer */ = new Timer(50, 1);
@@ -41,15 +41,10 @@ function PalacePropStore() {
     var propsUploadConfirmTimer/* :Timer */ = new Timer(1000, 1);
 
     this.PalacePropStoreConstructor = function () {
-        if (_instance != null) {
-            throw new Error("You can only instantiate one PropStore");
-        }
         assetRequestTimer.addEventListener(TimerEvent.TIMER, handleAssetRequestTimer);
         propsUploadtimer.addEventListener(TimerEvent.TIMER, handlePropsUploadTimer);
         propsUploadConfirmTimer.addEventListener(TimerEvent.TIMER, handlePropsUploadConfirmTimer);
-    };
-
-
+    }();
 
     this.injectAsset = function (asset/* :PalaceAsset */)/* :void */ {
         var prop/* :PalaceProp */ = that.getProp(asset.guid, asset.id, asset.crc);
@@ -70,7 +65,7 @@ function PalacePropStore() {
                     props[propToDelete.asset.guid] = null;
                     props[propToDelete.asset.id] = null;
                 }
-                requestAsset(prop);
+                that.requestAsset(prop);
             }
         }
         else {
@@ -83,13 +78,13 @@ function PalacePropStore() {
                     props[propToDelete.asset.guid] = null;
                     props[propToDelete.asset.id] = null;
                 }
-                requestAsset(prop);
+                that.requestAsset(prop);
             }
         }
         return prop;
     };
 
-    var requestAsset = this.requestAsset = function (prop/* :PalaceProp */)/* :void */ {
+    this.requestAsset = function (prop/* :PalaceProp */)/* :void */ {
         prop.addEventListener(PropEvent.PROP_DECODED, handlePropDecoded);
         assetsToRequest.push(prop);
         assetRequestTimer.reset();
@@ -104,7 +99,7 @@ function PalacePropStore() {
     }
 
     function handlePropsUploadTimer(event/* :Timer Event */)/* :void */ {
-        var rpc/* :OPWSNewProps */ = new OPWSNewProps();
+        var rpc/* :OPWSNewProps */ = new OPWSNewProps(palaceClient);
         rpc.addEventListener(OPWSEvent.RESULT_EVENT, handleNewPropsResult);
         rpc.send(propsToUpload);
         propsToUpload = [];
@@ -201,7 +196,7 @@ function PalacePropStore() {
                 var prop/* :PalaceProp */ = that.getProp(null, response['legacy_identifier']['id'], response['legacy_identifier']['crc']);
                 if (response['status'] && !response['status']['ready']) {
 //						trace("Web service knows about the prop but it's not ready.  Trying again.");
-                    requestAsset(prop);
+                    that.requestAsset(prop);
                 }
                 else {
 //						trace("Got prop " + response['legacy_identifier']['id'] + " - " + response['guid'] + " from web service.");
@@ -228,10 +223,13 @@ function PalacePropStore() {
 //			trace("There was a problem getting props from the webservice.");
     }
 
-    var loadImage = this.loadImage = function (prop/* :PalaceProp */)/* :void */ {
-        requestAsset(prop);
-    }
+    this.loadImage = function (prop/* :PalaceProp */)/* :void */ {
+        that.requestAsset(prop);
+    };
 
+    function trace(data) {
+        console.log(data);
+    }
 }
 
 module.exports.getInstance = function ()/* :PalaceProp Store */ {

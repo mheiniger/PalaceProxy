@@ -53,15 +53,15 @@ var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent"
 var IncomingMessageTypes =  require("./palace/message/IncomingMessageTypes");
 // var NavErrorMessage = require("./palace/message/NavErrorMessage");
 var OutgoingMessageTypes =  require("./palace/message/OutgoingMessageTypes");
-// var AssetManager = require("./palace/model/AssetManager");
-// var PalaceAsset = require("./palace/model/PalaceAsset");
+var AssetManager = require("./palace/model/AssetManager");
+var PalaceAsset =  require("./palace/model/PalaceAsset");
 var PalaceConfig =  require("./palace/model/PalaceConfig");
 var PalaceCurrentRoom = require("./palace/model/PalaceCurrentRoom");
 var PalaceHotspot = require("./palace/model/PalaceHotspot");
 var PalaceImageOverlay = require("./palace/model/PalaceImageOverlay");
 var PalaceLooseProp = require("./palace/model/PalaceLooseProp");
 // var PalaceProp = require("./palace/model/PalaceProp");
-// var PalacePropStore = require("./palace/model/PalacePropStore");
+var PalacePropStore = require("./palace/model/PalacePropStore");
 var PalaceRoom = require("./palace/model/PalaceRoom");
 var PalaceServerInfo =  require("./palace/model/PalaceServerInfo");
 
@@ -156,6 +156,7 @@ function PalaceClient() // extends EventDispatcher
     var connecting = false;
     var serverName = "No Server";
     var serverInfo = new PalaceServerInfo();
+    var propStore = new PalacePropStore(this);
 
     var population = 0;
     var mediaServer = "";
@@ -768,6 +769,7 @@ function PalaceClient() // extends EventDispatcher
         socket.flush();
     }
 
+    this.requestAsset = requestAsset;
     function requestAsset(assetType, assetId, assetCrc) {
         // Assets are requested in packets of up to 20 requests, separated by 500ms
         // to prevent flooding the server and getting killed.
@@ -2225,7 +2227,7 @@ function PalaceClient() // extends EventDispatcher
         var assetId = buffer.readInt();
         var assetCrc = buffer.readUnsignedInt();
 //			trace("Got asset request for type: " + type + ", assetId: " + assetId + ", assetCrc: " + assetCrc);
-        var prop = PalacePropStore.getInstance().getProp(null, assetId, assetCrc);
+        var prop = propStore.getProp(null, assetId, assetCrc);
 
         if (prop.ready) {
             sendPropToServer(prop);
@@ -2279,7 +2281,7 @@ function PalaceClient() // extends EventDispatcher
         asset.name = assetName;
 //			trace("Received asset: (Type:" + asset.type.toString(16) + ") (ID:"+asset.id+") (CRC:" + asset.crc + ") (Name:" + asset.name + ")");
         if (asset.type == AssetManager.ASSET_TYPE_PROP) {
-            PalacePropStore.getInstance().injectAsset(asset);
+            propStore.injectAsset(asset);
         }
     }
 
