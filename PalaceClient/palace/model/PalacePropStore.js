@@ -1,7 +1,7 @@
 var Event = require("../../adapter/events/Event");
 //	import flash.events.Event;
 var IOErrorEvent = require("../../adapter/events/IOErrorEvent");
-//	import flash.events.SecurityErrorEvent;
+var SecurityErrorEvent = require("../../adapter/events/SecurityErrorEvent");
 var TimerEvent = require("../../adapter/events/TimerEvent");
 
 var URLLoader = require("../../adapter/net/URLLoader");
@@ -14,11 +14,11 @@ var PalaceConfig = require("./PalaceConfig");
 var PalaceProp = require("./PalaceProp");
 var PropEvent = require("../event/PropEvent");
 //	import net.codecomposer.palace.rpc.PalaceClient;
-//	import net.codecomposer.palace.rpc.webservice.OPWSConfirmPropsUpload;
+var OPWSConfirmPropsUpload = require("../webservice/OPWSConfirmPropsUpload");
 var OPWSEvent = require("../webservice/OPWSEvent");
 //	import net.codecomposer.palace.rpc.webservice.OPWSGetProps;
 var OPWSNewProps = require("../webservice/OPWSNewProps");
-//	import net.codecomposer.palace.rpc.webservice.OPWSNewProps;
+
 //	import net.codecomposer.util.MultiPartFormBuilder;
 
 module.exports = PalacePropStore;

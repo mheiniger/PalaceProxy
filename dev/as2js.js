@@ -86,9 +86,15 @@ for(var i = 0;i<array.length;i++) {
     line = comment(line, ":MultiPartFormBuilder");
     line = comment(line, ":URLLoader");
     line = comment(line, ":OPWSGetProps");
+    line = comment(line, ":PNGEncoder");
+    line = comment(line, ":Base64Encoder");
     line = line.replace("PalaceRoom */View", "PalaceRoom View */");
     line = line.replace("PalaceRoom */Event", "PalaceRoom Event */");
     line = comment(line, "as Array");
+    line = comment(line, "is Bitmap");
+    line = line.replace("is Bitmap */Data", "is Bitmap Data */");
+    line = comment(line, "is String");
+    line = comment(line, "is Number");
 
 
     line = line.replace("/* /*", "/*");
