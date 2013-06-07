@@ -18,6 +18,8 @@ var OPWSParameters = require("./OPWSParameters");
 var OPWSEvent = require("./OPWSEvent");
 
 module.exports = OPWSConfirmPropsUpload;
+JSON.encode = JSON.stringify;
+JSON.decode = JSON.parse;
 
 // OPWS = Open Palace Web Service
 util.inherits(OPWSConfirmPropsUpload, EventDispatcher); //extends EventDispatcher
@@ -32,7 +34,8 @@ function OPWSConfirmPropsUpload()
 
     this.send = function (props/* :Array */)/* :void */ {
         var requestDefs/* :Array */ = [];
-        for (var prop/* :PalaceProp */ in props) {
+        for (var propNr/* :PalaceProp */ in props) {
+            var prop = props[propNr];
             if (prop.asset.guid) {
                 var requestDef/* :Object */ = {};
                 requestDef['guid'] = prop.asset.guid;

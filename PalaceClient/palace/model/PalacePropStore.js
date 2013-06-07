@@ -16,7 +16,7 @@ var PropEvent = require("../event/PropEvent");
 //	import net.codecomposer.palace.rpc.PalaceClient;
 var OPWSConfirmPropsUpload = require("../webservice/OPWSConfirmPropsUpload");
 var OPWSEvent = require("../webservice/OPWSEvent");
-//	import net.codecomposer.palace.rpc.webservice.OPWSGetProps;
+var OPWSGetProps = require("../webservice/OPWSGetProps");
 var OPWSNewProps = require("../webservice/OPWSNewProps");
 
 //	import net.codecomposer.util.MultiPartFormBuilder;
@@ -44,7 +44,9 @@ function PalacePropStore(palaceClient) {
         assetRequestTimer.addEventListener(TimerEvent.TIMER, handleAssetRequestTimer);
         propsUploadtimer.addEventListener(TimerEvent.TIMER, handlePropsUploadTimer);
         propsUploadConfirmTimer.addEventListener(TimerEvent.TIMER, handlePropsUploadConfirmTimer);
-    }();
+        console.log('asset timers started');
+    };
+    this.PalacePropStoreConstructor();
 
     this.injectAsset = function (asset/* :PalaceAsset */)/* :void */ {
         var prop/* :PalaceProp */ = that.getProp(asset.guid, asset.id, asset.crc);
@@ -85,6 +87,7 @@ function PalacePropStore(palaceClient) {
     };
 
     this.requestAsset = function (prop/* :PalaceProp */)/* :void */ {
+        console.log('requesting new asset');
         prop.addEventListener(PropEvent.PROP_DECODED, handlePropDecoded);
         assetsToRequest.push(prop);
         assetRequestTimer.reset();
@@ -176,9 +179,11 @@ function PalacePropStore(palaceClient) {
     }
 
     function handleAssetRequestTimer(event/* :Timer Event */)/* :void */ {
-        var rpc/* :OPWSGetProps */ = new OPWSGetProps();
+        var rpc/* :OPWSGetProps */ = new OPWSGetProps(palaceClient);
         rpc.addEventListener(OPWSEvent.RESULT_EVENT, handleGetPropsResult);
         rpc.addEventListener(OPWSEvent.FAULT_EVENT, handleGetPropsFault);
+        console.log('assets to request:');
+        console.log(assetsToRequest);
         rpc.send(assetsToRequest);
         assetsToRequest = [];
     }

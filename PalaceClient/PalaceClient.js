@@ -46,7 +46,7 @@ var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
 var PalaceEvent =  require("./palace/event/PalaceEvent");
 var PalaceRoomEvent = require("./palace/event/PalaceRoomEvent");
 var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
-// var PropEvent = require("./palace/event/PropEvent");
+var PropEvent = require("./palace/event/PropEvent");
 // var DebugData = require("./palace/iptscrae/DebugData");
 // var IptEventHandler = require("./palace/iptscrae/IptEventHandler");
 // var PalaceController = require("./palace/iptscrae/PalaceController");
@@ -852,6 +852,7 @@ function PalaceClient() // extends EventDispatcher
         return currentRoom.getUserById(id);
     }
 
+    this.updateUserProps = updateUserProps;
     function updateUserProps() {
         if (!connected) {
             return;
@@ -1787,7 +1788,7 @@ function PalaceClient() // extends EventDispatcher
             var userName = buffer.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
             buffer.readMultiByte(31 - userNameLength, 'Windows-1252');
 
-            var user = new PalaceUser();
+            var user = new PalaceUser(that, propStore);
             user.isSelf = Boolean(userId == id);
             user.id = userId;
             user.name = userName;
@@ -1830,7 +1831,7 @@ function PalaceClient() // extends EventDispatcher
         userList.removeAll();
         var userCount = referenceId;
         for (var i = 0; i < userCount; i++) {
-            var user = new PalaceUser();
+            var user = new PalaceUser(that, propStore);
             user.id = buffer.readInt();
             user.isSelf = Boolean(user.id == id);
             user.flags = buffer.readShort();
@@ -1904,7 +1905,7 @@ function PalaceClient() // extends EventDispatcher
         buffer.readMultiByte(31 - userNameLength, 'Windows-1252');
         //userName = userName.substring(1);
 
-        var user = new PalaceUser();
+        var user = new PalaceUser(that, propStore);
         user.isSelf = Boolean(userId == id);
         user.id = userId;
         user.x = x;
@@ -2226,7 +2227,7 @@ function PalaceClient() // extends EventDispatcher
         var type = buffer.readInt();
         var assetId = buffer.readInt();
         var assetCrc = buffer.readUnsignedInt();
-//			trace("Got asset request for type: " + type + ", assetId: " + assetId + ", assetCrc: " + assetCrc);
+		trace("Got asset request for type: " + type + ", assetId: " + assetId + ", assetCrc: " + assetCrc);
         var prop = propStore.getProp(null, assetId, assetCrc);
 
         if (prop.ready) {

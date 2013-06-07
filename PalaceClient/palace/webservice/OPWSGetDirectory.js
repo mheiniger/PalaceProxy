@@ -11,77 +11,31 @@ var URLRequest = require("../../adapter/net/URLRequest");
 var URLRequestHeader = require("../../adapter/net/URLRequestHeader");
 var URLRequestMethod = require("../../adapter/net/URLRequestMethod");
 
-var UIDUtil = require("../../adapter/utils/UIDUtil");
 
 var PalaceConfig = require("../model/PalaceConfig");
 //	import net.codecomposer.palace.model.PalaceProp;
 //	import net.codecomposer.palace.rpc.PalaceClient;
-var OPWSParameters = require("./OPWSParameters");
 var OPWSEvent = require("./OPWSEvent");
-JSON.encode = JSON.stringify;
-JSON.decode = JSON.parse;
 
-module.exports = OPWSNewProps;
+module.exports = OPWSGetDirectory;
 
-// OPWS = Open Palace Web Service
-util.inherits(OPWSNewProps, EventDispatcher); //extends EventDispatcher
-function OPWSNewProps(palaceClient)
+//	import net.codecomposer.palace.model.PalaceConfig;
+util.inherits(OPWSGetDirectory, EventDispatcher); //extends EventDispatcher
+function OPWSGetDirectory() //extends EventDispatcher
 {
-    OPWSNewProps.super_.call(this);
+    OPWSGetDirectory.super_.call(this);
     var that = this;
-//		[Event(type="OPWSEvent", name="result")]
-//		[Event(type="OPWSEvent", name="fault")]
 
     var _loader/* :URLLoader */;
 
-    var _props/* :Array */;
-
-    var client/* :PalaceClient */ = palaceClient;
-
-    this.send = function (props/* :Array */)/* :void */ {
-        var requestDefs/* :Array */ = [];
-        for (var propNr/* :PalaceProp */ in props) {
-            var prop = props[propNr];
-            prop.asset.temporaryIdentifier = UIDUtil.createUID();
-            var requestDef/* :Object */ = {
-                legacy_identifier: {
-                    id: prop.asset.id,
-                    crc: prop.asset.crc,
-                    originating_palace: client.host + ":" + client.port
-                },
-                temp_id: prop.asset.temporaryIdentifier,
-                name: prop.asset.name,
-                offsets: {
-                    x: prop.horizontalOffset,
-                    y: prop.verticalOffset
-                },
-                size: {
-                    width: prop.width,
-                    height: prop.height
-                },
-                flags: {
-                    head: prop.head,
-                    ghost: prop.ghost,
-                    rare: prop.rare,
-                    animate: prop.animate,
-                    palindrome: prop.palindrome,
-                    bounce: prop.bounce
-                },
-                format: prop.webServiceFormat
-            };
-            requestDefs.push(requestDef);
-        }
-        var request/* :URLRequest */ = new URLRequest(PalaceConfig.webServiceURL + "/props/new");
+    this.send = function ()/* :void */ {
+        var request/* :URLRequest */ = new URLRequest(PalaceConfig.webServiceURL + "/directory/get?content-type=application%2Fjson");
         request.contentType = 'application/json';
         request.method = URLRequestMethod.POST;
         request.requestHeaders = [
-            new URLRequestHeader('Accept', 'application/json')
+            new URLRequestHeader('Accept', 'application/json'),
+            new URLRequestHeader('Content-type', 'application/json')
         ];
-        request.data = JSON.encode({
-            api_version: 1,
-            api_key: OPWSParameters.API_KEY,
-            props: requestDefs
-        });
 
         _loader = new URLLoader();
         _loader.dataFormat = URLLoaderDataFormat.TEXT;
