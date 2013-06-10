@@ -43,24 +43,53 @@ function OPWSConfirmPropsUpload(palaceClient)
                 requestDefs.push(requestDef);
             }
         }
-        var request/* :URLRequest */ = new URLRequest(palaceClient.host + "/webservice/props/confirm_upload");
-        request.contentType = 'application/json';
-        request.method = URLRequestMethod.POST;
-        request.requestHeaders = [
-            new URLRequestHeader('Accept', 'application/json')
-        ];
-        request.data = JSON.encode({
+
+        var request = http.request({
+            hostname: palaceClient.host,
+            path: '/webservice/props/confirm_upload',
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json',
+                'Accept': 'application/json'
+            }
+
+        }, function (res) {
+            res.on('data', function (chunk) {
+                handleComplete(chunk)
+            });
+        });
+
+        var data = JSON.encode({
             api_version: 1,
             api_key: OPWSParameters.API_KEY,
             props: requestDefs
         });
 
-        _loader = new URLLoader();
-        _loader.dataFormat = URLLoaderDataFormat.TEXT;
-        _loader.addEventListener(Event.COMPLETE, handleComplete);
-        _loader.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
-        _loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
-        _loader.load(request);
+        request.on('error', function (err) {
+            handleIOError(err);
+        });
+
+        request.write('data\n');
+        request.end();
+
+//        var request/* :URLRequest */ = new URLRequest(palaceClient.host + "/webservice/props/confirm_upload");
+//        request.contentType = 'application/json';
+//        request.method = URLRequestMethod.POST;
+//        request.requestHeaders = [
+//            new URLRequestHeader('Accept', 'application/json')
+//        ];
+//        request.data = JSON.encode({
+//            api_version: 1,
+//            api_key: OPWSParameters.API_KEY,
+//            props: requestDefs
+//        });
+//
+//        _loader = new URLLoader();
+//        _loader.dataFormat = URLLoaderDataFormat.TEXT;
+//        _loader.addEventListener(Event.COMPLETE, handleComplete);
+//        _loader.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+//        _loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
+//        _loader.load(request);
     };
 
     function handleIOError(event/* :IOErrorEvent */)/* :void */ {

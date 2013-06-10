@@ -72,12 +72,12 @@ function OPWSGetProps(palaceClient) //extends EventDispatcher
             props: requestDefs
         });
 
-        request.write('data\n');
-        request.end();
-
         request.on('error', function (err) {
             handleIOError(err);
         });
+
+        request.write('data\n');
+        request.end();
 
 //        var request/* :URLRequest */ = new URLRequest(palaceClient.host + "/webservice/props/get");
 //        request.contentType = 'application/json';
