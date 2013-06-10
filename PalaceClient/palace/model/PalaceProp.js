@@ -154,6 +154,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
     }
 
     function renderBitmap()/* :void */ {
+        console.log('renderbitmap');
         --itemsToRender;
         var asset = that.asset;
         var flags = that.flags;
@@ -177,7 +178,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 
         that.propFormat = flags & formatMask;
 
-//            trace("Non-Standard flags: " +/* uint */(flags & mask).toString(16));
+            trace("Non-Standard flags: " +/* uint */(flags & mask).toString(16));
 
         that.head = Boolean(flags & HEAD_FLAG);
         that.ghost = Boolean(flags & GHOST_FLAG);
@@ -188,27 +189,27 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 
         if ((flags & mask) == 0xff80) {
             //WTF?!  Bizarre flags...
-//            	trace("16bit prop");
+            	trace("16bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_16_BIT;
             decode16BitProp();
         }
         else if (Boolean(that.propFormat & PROP_FORMAT_S20BIT)) {
-//            	trace("s20bit prop");
+            	trace("s20bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_S20_BIT;
             decodeS20BitProp();
         }
         else if (Boolean(that.propFormat & PROP_FORMAT_32BIT)) {
-//            	trace("32bit prop");
+            	trace("32bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_32_BIT;
             decode32BitProp();
         }
         else if (Boolean(that.propFormat & PROP_FORMAT_20BIT)) {
-//            	trace("20bit prop");
+            	trace("20bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_20_BIT;
             decode20BitProp();
         }
         else {
-//            	trace("8bit prop");
+            	trace("8bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_8_BIT;
             decode8BitProp();
         }
@@ -582,11 +583,11 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 
     function decode8BitProp()/* :void */ {
         var counter/* :int */ = 0;
-        var ba/* :ByteArray */ = new ByteArray();
+        //var ba/* :ByteArray */ = new ByteArray(that.asset.data.length - 12);
         var pixData/* :Vector.<uint> */ = []; // new Vector. < uint > (width * (height + 1), true);
         var n/* :int */ = 12;
-//			for (n = 12; n < asset.data.length; n++) {
-//				ba.writeByte(asset.data[n]);
+//			for (n = 12; n < that.asset.data.length; n++) {
+//				ba.writeByte(that.asset.data[n]);
 //			}
 //			ba.position = 0;
 //			trace("Computed CRC: " + computeCRC(ba) + " - Given CRC: " + asset.crc);

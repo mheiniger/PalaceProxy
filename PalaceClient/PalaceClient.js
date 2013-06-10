@@ -776,7 +776,7 @@ function PalaceClient() // extends EventDispatcher
         if (!connected) {
             return;
         }
-//			trace("Requesting asset (Type:" + assetType.toString(16) + ") (ID:" + assetId + ") (CRC:" + assetCrc + ")");
+    	trace("Requesting asset (Type:" + assetType.toString(16) + ") (ID:" + assetId + ") (CRC:" + assetCrc + ")");
         if (assetRequestQueueTimer == null) {
             assetRequestQueueTimer = new Timer(50, 1);
             assetRequestQueueTimer.addEventListener(TimerEvent.TIMER, sendAssetRequests);
@@ -810,11 +810,13 @@ function PalaceClient() // extends EventDispatcher
 
 //			trace("Requesting a group of props");
         for (var i = 0; i < count; i++) {
-            var request = assetRequestQueue.shift().toArray();
+            var request = assetRequestQueue.shift(); //.toArray();
+            console.log(request);
             socket.writeInt(OutgoingMessageTypes.REQUEST_ASSET);
             socket.writeInt(12);
             socket.writeInt(id);
             for (var j = 0; j < 3; j++) {
+                console.log('writing' + request[j]);
                 socket.writeInt(request[j]);
             }
         }
@@ -2280,7 +2282,7 @@ function PalaceClient() // extends EventDispatcher
         asset.data = data;
         asset.type = assetType;
         asset.name = assetName;
-//			trace("Received asset: (Type:" + asset.type.toString(16) + ") (ID:"+asset.id+") (CRC:" + asset.crc + ") (Name:" + asset.name + ")");
+			trace("Received asset: (Type:" + asset.type.toString(16) + ") (ID:"+asset.id+") (CRC:" + asset.crc + ") (Name:" + asset.name + ")");
         if (asset.type == AssetManager.ASSET_TYPE_PROP) {
             propStore.injectAsset(asset);
         }

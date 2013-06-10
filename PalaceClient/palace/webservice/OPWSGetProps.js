@@ -62,7 +62,7 @@ function OPWSGetProps(palaceClient) //extends EventDispatcher
 
         }, function (res) {
             res.on('data', function (chunk) {
-                handleComplete(chunk)
+                handleComplete(chunk, requestDefs)
             });
         });
 
@@ -107,13 +107,14 @@ function OPWSGetProps(palaceClient) //extends EventDispatcher
         dispatchEvent(new OPWSEvent(OPWSEvent.FAULT_EVENT));
     }
 
-    function handleComplete(event/* :Event */)/* :void */ {
+    function handleComplete(data, requestDefs)/* :void */ {
         var e/* :OPWSEvent */ = new OPWSEvent(OPWSEvent.RESULT_EVENT);
         try {
-            e.result = JSON.decode(String(_loader.data));
+            e.result = JSON.decode(String(data));
         }
         catch (error/* :Error */) {
-            throw new Error("Unable to decode JSON response: " + error.name + ":\n" + error.message);
+            //throw new Error("Unable to decode JSON response: " + error.name + ":\n" + error.message);
+            e.result.props = requestDefs;
         }
         dispatchEvent(e);
     }

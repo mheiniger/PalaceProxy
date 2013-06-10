@@ -10,6 +10,7 @@ var URLRequest = require("../../adapter/net/URLRequest");
 var URLRequestMethod = require("../../adapter/net/URLRequestMethod");
 var Timer = require("../../adapter/utils/Timer");
 
+var AssetManager = require("./AssetManager");
 var PalaceConfig = require("./PalaceConfig");
 var PalaceProp = require("./PalaceProp");
 var PropEvent = require("../event/PropEvent");
@@ -19,7 +20,7 @@ var OPWSEvent = require("../webservice/OPWSEvent");
 var OPWSGetProps = require("../webservice/OPWSGetProps");
 var OPWSNewProps = require("../webservice/OPWSNewProps");
 
-//	import net.codecomposer.util.MultiPartFormBuilder;
+var MultiPartFormBuilder = require("../util/MultiPartFormBuilder");
 
 module.exports = PalacePropStore;
 
@@ -189,9 +190,12 @@ function PalacePropStore(palaceClient) {
     }
 
     function handleGetPropsResult(event/* :OPWSEvent */)/* :void */ {
-        for (var response/* :Object */ in event.result['props'] /* as Array */) {
+        var props = event.result['props'];
+        for (var i = 0; i < props.length; i++) {
+            //for (var response/* :Object */ in event.result['props'] /* as Array */) {
+            var response = props[i];
             if (!response['success']) {
-//					trace("Unable to get prop " + response['legacy_identifier']['id'] + " from web service, downloading from palace server.");
+					trace("Unable to get prop " + response['legacy_identifier']['id'] + " from web service, downloading from palace server.");
                 client.requestAsset(AssetManager.ASSET_TYPE_PROP,
                     response['legacy_identifier']['id'],
                     response['legacy_identifier']['crc']
