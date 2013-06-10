@@ -21,7 +21,7 @@ module.exports = OPWSGetDirectory;
 
 //	import net.codecomposer.palace.model.PalaceConfig;
 util.inherits(OPWSGetDirectory, EventDispatcher); //extends EventDispatcher
-function OPWSGetDirectory() //extends EventDispatcher
+function OPWSGetDirectory(palaceClient) //extends EventDispatcher
 {
     OPWSGetDirectory.super_.call(this);
     var that = this;
@@ -29,7 +29,7 @@ function OPWSGetDirectory() //extends EventDispatcher
     var _loader/* :URLLoader */;
 
     this.send = function ()/* :void */ {
-        var request/* :URLRequest */ = new URLRequest(PalaceConfig.webServiceURL + "/directory/get?content-type=application%2Fjson");
+        var request/* :URLRequest */ = new URLRequest(palaceClient.host + "/webservice/directory/get?content-type=application%2Fjson");
         request.contentType = 'application/json';
         request.method = URLRequestMethod.POST;
         request.requestHeaders = [

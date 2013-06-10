@@ -1,5 +1,6 @@
 //	import com.adobe.serialization.json.JSON;
 var util = require("util");
+var http = require('follow-redirects').http;
 
 //	import flash.events.Event;
 var EventDispatcher = require("../../adapter/events/EventDispatcher");
@@ -23,7 +24,7 @@ JSON.decode = JSON.parse;
 
 // OPWS = Open Palace Web Service
 util.inherits(OPWSConfirmPropsUpload, EventDispatcher); //extends EventDispatcher
-function OPWSConfirmPropsUpload()
+function OPWSConfirmPropsUpload(palaceClient)
 {
     OPWSConfirmPropsUpload.super_.call(this);
     var that = this;
@@ -42,7 +43,7 @@ function OPWSConfirmPropsUpload()
                 requestDefs.push(requestDef);
             }
         }
-        var request/* :URLRequest */ = new URLRequest(PalaceConfig.webServiceURL + "/props/confirm_upload");
+        var request/* :URLRequest */ = new URLRequest(palaceClient.host + "/webservice/props/confirm_upload");
         request.contentType = 'application/json';
         request.method = URLRequestMethod.POST;
         request.requestHeaders = [

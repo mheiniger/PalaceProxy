@@ -1,6 +1,7 @@
 //	import com.adobe.serialization.json.JSON;
 
 var util = require("util");
+var http = require('follow-redirects').http;
 var Event = require("../../adapter/events/Event");
 var EventDispatcher = require("../../adapter/events/EventDispatcher");
 var IOErrorEvent = require("../../adapter/events/IOErrorEvent");
@@ -49,24 +50,53 @@ function OPWSGetProps(palaceClient) //extends EventDispatcher
             }
             requestDefs.push(requestDef);
         }
-        var request/* :URLRequest */ = new URLRequest(PalaceConfig.webServiceURL + "/props/get");
-        request.contentType = 'application/json';
-        request.method = URLRequestMethod.POST;
-        request.requestHeaders = [
-            new URLRequestHeader('Accept', 'application/json')
-        ];
-        request.data = JSON.encode({
+
+        var request = http.request({
+            hostname: palaceClient.host,
+            path: '/webservice/props/get',
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json',
+                'Accept': 'application/json'
+            }
+
+        }, function (res) {
+            res.on('data', function (chunk) {
+                handleComplete(chunk)
+            });
+        });
+
+        var data = JSON.encode({
             api_version: 1,
             api_key: OPWSParameters.API_KEY,
             props: requestDefs
         });
 
-        _loader = new URLLoader();
-        _loader.dataFormat = URLLoaderDataFormat.TEXT;
-        _loader.addEventListener(Event.COMPLETE, handleComplete);
-        _loader.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
-        _loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
-        _loader.load(request);
+        request.write('data\n');
+        request.end();
+
+        request.on('error', function (err) {
+            handleIOError(err);
+        });
+
+//        var request/* :URLRequest */ = new URLRequest(palaceClient.host + "/webservice/props/get");
+//        request.contentType = 'application/json';
+//        request.method = URLRequestMethod.POST;
+//        request.requestHeaders = [
+//            new URLRequestHeader('Accept', 'application/json')
+//        ];
+//        request.data = JSON.encode({
+//            api_version: 1,
+//            api_key: OPWSParameters.API_KEY,
+//            props: requestDefs
+//        });
+//
+//        _loader = new URLLoader();
+//        _loader.dataFormat = URLLoaderDataFormat.TEXT;
+//        _loader.addEventListener(Event.COMPLETE, handleComplete);
+//        _loader.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+//        _loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
+//        _loader.load(request);
     };
 
     function handleIOError(event/* :IOErrorEvent */)/* :void */ {

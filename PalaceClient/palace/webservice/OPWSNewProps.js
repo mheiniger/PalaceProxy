@@ -71,7 +71,7 @@ function OPWSNewProps(palaceClient)
             };
             requestDefs.push(requestDef);
         }
-        var request/* :URLRequest */ = new URLRequest(PalaceConfig.webServiceURL + "/props/new");
+        var request/* :URLRequest */ = new URLRequest(palaceClient.host + "/webservice/props/new");
         request.contentType = 'application/json';
         request.method = URLRequestMethod.POST;
         request.requestHeaders = [
