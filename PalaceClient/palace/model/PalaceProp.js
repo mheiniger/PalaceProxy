@@ -1,4 +1,5 @@
 var util = require("util");
+var http = require('follow-redirects').http;
 
 var Bitmap = require("./../../adapter/display/Bitmap");
 var BitmapData = require("./../../adapter/display/BitmapData");

@@ -115,7 +115,7 @@ function PalacePropStore(palaceClient) {
     }
 
     function handlePropsUploadConfirmTimer(event/* :Timer Event */)/* :void */ {
-        var rpc/* :OPWSConfirmPropsUpload */ = new OPWSConfirmPropsUpload();
+        var rpc/* :OPWSConfirmPropsUpload */ = new OPWSConfirmPropsUpload(palaceClient);
         rpc.addEventListener(OPWSEvent.RESULT_EVENT, handlePropsUploadConfirmResult);
         rpc.send(propsToConfirmUpload);
         propsToConfirmUpload = [];
