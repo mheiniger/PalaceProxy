@@ -206,8 +206,9 @@ function PalaceCurrentRoom() {
             dispatchEvent(event);
         });
 
-        user.on(PropEvent.PROP_LOADED, function () {
-            var event = new PropEvent(PropEvent.PROP_LOADED);
+        user.on(PropEvent.PROP_LOADED, function (data) {
+            console.log('user loggs  proploaded');
+            var event = new PropEvent(PropEvent.PROP_LOADED, data);
             event.user = user;
             dispatchEvent(event);
         });

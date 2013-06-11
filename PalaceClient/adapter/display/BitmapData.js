@@ -1,4 +1,4 @@
-
+module.exports = BitmapData;
 
 function BitmapData (width /* :int*/ , height /*:int*/, transparent /* :Boolean = true*/) {
     this.setVector = function(rect/*:Rectangle*/, inputVector /*:Vector.<uint>*/){

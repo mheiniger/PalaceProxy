@@ -6,6 +6,7 @@ var PalaceClient = require("./PalaceClient/PalaceClient");
 var PalaceEvent = require("./PalaceClient/palace/event/PalaceEvent");
 var PalaceRoomEvent = require("./PalaceClient/palace/event/PalaceRoomEvent");
 var ChatEvent = require("./PalaceClient/palace/event/ChatEvent");
+var PropEvent = require("./PalaceClient/palace/event/PropEvent");
 
 process.on("uncaughtException", function (e) {
     console.log(e);
@@ -102,6 +103,9 @@ appPalace.sockets.on('connection', function (socket) {
         });
         palaceClient.on(PalaceEvent.SERVER_INFO_CHANGED, function(event){
            socket.emit(PalaceEvent.SERVER_INFO_CHANGED, event);
+        });
+        palaceClient.currentRoom.on(PropEvent.PROP_LOADED, function(data) {
+            socket.emit(PropEvent.PROP_LOADED, data);
         });
 
     });

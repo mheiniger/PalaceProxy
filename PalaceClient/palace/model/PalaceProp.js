@@ -218,14 +218,14 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 
         if (!that.badProp) {
             that.ready = true;
-            dispatchEvent(new PropEvent(PropEvent.PROP_DECODED, this));
+            dispatchEvent(new PropEvent(PropEvent.PROP_DECODED, that));
         }
 
         // We need to keep the asset data around now, to be able
         // to upload it to other servers.
         //asset.data = null;
 
-        dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, this));
+        dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, that));
     }
 
     function computeCRC(data/* :ByteArray */)/* :uint */ {
@@ -584,6 +584,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
     }
 
     function decode8BitProp()/* :void */ {
+//        console.log('decoding 8 bit prop');
         var counter/* :int */ = 0;
         //var ba/* :ByteArray */ = new ByteArray(that.asset.data.length - 12);
         var pixData/* :Vector.<uint> */ = []; // new Vector. < uint > (width * (height + 1), true);

@@ -93,6 +93,9 @@ function startSocket() {
         console.log(user);
         setFace(user.id, user.face, user.color);
     });
+    socket.on('propLoaded', function (data) {
+       console.log(data);
+    });
 }
 
 
