@@ -26,6 +26,7 @@ var PalaceLooseProp = require("./PalaceLooseProp");
 var ArrayCollection = require("../../adapter/collections/ArrayCollection");
 var PalaceRoomEvent = require("../../palace/event/PalaceRoomEvent");
 var ChatEvent = require("../../palace/event/ChatEvent");
+var PropEvent = require("../../palace/event/PropEvent");
 var PalaceUtil = require("../../palace/util/PalaceUtil");
 //import net.codecomposer.palace.view.PalaceRoomView;
 var PalaceUser = require("../../palace/model/PalaceUser");
@@ -201,6 +202,12 @@ function PalaceCurrentRoom() {
 
         user.on('faceChanged', function () {
             var event = new Event("faceChanged");
+            event.user = user;
+            dispatchEvent(event);
+        });
+
+        user.on(PropEvent.PROP_LOADED, function () {
+            var event = new PropEvent(PropEvent.PROP_LOADED);
             event.user = user;
             dispatchEvent(event);
         });

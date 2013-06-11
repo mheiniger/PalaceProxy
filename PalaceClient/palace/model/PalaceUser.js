@@ -210,6 +210,7 @@ function PalaceUser(palaceClient, propStore)
 
     function handlePropLoaded(event/* :PropEvent */)/* :void */ {
         checkFaceProps();
+        dispatchEvent(new PropEvent(PropEvent.PROP_LOADED));
     }
 
     function dispatchEvent(event) {
