@@ -136,22 +136,24 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         if (url == null) {
             url = that.asset.imageDataURL;
         }
-        loader = new Loader();
-        var request/* :URLRequest */ = new URLRequest(url);
-
-        var context/* :Loader Context */ = new LoaderContext(true);
-
-        loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleBitmapLoadedFromURLComplete);
-        loader.load(request, context);
+//        loader = new Loader();
+//        var request/* :URLRequest */ = new URLRequest(url);
+//
+//        var context/* :Loader Context */ = new LoaderContext(true);
+//
+//        loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleBitmapLoadedFromURLComplete);
+//        loader.load(request, context);
+         that.url = url;
+         dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, that));
     };
 
-    function handleBitmapLoadedFromURLComplete(event/* :Event */)/* :void */ {
-        if (loader.content && loader.content /*is Bitmap*/) {
-            that.bitmap = Bitmap(loader.content).bitmapData;
-            that.ready = true;
-            dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, this));
-        }
-    }
+//    function handleBitmapLoadedFromURLComplete(event/* :Event */)/* :void */ {
+//        if (loader.content && loader.content /*is Bitmap*/) {
+//            that.bitmap = Bitmap(loader.content).bitmapData;
+//            that.ready = true;
+//            dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, that));
+//        }
+//    }
 
     function renderBitmap()/* :void */ {
         console.log('renderbitmap');

@@ -1,3 +1,4 @@
+var zlib = require('zlib');
 var encoding = require("encoding");
 
 function BufferedSocket() {
@@ -220,8 +221,11 @@ function extendBuffer(socket) {
         return length;
     };
 
-//    }
-
+    Buffer.prototype.uncompress = function () {
+        var uncompressed = zlib.unzip(this);
+        this.position = 0;
+        return uncompressed;
+    };
 }
 
 
