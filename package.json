@@ -6,7 +6,8 @@
     "dependencies": {
         "socket.io": "*",
         "encoding": "*",
-        "follow-redirects": "*"
+        "follow-redirects": "*",
+        "pngjs" : "*"
     },
     "devDependencies": {},
     "scripts": {
