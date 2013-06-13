@@ -7,7 +7,7 @@
         "socket.io": "*",
         "encoding": "*",
         "follow-redirects": "*",
-        "pngjs" : "*"
+        "png" : "*"
     },
     "devDependencies": {},
     "scripts": {

@@ -8,6 +8,8 @@ var PalaceRoomEvent = require("./PalaceClient/palace/event/PalaceRoomEvent");
 var ChatEvent = require("./PalaceClient/palace/event/ChatEvent");
 var PropEvent = require("./PalaceClient/palace/event/PropEvent");
 
+var users = {};
+
 process.on("uncaughtException", function (e) {
     console.log(e);
 });
@@ -23,6 +25,12 @@ if (process.env.PORT) { // needed in cloud9 environment
 
 function palaceHandler(req, res) {
     var url = req.url;
+    if (url.search(/^\/prop\//) === 0) {
+        res.writeHead(200);
+        // todo: write handler for url like /prop/palaceurl/userid/propnr.png
+        // needs each connected user to register itself in users{} after connection(-change) to find the right instance of palaceClient for data retrieval
+    }
+
     if (url == '/') {
         url = '/index.html';
     }
@@ -48,6 +56,7 @@ function mediaHandler(req, res) {
         if (url.search(/^\/palace\/media\//) !== 0) {
             res.writeHead(404);
             res.end('file not found');
+            return;
         }
         fs.readFile('/usr/local/palace' + url,
             function (err, data) {
