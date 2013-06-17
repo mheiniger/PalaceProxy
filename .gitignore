@@ -1,4 +1,4 @@
-
+.vagrant/
 node_modules/
 .c9revisions/
 .idea/
