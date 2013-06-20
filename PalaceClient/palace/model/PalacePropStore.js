@@ -139,6 +139,7 @@ function PalacePropStore(palaceClient) {
     }
 
     function uploadPropToS3(propDef/* :Object */)/* :void */ {
+        console.log('uploadPropToS3');
         var s3/* :Object */ = propDef.s3_upload_data;
         var request/* :URLRequest */ = new URLRequest(propDef.s3_upload_data.upload_url);
         request.method = URLRequestMethod.POST;

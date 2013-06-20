@@ -11,6 +11,8 @@ var URLLoaderDataFormat = require("../../adapter/net/URLLoaderDataFormat");
 var URLRequest = require("../../adapter/net/URLRequest");
 var URLRequestHeader = require("../../adapter/net/URLRequestHeader");
 var URLRequestMethod = require("../../adapter/net/URLRequestMethod");
+JSON.encode = JSON.stringify;
+JSON.decode = JSON.parse;
 
 var UIDUtil = require("../../adapter/utils/UIDUtil");
 
@@ -19,8 +21,6 @@ var PalaceConfig = require("../model/PalaceConfig");
 //	import net.codecomposer.palace.rpc.PalaceClient;
 var OPWSParameters = require("./OPWSParameters");
 var OPWSEvent = require("./OPWSEvent");
-JSON.encode = JSON.stringify;
-JSON.decode = JSON.parse;
 
 module.exports = OPWSNewProps;
 
@@ -129,13 +129,14 @@ function OPWSNewProps(palaceClient)
         dispatchEvent(new OPWSEvent(OPWSEvent.FAULT_EVENT));
     }
 
-    function handleComplete(event/* :Event */)/* :void */ {
+    function handleComplete(data, requestDefs/* :Event */)/* :void */ {
         var e/* :OPWSEvent */ = new OPWSEvent(OPWSEvent.RESULT_EVENT);
         try {
-            e.result = JSON.decode(String(_loader.data));
+            e.result = JSON.decode(String(data));
         }
         catch (error/* :Error */) {
-            throw new Error("Unable to decode JSON response: " + error.name + ":\n" + error.message);
+//            throw new Error("Unable to decode JSON response: " + error.name + ":\n" + error.message);
+            e.result.props = requestDefs;
         }
         dispatchEvent(e);
     }

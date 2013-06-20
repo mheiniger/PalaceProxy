@@ -88,29 +88,29 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
     var loader/* :Loader */ = null;
 
 
-    /* 
-     this.__defineGetter__("value", function(){
-     return value;
+
+     this.__defineGetter__("bitmap", function(){
+        return _bitmap;
      });
 
-     this.__defineSetter__("value", function(val){
-     value = val;
+     this.__defineSetter__("bitmap", function(val){
+         _bitmap = val;
      });
 
-     */
-    Object.defineProperty(this, "bitmap", {
-        get: function ()/* :ByteArray */ {
-            if (_bitmap) {
-                return new FlexBitmap(_bitmap);
-            }
-            else {
-                return null;
-            }
-        },
-        set: function (newBitmap/* :Object */) {
-            that._bitmap = BitmapData(newBitmap);
-        }
-    });
+
+//    Object.defineProperty(this, "bitmap", {
+//        get: function ()/* :ByteArray */ {
+//            if (_bitmap) {
+//                return _bitmap;
+//            }
+//            else {
+//                return null;
+//            }
+//        },
+//        set: function (newBitmap/* :Object */) {
+//            _bitmap = newBitmap;
+//        }
+//    });
 
     Object.defineProperty(this, "pngData", {
         get: function ()/* :ByteArray */ {
@@ -224,6 +224,12 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         // We need to keep the asset data around now, to be able
         // to upload it to other servers.
         //asset.data = null;
+        var PNGEncoder = require("../../../PalaceClient/adapter/graphics/codec/PNGEncoder.js");
+        var fs = require('fs');
+        var pngEncoder = new PNGEncoder();
+        var png = pngEncoder.encode(new Buffer(that.bitmap), 44, 44, 'RGBA');
+        var filename = './'+ that.crc +'.png'
+        fs.writeFileSync(filename, png.toString('binary'), 'binary');
 
         dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, that));
     }
@@ -628,6 +634,18 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
             }
 
         }
+        var rgba = [];
+        var i;
+        for (i=44; i<pixData.length; i++) {
+            rgba.push(pixData[i] >> 16 & 0xff);
+            rgba.push(pixData[i] >> 8 & 0xff);
+            rgba.push(pixData[i] & 0xff);
+            if(pixData[i] === 0xff) {
+                rgba.push(0xff);
+            } else {
+                rgba.push(0x00);
+            }
+        }
 
         // Using setPixels() now instead of setPixel() -- WAY faster.
 
@@ -641,7 +659,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         var bitmapData/* :BitmapData */ = new BitmapData(that.width, that.height, true);
         bitmapData.setVector(rect, bitmapBytes);
 
-        that.bitmap = bitmapData;
+        that.bitmap = rgba; //bitmapData;
     }
 
     function trace(data) {
