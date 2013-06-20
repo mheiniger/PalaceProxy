@@ -1240,7 +1240,7 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(regCRC);  // Guest regCode crc
 
         // regCode counter 0xcf07309c;
-        socket.writeInt(regCounter);  // Guest regCode counter
+        socket.writeUnsignedInt(regCounter);  // Guest regCode counter
         // Username has to be Windows-1252 and up to 31 characters
         var userName = that.getUserName();
         if (userName.length > 31) {
@@ -1258,13 +1258,13 @@ function PalaceClient() // extends EventDispatcher
             socket.writeByte(0);
         }
         // auxFlags
-        socket.writeInt(AUXFLAGS_AUTHENTICATE + AUXFLAGS_WIN32);
+        socket.writeUnsignedInt(AUXFLAGS_AUTHENTICATE + AUXFLAGS_WIN32);
 
         // puidCtr
-        socket.writeInt(puidCounter);
+        socket.writeUnsignedInt(puidCounter);
 
         // puidCRC
-        socket.writeInt(puidCRC);
+        socket.writeUnsignedInt(puidCRC);
 
         // demoElapsed - no longer used
         socket.writeInt(0);
@@ -1287,14 +1287,14 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(0);
 
         // ulUploadCaps
-        socket.writeInt(
+        socket.writeUnsignedInt(
             ULCAPS_ASSETS_PALACE  // This is a lie... for now
         );
 
         // ulDownloadCaps
         // We have to lie about our capabilities so that servers don't
         // reject OpenPalace as a Hacked client.
-        socket.writeInt(
+        socket.writeUnsignedInt(
             DLCAPS_ASSETS_PALACE |
                 DLCAPS_FILES_PALACE |  // This is a lie...
                 DLCAPS_FILES_HTTPSRVR

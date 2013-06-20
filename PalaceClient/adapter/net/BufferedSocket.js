@@ -28,6 +28,20 @@ function extendSocket(socket) {
         this.extendWriteBuffer(4);
         //var buffer = new Buffer(4);
         if (socket.endian == "littleEndian") {
+            this.writeBuffer.writeInt32LE(data, this.writeBufferPos);
+        } else {
+            this.writeBuffer.writeInt32BE(data, this.writeBufferPos);
+        }
+        this.writeBufferPos += 4;
+        //socket.write(buffer);
+    };
+
+    socket.writeUnsignedInt = function (data) {
+//            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
+//            console.log('writeInt Binary: ' + data.toString(2));
+        this.extendWriteBuffer(4);
+        //var buffer = new Buffer(4);
+        if (socket.endian == "littleEndian") {
             this.writeBuffer.writeUInt32LE(data, this.writeBufferPos);
         } else {
             this.writeBuffer.writeUInt32BE(data, this.writeBufferPos);
@@ -35,7 +49,6 @@ function extendSocket(socket) {
         this.writeBufferPos += 4;
         //socket.write(buffer);
     };
-    socket.writeUnsignedInt = socket.writeInt;
 
     socket.writeByte = function (data) {
 //            var buffer = new Buffer(1);
