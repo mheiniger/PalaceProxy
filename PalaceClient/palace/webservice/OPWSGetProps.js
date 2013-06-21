@@ -75,8 +75,9 @@ function OPWSGetProps(palaceClient) //extends EventDispatcher
         request.on('error', function (err) {
             handleIOError(err);
         });
-
+        console.log('requesting: ' + palaceClient.host + '/webservice/props/get');
         request.write('data\n');
+        console.log('width data: ' + data);
         request.end();
 
 //        var request/* :URLRequest */ = new URLRequest(palaceClient.host + "/webservice/props/get");

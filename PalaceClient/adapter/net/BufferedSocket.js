@@ -23,6 +23,10 @@ function extendSocket(socket) {
     };
 
     socket.writeInt = function (data) {
+        if (data > 2147483647) {
+            this.writeUnsignedInt(data);
+            return;
+        }
 //            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
 //            console.log('writeInt Binary: ' + data.toString(2));
         this.extendWriteBuffer(4);
@@ -37,6 +41,10 @@ function extendSocket(socket) {
     };
 
     socket.writeUnsignedInt = function (data) {
+        if (data < 0) {
+            this.writeInt(data);
+            return;
+        }
 //            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
 //            console.log('writeInt Binary: ' + data.toString(2));
         this.extendWriteBuffer(4);
