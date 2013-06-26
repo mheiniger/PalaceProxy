@@ -26,7 +26,17 @@ if (process.env.PORT) { // needed in cloud9 environment
 function palaceHandler(req, res) {
     var url = req.url;
     if (url.search(/^\/prop\//) === 0) {
+        var urlParts = url.split('/');
+        var crc = urlParts[3].replace(".png", "");
         res.writeHead(200);
+        var props = users[urlParts[2]].props.data;
+        var data = "";
+        for (var i=0; i<props.length;i++) {
+            if (props[i].asset.crc == crc){
+                data = props[i].pngData;
+            }
+        }
+        res.end(data);
         // todo: write handler for url like /prop/palaceurl/userid/propnr.png
         // needs each connected user to register itself in users{} after connection(-change) to find the right instance of palaceClient for data retrieval
     }
@@ -92,6 +102,7 @@ appPalace.sockets.on('connection', function (socket) {
 
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_ENTERED, function (event) {
             event.user.face = event.user.get_face();
+            users[event.user.id] = event.user;
             socket.emit(PalaceRoomEvent.USER_ENTERED, event);
         });
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_MOVED, function (event) {

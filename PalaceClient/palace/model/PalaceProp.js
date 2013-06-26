@@ -20,6 +20,8 @@ var PalacePropFormat = require("./PalacePropFormat");
 var PalacePalette = require("./PalacePalette");
 
 var PropEvent = require("../event/PropEvent");
+var PNGEncoder = require("../../../PalaceClient/adapter/graphics/codec/PNGEncoder.js");
+
 
 //	[Event(name="propLoaded",type="net.codecomposer.palace.event.PropEvent")]
 //	[Event(name="propDecoded",type="net.codecomposer.palace.event.PropEvent")]
@@ -116,7 +118,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         get: function ()/* :ByteArray */ {
             if (_bitmap != null) {
                 var encoder /*:PNGEncoder*/ = new PNGEncoder();
-                return encoder.encode(_bitmap);
+                return encoder.encode(_bitmap,44,44);
             }
             else {
                 return null;
@@ -224,12 +226,11 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         // We need to keep the asset data around now, to be able
         // to upload it to other servers.
         //asset.data = null;
-        var PNGEncoder = require("../../../PalaceClient/adapter/graphics/codec/PNGEncoder.js");
-        var fs = require('fs');
-        var pngEncoder = new PNGEncoder();
-        var png = pngEncoder.encode(new Buffer(that.bitmap), 44, 44, 'RGBA');
-        var filename = './'+ that.asset.crc +'.png'
-        fs.writeFileSync(filename, png.toString('binary'), 'binary');
+//        var fs = require('fs');
+//        var pngEncoder = new PNGEncoder();
+//        var png = pngEncoder.encode(that.bitmap, 44, 44, 'rgba');
+//        var filename = './'+ that.asset.crc +'.png'
+//        fs.writeFileSync(filename, png.toString('binary'), 'binary');
 
         dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, that));
     }
@@ -596,6 +597,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         var pixData/* :Vector.<uint> */ = []; // new Vector. < uint > (width * (height + 1), true);
         var n/* :int */ = 12;
 //			for (n = 12; n < that.asset.data.length; n++) {
+
 //				ba.writeByte(that.asset.data[n]);
 //			}
 //			ba.position = 0;

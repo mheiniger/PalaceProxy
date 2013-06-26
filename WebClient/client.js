@@ -94,7 +94,8 @@ function startSocket() {
         setFace(user.id, user.face, user.color);
     });
     socket.on('propLoaded', function (data) {
-       console.log(data);
+        console.log(data);
+        addProp(data.user.id, data.user);
     });
 }
 
@@ -156,6 +157,26 @@ function setFace(userId, face, color) {
     userDiv.css({
         'backgroundPosition':(45 * column * -1) + 'px ' + (45 * row * -1) + 'px'
     });
+}
+
+function addProp(userId, userData) {
+    var userDiv = $('#user-' + userId);
+    userDiv.find('.prop').remove();
+    var i;
+    console.log('propcount: ' + userData.propCount);
+    for (i=0;i<userData.propCount;i++) {
+        console.log('adding Prop' + i);
+        var propDiv = document.createElement("div");
+        propDiv.setAttribute("class", "prop");
+        propDiv.style.width = '44px';
+        propDiv.style.height = '44px';
+//        propDiv.style.top = userData.props.data[i].verticalOffset;
+//        propDiv.style.left = userData.props.data[i].horizontalOffset;
+        propDiv.style.backgroundImage = "url('prop/"+ userId +"/"+ userData.propCrcs[i] +".png')";
+        propDiv.style.backgroundRepeat = "no-repeat";
+        propDiv.style.backgroundPosition = "-1px -1px";
+        userDiv.append(propDiv);
+    }
 }
 
 function moveUser(userId, x, y) {
