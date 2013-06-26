@@ -1,5 +1,6 @@
 var users = {};
 var me = {};
+var server = {};
 me.isWhisperingTo = null;
 var socket = null;
 
@@ -43,7 +44,9 @@ function startSocket() {
     socket.on('dev-log', function (data) {
         console.log(data);
     });
-    socket.on('connectComplete', function () {
+    socket.on('connectComplete', function (data) {
+        server.host = data.host;
+        server.port = data.port;
         $('#login-box').hide(1000);
     });
 

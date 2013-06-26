@@ -1314,7 +1314,10 @@ function PalaceClient() // extends EventDispatcher
         state = STATE_READY;
         console.log('logon finished');
         connecting = false;
-        dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_COMPLETE));
+        var connectionComplete = new PalaceEvent(PalaceEvent.CONNECT_COMPLETE);
+        connectionComplete.host = that.host;
+        connectionComplete.port = that.port;
+        dispatchEvent(connectionComplete);
     }
 
 

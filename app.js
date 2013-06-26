@@ -89,7 +89,7 @@ appPalace.sockets.on('connection', function (socket) {
         palaceClient.connect(userName, host, port, 0, socket);
 
         palaceClient.on(PalaceEvent.CONNECT_COMPLETE, function (data) {
-            socket.emit(PalaceEvent.CONNECT_COMPLETE);
+            socket.emit(PalaceEvent.CONNECT_COMPLETE, data);
             socket.emit('log', { text: 'You\'re connected to ' + host + ":" + port});
         });
         palaceClient.on(PalaceEvent.ROOM_CHANGED, function () {
