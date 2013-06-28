@@ -27,9 +27,9 @@ function palaceHandler(req, res) {
     var url = req.url;
     if (url.search(/^\/prop\//) === 0) {
         var urlParts = url.split('/');
-        var crc = urlParts[3].replace(".png", "");
+        var crc = urlParts[4].replace(".png", "");
         res.writeHead(200);
-        var props = users[urlParts[2]].props.data;
+        var props = users[urlParts[3]].props.data;
         var data = "";
         for (var i=0; i<props.length;i++) {
             if (props[i].asset.crc == crc){

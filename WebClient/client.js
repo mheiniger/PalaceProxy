@@ -175,7 +175,7 @@ function addProp(userId, userData) {
         propDiv.style.height = '44px';
 //        propDiv.style.top = userData.props.data[i].verticalOffset;
 //        propDiv.style.left = userData.props.data[i].horizontalOffset;
-        propDiv.style.backgroundImage = "url('prop/"+ userId +"/"+ userData.propCrcs[i] +".png')";
+        propDiv.style.backgroundImage = "url('prop/" + server.host + ":" + server.port + "/" + userId +"/"+ userData.propCrcs[i] +".png')";
         propDiv.style.backgroundRepeat = "no-repeat";
         propDiv.style.backgroundPosition = "-1px -1px";
         userDiv.append(propDiv);

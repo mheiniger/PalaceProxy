@@ -80,6 +80,9 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 
     this.webServiceFormat/* :String */ = "";
 
+    this.palaceHost = "";
+    this.palacePort = "";
+
 
     var formatMask/* :uint */ = PROP_FORMAT_20BIT |
         PROP_FORMAT_S20BIT |
