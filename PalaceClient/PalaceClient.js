@@ -46,22 +46,22 @@ var PalaceEncryption = require("./palace/crypto/PalaceEncryption");
 var PalaceEvent =  require("./palace/event/PalaceEvent");
 var PalaceRoomEvent = require("./palace/event/PalaceRoomEvent");
 var PalaceSecurityErrorEvent = require("./palace/event/PalaceSecurityErrorEvent");
-// var PropEvent = require("./palace/event/PropEvent");
+var PropEvent = require("./palace/event/PropEvent");
 // var DebugData = require("./palace/iptscrae/DebugData");
 // var IptEventHandler = require("./palace/iptscrae/IptEventHandler");
 // var PalaceController = require("./palace/iptscrae/PalaceController");
 var IncomingMessageTypes =  require("./palace/message/IncomingMessageTypes");
 // var NavErrorMessage = require("./palace/message/NavErrorMessage");
 var OutgoingMessageTypes =  require("./palace/message/OutgoingMessageTypes");
-// var AssetManager = require("./palace/model/AssetManager");
-// var PalaceAsset = require("./palace/model/PalaceAsset");
+var AssetManager = require("./palace/model/AssetManager");
+var PalaceAsset =  require("./palace/model/PalaceAsset");
 var PalaceConfig =  require("./palace/model/PalaceConfig");
 var PalaceCurrentRoom = require("./palace/model/PalaceCurrentRoom");
 var PalaceHotspot = require("./palace/model/PalaceHotspot");
 var PalaceImageOverlay = require("./palace/model/PalaceImageOverlay");
 var PalaceLooseProp = require("./palace/model/PalaceLooseProp");
 // var PalaceProp = require("./palace/model/PalaceProp");
-// var PalacePropStore = require("./palace/model/PalacePropStore");
+var PalacePropStore = require("./palace/model/PalacePropStore");
 var PalaceRoom = require("./palace/model/PalaceRoom");
 var PalaceServerInfo =  require("./palace/model/PalaceServerInfo");
 
@@ -156,6 +156,7 @@ function PalaceClient() // extends EventDispatcher
     var connecting = false;
     var serverName = "No Server";
     var serverInfo = new PalaceServerInfo();
+    var propStore = new PalacePropStore(this);
 
     var population = 0;
     var mediaServer = "";
@@ -230,6 +231,13 @@ function PalaceClient() // extends EventDispatcher
 //        palaceController = new PalaceController();
 //        palaceController.client = this;
     };
+
+    this.getPalaceUrl = function() {
+        if (that.port) {
+            return that.host + ":" + that.port;
+        }
+        return that.host;
+    }
 
     function setCyborg(cyborgScript) {
         cyborgHotspot = new PalaceHotspot();
@@ -768,13 +776,14 @@ function PalaceClient() // extends EventDispatcher
         socket.flush();
     }
 
+    this.requestAsset = requestAsset;
     function requestAsset(assetType, assetId, assetCrc) {
         // Assets are requested in packets of up to 20 requests, separated by 500ms
         // to prevent flooding the server and getting killed.
         if (!connected) {
             return;
         }
-//			trace("Requesting asset (Type:" + assetType.toString(16) + ") (ID:" + assetId + ") (CRC:" + assetCrc + ")");
+    	trace("Requesting asset (Type:" + assetType.toString(16) + ") (ID:" + assetId + ") (CRC:" + assetCrc + ")");
         if (assetRequestQueueTimer == null) {
             assetRequestQueueTimer = new Timer(50, 1);
             assetRequestQueueTimer.addEventListener(TimerEvent.TIMER, sendAssetRequests);
@@ -808,11 +817,13 @@ function PalaceClient() // extends EventDispatcher
 
 //			trace("Requesting a group of props");
         for (var i = 0; i < count; i++) {
-            var request = assetRequestQueue.shift().toArray();
+            var request = assetRequestQueue.shift(); //.toArray();
+            console.log(request);
             socket.writeInt(OutgoingMessageTypes.REQUEST_ASSET);
             socket.writeInt(12);
             socket.writeInt(id);
             for (var j = 0; j < 3; j++) {
+                console.log('writing' + request[j]);
                 socket.writeInt(request[j]);
             }
         }
@@ -850,6 +861,7 @@ function PalaceClient() // extends EventDispatcher
         return currentRoom.getUserById(id);
     }
 
+    this.updateUserProps = updateUserProps;
     function updateUserProps() {
         if (!connected) {
             return;
@@ -862,7 +874,7 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(id);
         socket.writeInt(user.props.length);
         for (var i = 0; i < numProps; i++) {
-            var prop = PalaceProp(user.props.getItemAt(i));
+            var prop = user.props.getItemAt(i);
             socket.writeInt(prop.asset.id);
             //socket.writeUnsignedInt(prop.asset.crc);
             socket.writeUnsignedInt(0);
@@ -1235,7 +1247,7 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(regCRC);  // Guest regCode crc
 
         // regCode counter 0xcf07309c;
-        socket.writeInt(regCounter);  // Guest regCode counter
+        socket.writeUnsignedInt(regCounter);  // Guest regCode counter
         // Username has to be Windows-1252 and up to 31 characters
         var userName = that.getUserName();
         if (userName.length > 31) {
@@ -1253,13 +1265,13 @@ function PalaceClient() // extends EventDispatcher
             socket.writeByte(0);
         }
         // auxFlags
-        socket.writeInt(AUXFLAGS_AUTHENTICATE + AUXFLAGS_WIN32);
+        socket.writeUnsignedInt(AUXFLAGS_AUTHENTICATE + AUXFLAGS_WIN32);
 
         // puidCtr
-        socket.writeInt(puidCounter);
+        socket.writeUnsignedInt(puidCounter);
 
         // puidCRC
-        socket.writeInt(puidCRC);
+        socket.writeUnsignedInt(puidCRC);
 
         // demoElapsed - no longer used
         socket.writeInt(0);
@@ -1282,14 +1294,14 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(0);
 
         // ulUploadCaps
-        socket.writeInt(
+        socket.writeUnsignedInt(
             ULCAPS_ASSETS_PALACE  // This is a lie... for now
         );
 
         // ulDownloadCaps
         // We have to lie about our capabilities so that servers don't
         // reject OpenPalace as a Hacked client.
-        socket.writeInt(
+        socket.writeUnsignedInt(
             DLCAPS_ASSETS_PALACE |
                 DLCAPS_FILES_PALACE |  // This is a lie...
                 DLCAPS_FILES_HTTPSRVR
@@ -1309,7 +1321,10 @@ function PalaceClient() // extends EventDispatcher
         state = STATE_READY;
         console.log('logon finished');
         connecting = false;
-        dispatchEvent(new PalaceEvent(PalaceEvent.CONNECT_COMPLETE));
+        var connectionComplete = new PalaceEvent(PalaceEvent.CONNECT_COMPLETE);
+        connectionComplete.host = that.host;
+        connectionComplete.port = that.port;
+        dispatchEvent(connectionComplete);
     }
 
 
@@ -1785,10 +1800,11 @@ function PalaceClient() // extends EventDispatcher
             var userName = buffer.readMultiByte(userNameLength, 'Windows-1252'); // Length = 32
             buffer.readMultiByte(31 - userNameLength, 'Windows-1252');
 
-            var user = new PalaceUser();
+            var user = new PalaceUser(that, propStore);
             user.isSelf = Boolean(userId == id);
             user.id = userId;
             user.name = userName;
+            user.palaceUrl = that.getPalaceUrl();
             user.propCount = propnum;
             user.x = x;
             user.y = y;
@@ -1828,11 +1844,13 @@ function PalaceClient() // extends EventDispatcher
         userList.removeAll();
         var userCount = referenceId;
         for (var i = 0; i < userCount; i++) {
-            var user = new PalaceUser();
+            var user = new PalaceUser(that, propStore);
             user.id = buffer.readInt();
             user.isSelf = Boolean(user.id == id);
             user.flags = buffer.readShort();
             user.roomID = buffer.readShort();
+            user.palaceUrl = that.getPalaceUrl();
+
             if (roomById[user.roomID]) {
                 user.roomName = roomById[user.roomID].name;
             }
@@ -1902,7 +1920,7 @@ function PalaceClient() // extends EventDispatcher
         buffer.readMultiByte(31 - userNameLength, 'Windows-1252');
         //userName = userName.substring(1);
 
-        var user = new PalaceUser();
+        var user = new PalaceUser(that, propStore);
         user.isSelf = Boolean(userId == id);
         user.id = userId;
         user.x = x;
@@ -1911,6 +1929,7 @@ function PalaceClient() // extends EventDispatcher
         user.propCrcs = propCrcs;
         user.propCount = propnum;
         user.name = userName;
+        user.palaceUrl = that.getPalaceUrl();
         user.roomID = roomId;
         user.set_face(face);
         user.color = color;
@@ -2224,8 +2243,8 @@ function PalaceClient() // extends EventDispatcher
         var type = buffer.readInt();
         var assetId = buffer.readInt();
         var assetCrc = buffer.readUnsignedInt();
-//			trace("Got asset request for type: " + type + ", assetId: " + assetId + ", assetCrc: " + assetCrc);
-        var prop = PalacePropStore.getInstance().getProp(null, assetId, assetCrc);
+		trace("Got asset request for type: " + type + ", assetId: " + assetId + ", assetCrc: " + assetCrc);
+        var prop = propStore.getProp(null, assetId, assetCrc);
 
         if (prop.ready) {
             sendPropToServer(prop);
@@ -2277,9 +2296,9 @@ function PalaceClient() // extends EventDispatcher
         asset.data = data;
         asset.type = assetType;
         asset.name = assetName;
-//			trace("Received asset: (Type:" + asset.type.toString(16) + ") (ID:"+asset.id+") (CRC:" + asset.crc + ") (Name:" + asset.name + ")");
+			trace("Received asset: (Type:" + asset.type.toString(16) + ") (ID:"+asset.id+") (CRC:" + asset.crc + ") (Name:" + asset.name + ")");
         if (asset.type == AssetManager.ASSET_TYPE_PROP) {
-            PalacePropStore.getInstance().injectAsset(asset);
+            propStore.injectAsset(asset);
         }
     }
 

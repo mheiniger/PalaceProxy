@@ -21,6 +21,7 @@ var EventDispatcher = require("../../adapter/events/EventDispatcher");
 var ArrayCollection = require("../../adapter/collections/ArrayCollection");
 
 var PropEvent = require("./../event/PropEvent");
+var PalaceProp = require("./PalaceProp");
 //	import net.codecomposer.palace.rpc.PalaceClient;
 
 module.exports = PalaceUser;
@@ -53,7 +54,7 @@ module.exports.PROPGAG/* :uint */ = 0x1000;
 
 
 util.inherits(PalaceUser, EventDispatcher); //extends EventDispatcher
-function PalaceUser()
+function PalaceUser(palaceClient, propStore)
 {
     PalaceUser.super_.call(this);
 
@@ -62,6 +63,7 @@ function PalaceUser()
     this.isSelf/* :Boolean */ = false;
     this.id/* :int */ = 0;
     this.name/* :String */ = "Uninitialized User";
+    this.palaceUrl = "";
     this.x/* :int */ = 0;
     this.y/* :int */ = 0;
     this.roomID/* :int */ = 0;
@@ -75,8 +77,6 @@ function PalaceUser()
     this.props/* :Array Collection */ = new ArrayCollection();
 
     this.showFace/* :Boolean */ = true;
-// todo: mhe: implement prop store
-//		var propStore/* :PalaceProp Store */ = PalacePropStore.getInstance();
 
     this.set_face = function (newValue/* :int */)/* :void */ {
         if (newValue > 12) {
@@ -171,7 +171,7 @@ function PalaceUser()
     };
 
     this.updatePropsOnServer = function ()/* :void */ {
-        PalaceClient.getInstance().updateUserProps();
+        palaceClient.updateUserProps();
     };
 
     this.naked = function ()/* :void */ {
@@ -192,26 +192,26 @@ function PalaceUser()
     };
 
     this.loadProps = function ()/* :void */ {
-// todo mhe: later
-//			var i/* :int */ = 0;
-//			var prop/* :PalaceProp */;
-//			for (i=0; i < that.props.length; i++) {
-//				prop = PalaceProp(that.props.getItemAt(i));
-//				prop.removeEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
-//			}
-//			that.props.removeAll();
-//			for (i = 0; i < that.propCount; i ++) {
-//				prop = that.propStore.getProp(null, that.propIds[i], that.propCrcs[i]);
-//				if (!prop.ready) {
-//					prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
-//				}
-//				that.props.addItem(prop);
-//			}
-//			checkFaceProps();
+			var i/* :int */ = 0;
+			var prop/* :PalaceProp */;
+			for (i=0; i < that.props.length; i++) {
+				prop = that.props.getItemAt(i);
+				prop.removeEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
+			}
+			that.props.removeAll();
+			for (i = 0; i < that.propCount; i ++) {
+				prop = propStore.getProp(null, that.propIds[i], that.propCrcs[i]);
+				if (!prop.ready) {
+					prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
+				}
+				that.props.addItem(prop);
+			}
+			checkFaceProps();
     };
 
     function handlePropLoaded(event/* :PropEvent */)/* :void */ {
         checkFaceProps();
+        dispatchEvent(new PropEvent(PropEvent.PROP_LOADED));
     }
 
     function dispatchEvent(event) {

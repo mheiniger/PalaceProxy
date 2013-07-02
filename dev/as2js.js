@@ -12,8 +12,8 @@ for(var i = 0;i<array.length;i++) {
 
     // add new variable scopes
     if (line.search("public class") > -1) {
-        array[i+1] = array[i+1] + "\n" +
-            "    this.constants = {};";
+//        array[i+1] = array[i+1] + "\n" +
+//            "    this.constants = {};";
         classname = line.match(/public class (\w+)/)[1];
     }
     line = line.replace(/public class (\w+)/, 'function $1\(\)');
@@ -80,9 +80,21 @@ for(var i = 0;i<array.length;i++) {
     line = comment(line, ":FlexBitmap");
     line = comment(line, ":URLRequest");
     line = comment(line, ":HTTPStatusEvent");
+    line = comment(line, ":OPWSNewProps");
+    line = comment(line, ":OPWSConfirmPropsUpload");
+    line = comment(line, ":OPWSEvent");
+    line = comment(line, ":MultiPartFormBuilder");
+    line = comment(line, ":URLLoader");
+    line = comment(line, ":OPWSGetProps");
+    line = comment(line, ":PNGEncoder");
+    line = comment(line, ":Base64Encoder");
     line = line.replace("PalaceRoom */View", "PalaceRoom View */");
     line = line.replace("PalaceRoom */Event", "PalaceRoom Event */");
     line = comment(line, "as Array");
+    line = comment(line, "is Bitmap");
+    line = line.replace("is Bitmap */Data", "is Bitmap Data */");
+    line = comment(line, "is String");
+    line = comment(line, "is Number");
 
 
     line = line.replace("/* /*", "/*");
@@ -99,13 +111,13 @@ for(var i = 0;i<array.length;i++) {
     line = line.replace(/public static function (\w+)/, 'var $1 = this.$1 = this.constants.$1 = function ');
 
 
-    line = line.replace(/public static const (\w+)/, 'var $1 = this.$1 = this.constants.$1');
+    line = line.replace(/public static const (\w+)/, 'var $1 = module.exports.$1');
     line = line.replace(/public const (\w+)/, 'var $1 = this.constants.$1');
 
     line = line.replace(":Vector.<IptEventHandler> = new Vector.<IptEventHandler>()", "= {}");
 
 
-    line = line.replace(/public var (\w+)/, "var $1 = this.$1");
+    line = line.replace(/public var (\w+)/, "this.$1");
     line = line.replace("private var ", "var ");
     line = line.replace("private static function ", "function ");
     line = line.replace("private function ", "function ");
@@ -130,12 +142,12 @@ for(var i = 0;i<array.length;i++) {
 }
 
 array[array.length-1] = "//" + array[array.length-1];
-array[array.length] = array[array.length]||'' + "\n" +
-    "module.exports = " + classname + ";\n" +
-    "var " + classname + "Var = new " + classname + "();\n" +
-    "for (name in " + classname + "Var.constants) {\n" +
-    "   module.exports[name] = " + classname + "Var.constants[name];\n" +
-    "}"
+//array[array.length] = array[array.length]||'' + "\n" +
+//    "module.exports = " + classname + ";\n" +
+//    "var " + classname + "Var = new " + classname + "();\n" +
+//    "for (name in " + classname + "Var.constants) {\n" +
+//    "   module.exports[name] = " + classname + "Var.constants[name];\n" +
+//    "}"
 
 function comment(line, word){
     var re = new RegExp(word,"g");

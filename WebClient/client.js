@@ -1,5 +1,6 @@
 var users = {};
 var me = {};
+var server = {};
 me.isWhisperingTo = null;
 var socket = null;
 
@@ -43,7 +44,9 @@ function startSocket() {
     socket.on('dev-log', function (data) {
         console.log(data);
     });
-    socket.on('connectComplete', function () {
+    socket.on('connectComplete', function (data) {
+        server.host = data.host;
+        server.port = data.port;
         $('#login-box').hide(1000);
     });
 
@@ -92,6 +95,10 @@ function startSocket() {
         var user = data.user;
         console.log(user);
         setFace(user.id, user.face, user.color);
+    });
+    socket.on('propLoaded', function (data) {
+        console.log(data);
+        addProp(data.user.id, data.user);
     });
 }
 
@@ -155,6 +162,25 @@ function setFace(userId, face, color) {
     });
 }
 
+function addProp(userId, userData) {
+    var userDiv = $('#user-' + userId);
+    userDiv.find('.prop').remove();
+    var i;
+    console.log('propcount: ' + userData.propCount);
+    for (i=0;i<userData.propCount;i++) {
+        console.log('adding Prop' + i);
+        var propDiv = document.createElement("div");
+        propDiv.setAttribute("class", "prop");
+        propDiv.style.width = '44px';
+        propDiv.style.height = '44px';
+        propDiv.style.top = userData.props.data[i].verticalOffset + 1 + 'px';
+        propDiv.style.left = userData.props.data[i].horizontalOffset + 1 + 'px';
+        propDiv.style.backgroundImage = "url('prop/" + userData.palaceUrl + "/" + userId +"/"+ userData.propIds[i] +".png')";
+        propDiv.style.backgroundRepeat = "no-repeat";
+        userDiv.append(propDiv);
+    }
+}
+
 function moveUser(userId, x, y) {
     var roomImage = $('#room-image');
     x = Math.max(x, 22);
@@ -215,8 +241,8 @@ function createUserDiv(user) {
 
     var userFace = document.createElement("div");
     userFace.setAttribute("class", "face");
-    userFace.style.width = '42px';
-    userFace.style.height = '42px';
+    userFace.style.width = '44px';
+    userFace.style.height = '44px';
     userFace.style.backgroundImage = "url('assets/faces/defaultsmileys.png')";
     userFace.style.backgroundRepeat = "no-repeat";
     userFace.style.backgroundPosition = "-1px -1px";

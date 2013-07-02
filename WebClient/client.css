@@ -117,6 +117,13 @@ body {
     padding-left: 1px;
     padding-right: 3px;
     box-shadow: 0 0 6px #B2B2B2;
+    z-index: 30;
+}
+
+.userDiv .prop {
+    position: absolute;
+    z-index: 20;
+    background-position: 0;
 }
 
 .chatBubble {
