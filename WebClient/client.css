@@ -120,7 +120,9 @@ body {
 }
 
 .userDiv .prop {
-    position: relative;
+    position: absolute;
+    z-index: 20;
+    background-position: 0;
 }
 
 .chatBubble {

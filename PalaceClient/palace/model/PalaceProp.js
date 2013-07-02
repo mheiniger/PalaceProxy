@@ -169,16 +169,16 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         if (asset.data[1] == 0) {
             that.width = asset.data[0] | asset.data[1] << 8;
             that.height = asset.data[2] | asset.data[3] << 8;
-            that.horizontalOffset = asset.data[4] | asset.data[5] << 8;
-            that.verticalOffset = asset.data[6] | asset.data[7] << 8;
+            that.horizontalOffset = toSignedShort(asset.data[4] | asset.data[5] << 8);
+            that.verticalOffset = toSignedShort(asset.data[6] | asset.data[7] << 8);
             that.scriptOffset = asset.data[8] | asset.data[9] << 8;
             that.flags = asset.data[10] | asset.data[11] << 8;
         }
         else {
             that.width = asset.data[1] | asset.data[0] << 8;
             that.height = asset.data[3] | asset.data[2] << 8;
-            that.horizontalOffset = asset.data[5] | asset.data[4] << 8;
-            that.verticalOffset = asset.data[7] | asset.data[6] << 8;
+            that.horizontalOffset = toSignedShort(asset.data[5] | asset.data[4] << 8);
+            that.verticalOffset = toSignedShort(asset.data[7] | asset.data[6] << 8);
             that.scriptOffset = asset.data[9] | asset.data[8] << 8;
             that.flags = asset.data[11] | asset.data[10] << 8;
         }
@@ -236,6 +236,13 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 //        fs.writeFileSync(filename, png.toString('binary'), 'binary');
 
         dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, that));
+    }
+
+    function toSignedShort(int) {
+        if (int & 0x8000) {
+            return int - 0x10000;
+        }
+        return int & 0xffff;
     }
 
     function computeCRC(data/* :ByteArray */)/* :uint */ {
@@ -656,7 +663,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
             rgba.push(bitmapBytes[i] >> 16 & 0xff);
             rgba.push(bitmapBytes[i] >> 8 & 0xff);
             rgba.push(bitmapBytes[i] & 0xff);
-            if(bitmapBytes[i] === 0xff) {
+            if((bitmapBytes[i] & 0xfffff) == 0) {
                 rgba.push(0xff);
             } else {
                 rgba.push(0x00);

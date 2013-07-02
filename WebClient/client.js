@@ -173,8 +173,8 @@ function addProp(userId, userData) {
         propDiv.setAttribute("class", "prop");
         propDiv.style.width = '44px';
         propDiv.style.height = '44px';
-        propDiv.style.top = userData.props.data[i].verticalOffset;
-        propDiv.style.left = userData.props.data[i].horizontalOffset;
+        propDiv.style.top = userData.props.data[i].verticalOffset + 1 + 'px';
+        propDiv.style.left = userData.props.data[i].horizontalOffset + 1 + 'px';
         propDiv.style.backgroundImage = "url('prop/" + userData.palaceUrl + "/" + userId +"/"+ userData.propIds[i] +".png')";
         propDiv.style.backgroundRepeat = "no-repeat";
         propDiv.style.backgroundPosition = "-1px -1px";
@@ -242,8 +242,8 @@ function createUserDiv(user) {
 
     var userFace = document.createElement("div");
     userFace.setAttribute("class", "face");
-    userFace.style.width = '42px';
-    userFace.style.height = '42px';
+    userFace.style.width = '44px';
+    userFace.style.height = '44px';
     userFace.style.backgroundImage = "url('assets/faces/defaultsmileys.png')";
     userFace.style.backgroundRepeat = "no-repeat";
     userFace.style.backgroundPosition = "-1px -1px";

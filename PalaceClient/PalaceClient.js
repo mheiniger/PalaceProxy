@@ -874,7 +874,7 @@ function PalaceClient() // extends EventDispatcher
         socket.writeInt(id);
         socket.writeInt(user.props.length);
         for (var i = 0; i < numProps; i++) {
-            var prop = PalaceProp(user.props.getItemAt(i));
+            var prop = user.props.getItemAt(i);
             socket.writeInt(prop.asset.id);
             //socket.writeUnsignedInt(prop.asset.crc);
             socket.writeUnsignedInt(0);
