@@ -232,6 +232,13 @@ function PalaceClient() // extends EventDispatcher
 //        palaceController.client = this;
     };
 
+    this.getPalaceUrl = function() {
+        if (that.port) {
+            return that.host + ":" + that.port;
+        }
+        return that.host;
+    }
+
     function setCyborg(cyborgScript) {
         cyborgHotspot = new PalaceHotspot();
         cyborgHotspot.scriptString = cyborgScript;
@@ -1797,6 +1804,7 @@ function PalaceClient() // extends EventDispatcher
             user.isSelf = Boolean(userId == id);
             user.id = userId;
             user.name = userName;
+            user.palaceUrl = that.getPalaceUrl();
             user.propCount = propnum;
             user.x = x;
             user.y = y;
@@ -1841,6 +1849,8 @@ function PalaceClient() // extends EventDispatcher
             user.isSelf = Boolean(user.id == id);
             user.flags = buffer.readShort();
             user.roomID = buffer.readShort();
+            user.palaceUrl = that.getPalaceUrl();
+
             if (roomById[user.roomID]) {
                 user.roomName = roomById[user.roomID].name;
             }
@@ -1919,6 +1929,7 @@ function PalaceClient() // extends EventDispatcher
         user.propCrcs = propCrcs;
         user.propCount = propnum;
         user.name = userName;
+        user.palaceUrl = that.getPalaceUrl();
         user.roomID = roomId;
         user.set_face(face);
         user.color = color;

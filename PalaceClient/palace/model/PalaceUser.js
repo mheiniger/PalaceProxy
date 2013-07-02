@@ -63,6 +63,7 @@ function PalaceUser(palaceClient, propStore)
     this.isSelf/* :Boolean */ = false;
     this.id/* :int */ = 0;
     this.name/* :String */ = "Uninitialized User";
+    this.palaceUrl = "";
     this.x/* :int */ = 0;
     this.y/* :int */ = 0;
     this.roomID/* :int */ = 0;

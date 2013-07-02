@@ -27,12 +27,12 @@ function palaceHandler(req, res) {
     var url = req.url;
     if (url.search(/^\/prop\//) === 0) {
         var urlParts = url.split('/');
-        var crc = urlParts[4].replace(".png", "");
+        var id = urlParts[4].replace(".png", "");
         res.writeHead(200);
-        var props = users[urlParts[3]].props.data;
+        var props = users[urlParts[2] + "/" + urlParts[3]].props.data;
         var data = "";
         for (var i=0; i<props.length;i++) {
-            if (props[i].asset.crc == crc){
+            if (props[i].asset.id == id){
                 data = props[i].pngData;
             }
         }
@@ -102,7 +102,7 @@ appPalace.sockets.on('connection', function (socket) {
 
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_ENTERED, function (event) {
             event.user.face = event.user.get_face();
-            users[event.user.id] = event.user;
+            users[event.user.palaceUrl + "/" + event.user.id] = event.user;
             socket.emit(PalaceRoomEvent.USER_ENTERED, event);
         });
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_MOVED, function (event) {
