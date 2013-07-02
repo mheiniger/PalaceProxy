@@ -1,3 +1,4 @@
+var zlib = require('zlib');
 var encoding = require("encoding");
 
 function BufferedSocket() {
@@ -22,6 +23,28 @@ function extendSocket(socket) {
     };
 
     socket.writeInt = function (data) {
+        if (data > 2147483647) {
+            this.writeUnsignedInt(data);
+            return;
+        }
+//            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
+//            console.log('writeInt Binary: ' + data.toString(2));
+        this.extendWriteBuffer(4);
+        //var buffer = new Buffer(4);
+        if (socket.endian == "littleEndian") {
+            this.writeBuffer.writeInt32LE(data, this.writeBufferPos);
+        } else {
+            this.writeBuffer.writeInt32BE(data, this.writeBufferPos);
+        }
+        this.writeBufferPos += 4;
+        //socket.write(buffer);
+    };
+
+    socket.writeUnsignedInt = function (data) {
+        if (data < 0) {
+            this.writeInt(data);
+            return;
+        }
 //            console.log('writeInt Data: 0x' + data.toString(16) + " " + data);
 //            console.log('writeInt Binary: ' + data.toString(2));
         this.extendWriteBuffer(4);
@@ -34,7 +57,6 @@ function extendSocket(socket) {
         this.writeBufferPos += 4;
         //socket.write(buffer);
     };
-    socket.writeUnsignedInt = socket.writeInt;
 
     socket.writeByte = function (data) {
 //            var buffer = new Buffer(1);
@@ -184,6 +206,10 @@ function extendBuffer(socket) {
         return (this.length - this.position);
     };
 
+    Buffer.prototype.__defineGetter__("bytesAvailable", function(){
+        return (this.length - this.position);
+    });
+
     Buffer.prototype.writeByte = function (oneByte) {
         this.writeUInt8(oneByte, this.position);
         this.position++;
@@ -216,8 +242,11 @@ function extendBuffer(socket) {
         return length;
     };
 
-//    }
-
+    Buffer.prototype.uncompress = function () {
+        var uncompressed = zlib.unzip(this);
+        this.position = 0;
+        return uncompressed;
+    };
 }
 
 

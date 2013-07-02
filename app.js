@@ -6,6 +6,9 @@ var PalaceClient = require("./PalaceClient/PalaceClient");
 var PalaceEvent = require("./PalaceClient/palace/event/PalaceEvent");
 var PalaceRoomEvent = require("./PalaceClient/palace/event/PalaceRoomEvent");
 var ChatEvent = require("./PalaceClient/palace/event/ChatEvent");
+var PropEvent = require("./PalaceClient/palace/event/PropEvent");
+
+var users = {};
 
 process.on("uncaughtException", function (e) {
     console.log(e);
@@ -22,6 +25,22 @@ if (process.env.PORT) { // needed in cloud9 environment
 
 function palaceHandler(req, res) {
     var url = req.url;
+    if (url.search(/^\/prop\//) === 0) {
+        var urlParts = url.split('/');
+        var id = urlParts[4].replace(".png", "");
+        res.writeHead(200);
+        var props = users[urlParts[2] + "/" + urlParts[3]].props.data;
+        var data = "";
+        for (var i=0; i<props.length;i++) {
+            if (props[i].asset.id == id){
+                data = props[i].pngData;
+            }
+        }
+        res.end(data);
+        // todo: write handler for url like /prop/palaceurl/userid/propnr.png
+        // needs each connected user to register itself in users{} after connection(-change) to find the right instance of palaceClient for data retrieval
+    }
+
     if (url == '/') {
         url = '/index.html';
     }
@@ -47,6 +66,7 @@ function mediaHandler(req, res) {
         if (url.search(/^\/palace\/media\//) !== 0) {
             res.writeHead(404);
             res.end('file not found');
+            return;
         }
         fs.readFile('/usr/local/palace' + url,
             function (err, data) {
@@ -69,7 +89,7 @@ appPalace.sockets.on('connection', function (socket) {
         palaceClient.connect(userName, host, port, 0, socket);
 
         palaceClient.on(PalaceEvent.CONNECT_COMPLETE, function (data) {
-            socket.emit(PalaceEvent.CONNECT_COMPLETE);
+            socket.emit(PalaceEvent.CONNECT_COMPLETE, data);
             socket.emit('log', { text: 'You\'re connected to ' + host + ":" + port});
         });
         palaceClient.on(PalaceEvent.ROOM_CHANGED, function () {
@@ -82,6 +102,7 @@ appPalace.sockets.on('connection', function (socket) {
 
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_ENTERED, function (event) {
             event.user.face = event.user.get_face();
+            users[event.user.palaceUrl + "/" + event.user.id] = event.user;
             socket.emit(PalaceRoomEvent.USER_ENTERED, event);
         });
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_MOVED, function (event) {
@@ -102,6 +123,9 @@ appPalace.sockets.on('connection', function (socket) {
         });
         palaceClient.on(PalaceEvent.SERVER_INFO_CHANGED, function(event){
            socket.emit(PalaceEvent.SERVER_INFO_CHANGED, event);
+        });
+        palaceClient.currentRoom.on(PropEvent.PROP_LOADED, function(data) {
+            socket.emit(PropEvent.PROP_LOADED, data);
         });
 
     });
