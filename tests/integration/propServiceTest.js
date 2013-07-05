@@ -1,12 +1,40 @@
 var zlib = require('zlib');
-var http = require('http');
+var http = require('follow-redirects').http;
 
-http.createServer(function (req, res) {
-    res.writeHead(200, {'Content-Type': 'text/html', 'Content-Encoding': 'gzip'});
+var host = "dream-animemedia.ipalaces.org";
 
-    var text = "Hello World!";
-    var buf = new Buffer(text, 'utf-8');   // Choose encoding for the string.
-    zlib.gzip(buf, function (_, result) {  // The callback will give you the
-        res.end(result);                     // result, so just send it.
+var request = http.request({
+    hostname: host,
+    path: '/webservice/props/get',
+    method: 'POST',
+    headers: {
+        'Accept-Encoding': 'gzip,deflate',
+        'Content-Type': 'application/json'
+    }
+
+}, function (res) {
+    res.on('data', function (data) {
+        console.log(data.toString('binary'));
+        console.log('end');
     });
-}).listen(80);
+});
+
+var data = JSON.stringify({
+    "props": [
+        {"id": 1569978199}
+    ],
+    "api_version": 1
+});
+
+request.on('error', function (err) {
+//    handleIOError(err);
+    console.log(err);
+});
+
+console.log('requesting: ' + host + '/webservice/props/get');
+zlib.gzip(data, function (_, result) {  // The callback will give you the
+    request.write(result);
+    request.end();
+});
+
+console.log('width data: ' + data);
