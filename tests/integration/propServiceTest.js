@@ -22,6 +22,7 @@ var path = '/webservice/props/get';
 
 doPropGetRequest(host, path, data, function (data) {
     console.log(data.toString('binary'));
+    requestPropImage(data);
 });
 
 function doPropGetRequest(host, path, data, callback) {
@@ -63,4 +64,10 @@ function doPropGetRequest(host, path, data, callback) {
         httpRequest.write(result);
         httpRequest.end();
     });
+
+
+}
+
+function requestPropImage(data){
+
 }
