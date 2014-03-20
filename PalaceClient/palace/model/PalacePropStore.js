@@ -196,7 +196,9 @@ function PalacePropStore(palaceClient) {
             //for (var response/* :Object */ in event.result['props'] /* as Array */) {
             var response = props[i];
             if (!response['success']) {
-					trace("Unable to get prop " + response['legacy_identifier']['id'] + " from web service, downloading from palace server.");
+                trace('response:');
+                trace(response);
+					trace("Unable to get prop " + response['id'] + " from web service, downloading from palace server.");
                 client.requestAsset(AssetManager.ASSET_TYPE_PROP,
                     response['legacy_identifier']['id'],
                     response['legacy_identifier']['crc']
