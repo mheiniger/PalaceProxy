@@ -36,15 +36,17 @@ function OPWSGetProps(palaceClient) //extends EventDispatcher
 
     this.send = function (props/* :Array */)/* :void */ {
         var requestDefs/* :Array */ = [];
+        var requestLegacyDefs = {};
         for (var propNr/* :PalaceProp */ in props) {
             var prop = props[propNr];
             var requestDef/* :Object */ = {};
+            var requestLegacyDef/* :Object */ = {};
             if (prop.asset.guid) {
                 requestDef['guid'] = prop.asset.guid;
             }
             else {
                 requestDef['id'] = prop.asset.id;
-                requestDef['legacy_identifier'] = {
+                requestLegacyDefs[prop.asset.id] = {
                     id: prop.asset.id,
                     crc: prop.asset.crc,
                     originating_palace: client.host + ":" + client.port
@@ -66,7 +68,7 @@ function OPWSGetProps(palaceClient) //extends EventDispatcher
             requestPropLocation(palaceClient.get_mediaServer().replace(/\/$/gm,'') + '/webservice/props/get/', result, function(answer) {
                 console.log('answer:');
                 console.log(answer);
-                handleComplete(answer, requestDefs)
+                handleComplete(answer, requestDefs, requestLegacyDefs)
             });
         });
 
@@ -133,10 +135,11 @@ function OPWSGetProps(palaceClient) //extends EventDispatcher
         dispatchEvent(new OPWSEvent(OPWSEvent.FAULT_EVENT));
     }
 
-    function handleComplete(data, requestDefs)/* :void */ {
+    function handleComplete(data, requestDefs, requestLegacyDefs)/* :void */ {
         var e/* :OPWSEvent */ = new OPWSEvent(OPWSEvent.RESULT_EVENT);
         try {
             e.result = JSON.decode(String(data));
+            e.legacyDefs = requestLegacyDefs;
         }
         catch (error/* :Error */) {
             //throw new Error("Unable to decode JSON response: " + error.name + ":\n" + error.message);

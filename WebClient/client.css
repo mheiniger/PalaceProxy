@@ -26,6 +26,10 @@ body {
     overflow: hidden;
 }
 
+#room-image {
+    max-width: none;
+}
+
 #notification-area {
     visibility: hidden;
     float: left;
