@@ -191,12 +191,49 @@ function PalacePropStore(palaceClient) {
     }
 
     function handleGetPropsResult(event/* :OPWSEvent */)/* :void */ {
+        trace("entering function handleGetPropsResult");
         var props = event.result['props'];
+        var imgUrl = event.result['img_url'] ? event.result['img_url'] : '';
+        var legacyDefs = event.legacyDefs;
         for (var i = 0; i < props.length; i++) {
             //for (var response/* :Object */ in event.result['props'] /* as Array */) {
             var response = props[i];
-            if (!response['success']) {
-					trace("Unable to get prop " + response['legacy_identifier']['id'] + " from web service, downloading from palace server.");
+            if (legacyDefs[response['id']]) {
+                response.legacy_identifier = legacyDefs[response['id']];
+            }
+            trace("response:");
+            trace(response);
+            if (response['success'] && response['format']){
+                var prop/* :PalaceProp */ = that.getProp(null, response['id'], response['crc']);
+//						trace("Got prop " + response['legacy_identifier']['id'] + " - " + response['guid'] + " from web service.");
+                var flags/* :Object */ = response['flags'];
+                prop.width = response['size']['w'];
+                prop.height = response['size']['h'];
+                prop.horizontalOffset = response['offsets']['x'];
+                prop.verticalOffset = response['offsets']['y'];
+                prop.originatingPalace = response['legacy_identifier']['originating_palace'];
+
+            /*
+                flags come in this format: flags: '0204'
+                todo: decode them
+             */
+//                prop.head = flags['head'];
+//                prop.ghost = flags['ghost'];
+//                prop.rare = flags['rare'];
+//                prop.animate = flags['animate'];
+//                prop.palindrome = flags['palindrome'];
+//                prop.bounce = flags['bounce'];
+                prop.asset.imageDataURL = imgUrl + response['id'];
+                prop.asset.name = response['name'];
+                prop.asset.format = response['format'];
+                prop.loadBitmapFromURL();
+
+            }
+            else if (!response['success']) {
+
+                trace('response:');
+                trace(response);
+					trace("Unable to get prop " + response['id'] + " from web service, downloading from palace server.");
                 client.requestAsset(AssetManager.ASSET_TYPE_PROP,
                     response['legacy_identifier']['id'],
                     response['legacy_identifier']['crc']
@@ -230,7 +267,7 @@ function PalacePropStore(palaceClient) {
     }
 
     function handleGetPropsFault(event/* :OPWSEvent */)/* :void */ {
-//			trace("There was a problem getting props from the webservice.");
+			trace("There was a problem getting props from the webservice.");
     }
 
     this.loadImage = function (prop/* :PalaceProp */)/* :void */ {

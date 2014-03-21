@@ -145,9 +145,13 @@ appPalace.sockets.on('connection', function (socket) {
     });
     socket.on("disconnect", function () {
         palaceClient.disconnect();
+        palaceClient.removeAllListeners();
+        palaceClient = null;
     });
     socket.on("logout", function () {
         palaceClient.disconnect();
+        palaceClient.removeAllListeners();
+        palaceClient = null;
     });
     socket.on("gotoRoom", function (data) {
         palaceClient.gotoRoom(data.roomId);

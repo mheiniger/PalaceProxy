@@ -171,11 +171,17 @@ function addProp(userId, userData) {
         console.log('adding Prop' + i);
         var propDiv = document.createElement("div");
         propDiv.setAttribute("class", "prop");
-        propDiv.style.width = '44px';
-        propDiv.style.height = '44px';
-        propDiv.style.top = userData.props.data[i].verticalOffset + 1 + 'px';
-        propDiv.style.left = userData.props.data[i].horizontalOffset + 1 + 'px';
-        propDiv.style.backgroundImage = "url('prop/" + userData.palaceUrl + "/" + userId +"/"+ userData.propIds[i] +".png')";
+        propDiv.style.top = (parseInt(userData.props.data[i].verticalOffset) + 1) + 'px';
+        propDiv.style.left = (parseInt(userData.props.data[i].horizontalOffset) + 1) + 'px';
+        if (userData.props.data[i].url) {
+            propDiv.style.backgroundImage = "url('" + userData.props.data[i].url + "')";
+            propDiv.style.width = '220px';
+            propDiv.style.height = '220px';
+        } else {
+            propDiv.style.backgroundImage = "url('prop/" + userData.palaceUrl + "/" + userId +"/"+ userData.propIds[i] +".png')";
+            propDiv.style.width = '44px';
+            propDiv.style.height = '44px';
+        }
         propDiv.style.backgroundRepeat = "no-repeat";
         userDiv.append(propDiv);
     }
