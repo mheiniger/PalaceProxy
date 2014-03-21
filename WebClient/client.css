@@ -127,7 +127,7 @@ body {
 .userDiv .prop {
     position: absolute;
     z-index: 20;
-    background-position: 0;
+    background-position: 0 0;
 }
 
 .chatBubble {
@@ -151,6 +151,7 @@ body {
     top: 4px;
     /*left: 30px;*/
     vertical-align: top;
+    z-index: 50;
 }
 
 .bubble p {
@@ -176,6 +177,7 @@ body {
     -o-transform: rotate(29deg) skew(-35deg);
     -webkit-transform: rotate(29deg) skew(-35deg);
     width: 20px;
+    z-index: 49;
 }
 
 .bubble.right {
