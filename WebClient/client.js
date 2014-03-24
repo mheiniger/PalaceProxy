@@ -233,7 +233,7 @@ function showChatBubble(user, message, type) {
     setTimeout(function () {
         spike.hide();
         bubbleDiv.hide();
-    }, 3000);
+    }, 3000 + parseInt(message.length * 100));
 }
 
 function createUserDiv(user) {
