@@ -1081,10 +1081,6 @@ function PalaceClient() // extends EventDispatcher
                         case IncomingMessageTypes.USER_DESCRIPTION: // (prop) usrD
                             handleUserDescription(buffer, size, p);
                             break;
-//
-//						case IncomingMessage.USER_PROP:
-//							handleUserProp(buffer, size, p);
-//							break;
 
                         case IncomingMessageTypes.USER_RENAME:
                             handleUserRename(buffer, size, p);

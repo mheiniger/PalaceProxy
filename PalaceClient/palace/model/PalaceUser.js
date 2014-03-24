@@ -199,13 +199,18 @@ function PalaceUser(palaceClient, propStore)
 				prop.removeEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
 			}
 			that.props.removeAll();
-			for (i = 0; i < that.propCount; i ++) {
+			for (i = 0; i < that.propCount; i++) {
 				prop = propStore.getProp(null, that.propIds[i], that.propCrcs[i]);
-				if (!prop.ready) {
-					prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
-				}
-				that.props.addItem(prop);
+                that.props.addItem(prop);
+                if (prop.ready || prop.url) {
+                    handlePropLoaded();
+				} else {
+                    prop.addEventListener(PropEvent.PROP_LOADED, handlePropLoaded);
+                }
 			}
+            if (that.propCount == 0) {
+                handlePropLoaded();
+            }
 			checkFaceProps();
     };
 
