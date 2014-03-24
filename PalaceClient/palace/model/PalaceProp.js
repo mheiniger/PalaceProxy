@@ -663,11 +663,17 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
             rgba.push(bitmapBytes[i] >> 16 & 0xff);
             rgba.push(bitmapBytes[i] >> 8 & 0xff);
             rgba.push(bitmapBytes[i] & 0xff);
-            if((bitmapBytes[i] & 0xfffff) == 0) {
+            if(bitmapBytes[i] == undefined) {
                 rgba.push(0xff);
             } else {
                 rgba.push(0x00);
             }
+        }
+        for (i=bitmapBytes.length; i < 44*44;i++){
+            rgba.push(0xff);
+            rgba.push(0xff);
+            rgba.push(0xff);
+            rgba.push(0xff);
         }
 
         var bitmapData/* :BitmapData */ = new BitmapData(that.width, that.height, true);
