@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Concept of Web-Palaceclient</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link href="jquery-ui-1.10.4/themes/base/jquery-ui.css" rel="stylesheet">-->
+    <link rel="stylesheet" href="jquery-ui-1.10.4/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="w2ui-1.3.2/w2ui-1.3.2.min.css">
+    <link href="client.css" rel="stylesheet">
+
+</head>
+<body>
+<div id="myToolbar"></div>
+
+<div class="container">
+    <div id="room-window">
+        <div id="room-title">
+            Room-Name: <span id="room-name"></span>
+        </div>
+        <div id="room-stage">
+            <img id="room-image" src="assets/images/start-screen.png">
+
+            <form id="login-box">
+                <fieldset>
+                    <div style="text-align: right">
+                        <label>User name: <input type="text" id="user-name" value="JSPAL-Test"></label>
+                        <label>Address: <input type="text" id="palace-address" value="pal.palazzo-chat.at"></label>
+                        <label>Port: <input type="text" id="palace-port" value="9998" size="4"></label>
+                    </div>
+                    <button id="connect" class="btn btn-success" onclick="return false;">Connect</button>
+                </fieldset>
+            </form>
+        </div>
+        <div id="notification-area"></div>
+        <textarea id="input"></textarea>
+    </div>
+</div>
+
+<div id="room-list-window">
+    <div id="room-list" style="height: 450px"></div>
+</div>
+
+<div id="log"></div>
+
+<script src="jquery-ui-1.10.4/jquery-1.10.2.js"></script>
+<script src="w2ui-1.3.2/w2ui-1.3.2.min.js"></script>
+<script src="jquery-ui-1.10.4/ui/jquery-ui.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+<script type="text/javascript">startSocket();</script>
+<script type="text/javascript">
+    $(function () {
+        var roomListWindow = $("#room-list-window");
+        roomListWindow.dialog({ autoOpen: false, title: "Room List"});
+        var logWindow = $("#log");
+        logWindow.dialog({ autoOpen: true, title: "Log Window"});
+
+        $('#myToolbar').w2toolbar({
+            name: 'myToolbar',
+            items: [
+                { type: 'html', html: '<b>JS-Palace</b>'},
+                { type: 'break'},
+                { type: 'menu', id: 'file', caption: 'File', items: [
+                    { type: 'button', id: 'login', caption: 'New Connection' },
+                    { type: 'button', id: 'logout', caption: 'Logout' }
+                ]},
+                { type: 'menu', id: 'palaces', caption: 'Bookmarks', img: 'icon-folder', items: [
+                    { text: 'localhost', value: 'localhost', img: 'icon-page' },
+                    { text: 'creationgroup', value: 'creationgroup', img: 'icon-page' }
+                ]},
+
+                { type: 'button', id: 'userlist', caption: 'User List' },
+                { type: 'button', id: 'roomlist', caption: 'Room List' },
+                { type: 'button', id: 'logwindowButton', caption: 'Log Window'},
+                { type: 'break'},
+                { type: 'html', id: "palace-name", html: '<span id="palace-name" class="text-center"></span>'}
+            ],
+
+            onClick: function (event) {
+                console.log(event);
+                if (event.target == 'logwindowButton') {
+                    logWindow.dialog('open')
+                }
+                if (event.target == 'roomlist') {
+                    roomListWindow.dialog('open');
+                }
+                if (event.target == 'file' && event.subItem) {
+                    if (event.subItem.id == 'login') {
+                        $('#login-box').show(500);
+                    }
+                    if (event.subItem.id == 'logout') {
+                        socket.emit('logout');
+                        clearStage();
+                    }
+                }
+            }
+        });
+        $('#room-list').w2grid({
+            name	: 'grid',
+            autoLoad: false,
+            columns	: [
+            		{ field: 'roomName', caption: 'Room', size: '100%' }
+            	],
+            onClick: function(event) {
+                var record = (this.get(event.recid));
+                socket.emit('gotoRoom', { 'roomName': record.value, 'roomId': record.recid });
+            }
+        })
+    });
+</script>
+</body>
+</html>

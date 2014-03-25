@@ -1,0 +1,202 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    /*padding-top: 50px;*/
+}
+
+#room-window {
+    /*width: 300px;*/
+    margin: 5px 0 0 5px;
+    float: left;
+    border: 1px solid silver;
+}
+
+#room-title {
+    background-color: cornflowerblue;
+    float: left;
+    width: 100%;
+}
+
+#room-stage {
+    /*width: 100%;*/
+    position: relative;
+    /*height: 200px;*/
+    background-color: #AEBDCC;
+    float: left;
+    clear: left;
+    overflow: hidden;
+}
+
+#room-image {
+    max-width: none;
+}
+
+#notification-area {
+    visibility: hidden;
+    float: left;
+    clear: both;
+    height: 20px;
+    background-color: lightblue;
+    border: 1px solid cornflowerblue;
+    border-radius: 3px;
+    padding: 1px 2px;
+    margin: 1px;
+}
+
+#notification-area a {
+    /*text-decoration: none;*/
+    /*float: right;*/
+    /*font-size: 14px;*/
+    /*font-weight: bolder;*/
+    /*padding: 0px 5px 1px 5px;*/
+    margin-left: 10px;
+    /*margin-right: 3px;*/
+}
+
+#room-list-window
+#log-window {
+    /*margin: 0px;*/
+    /*border: 1px solid silver;*/
+}
+
+#room-list {
+    font-size: 13px;
+    width: 300px;
+    height: 100px;
+    background-color: #eeeeee;
+    overflow: scroll;
+}
+#log {
+    font-size: 13px;
+    width: 300px;
+    height: 384px;
+    background-color: #eeeeee;
+    overflow: scroll;
+}
+
+#input {
+    width: 490px;
+    margin: 0 4px 4px 4px;
+    height: 50px;
+    background-color: #eeeeee;
+    float: left;
+    clear: both;
+}
+
+#login-box {
+    position: absolute;
+    z-index: 12;
+    top: 200px;
+    left: 100px;
+    width: 300px;
+    border: 1px solid silver;
+    text-align: center;
+    padding: 10px;
+    background-color: lightblue;
+}
+
+#navigation {
+    height: 30px;
+    margin-left: 0px;
+    margin-right: 0px;
+    background-color: silver;
+    border-bottom: 1px solid black;
+}
+
+
+.userDiv {
+    margin: 0;
+    position: absolute;
+    z-index: 10;
+}
+
+.userDiv .name {
+    font-size: 14px;
+    white-space: nowrap;
+    background: yellow;
+    color: black;
+    position: relative;
+    border: 1px solid silver;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    padding-left: 1px;
+    padding-right: 3px;
+    box-shadow: 0 0 6px #B2B2B2;
+    z-index: 30;
+}
+
+.userDiv .prop {
+    position: absolute;
+    z-index: 20;
+    background-position: 0 0;
+}
+
+.chatBubble {
+    border: 1px solid black;
+    background-color: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    top: -10px;
+    left: 30px;
+    padding: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+}
+
+.bubble {
+    background-color: #F2F2F2;
+    border-radius: 6px;
+    box-shadow: 0 0 6px #B2B2B2;
+    display: inline-block;
+    padding: 4px 4px;
+    position: absolute;
+    top: 4px;
+    /*left: 30px;*/
+    vertical-align: top;
+    z-index: 50;
+}
+
+.bubble p {
+    padding: 0 0;
+    position: relative;
+    top: 0;
+    left: 0;
+    margin: 0;
+    font-size: 14px;
+    /*z-index: 20;*/
+}
+
+.spike {
+    background-color: #F2F2F2;
+    content: "\00a0";
+    display: block;
+    height: 16px;
+    position: absolute;
+    top: 12px;
+    transform: rotate(29deg) skew(-35deg);
+    -moz-transform: rotate(29deg) skew(-35deg);
+    -ms-transform: rotate(29deg) skew(-35deg);
+    -o-transform: rotate(29deg) skew(-35deg);
+    -webkit-transform: rotate(29deg) skew(-35deg);
+    width: 20px;
+    z-index: 49;
+}
+
+.bubble.right {
+    float: left;
+    left: 52px;
+}
+
+.spike.right {
+    box-shadow: -2px 2px 2px 0 rgba(178, 178, 178, .4);
+    left: 45px;
+}
+
+.bubble.left {
+    float: right;
+    right: 94px;
+}
+
+.spike.left {
+    box-shadow: 2px -2px 2px 0 rgba(178, 178, 178, .4);
+    right: 90px;
+}

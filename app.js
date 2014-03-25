@@ -44,7 +44,7 @@ function palaceHandler(req, res) {
     if (url == '/') {
         url = '/index.html';
     }
-    fs.readFile(__dirname + '/WebClient/' + url,
+    fs.readFile(__dirname + '/WebClient2/' + url,
         function (err, data) {
             if (err) {
                 res.writeHead(500);
@@ -144,14 +144,18 @@ appPalace.sockets.on('connection', function (socket) {
         palaceClient.move(data.x, data.y);
     });
     socket.on("disconnect", function () {
-        palaceClient.disconnect();
-        palaceClient.removeAllListeners();
-        palaceClient = null;
+        if (palaceClient) {
+            palaceClient.disconnect();
+            palaceClient.removeAllListeners();
+            palaceClient = null;
+        }
     });
     socket.on("logout", function () {
-        palaceClient.disconnect();
-        palaceClient.removeAllListeners();
-        palaceClient = null;
+        if (palaceClient) {
+            palaceClient.disconnect();
+            palaceClient.removeAllListeners();
+            palaceClient = null;
+        }
     });
     socket.on("gotoRoom", function (data) {
         palaceClient.gotoRoom(data.roomId);
