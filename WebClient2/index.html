@@ -38,7 +38,7 @@
 </div>
 
 <div id="room-list-window">
-    <div id="room-list" style="height: 450px"></div>
+    <div id="room-list" style="height: 100%; min-height: 200px"></div>
 </div>
 
 <div id="log"></div>
@@ -84,6 +84,8 @@
                 }
                 if (event.target == 'roomlist') {
                     roomListWindow.dialog('open');
+                    roomListWindow.dialog( "option", "width", 350 );
+                    w2ui['grid'].resize();
                 }
                 if (event.target == 'file' && event.subItem) {
                     if (event.subItem.id == 'login') {
