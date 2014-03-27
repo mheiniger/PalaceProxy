@@ -49,8 +49,7 @@ var rect/*:Rectangle*/ = new Rectangle(0, 0, 44, 44);
 var mask/* :uint */ = 0xFFC1; // Original palace prop flags.
 
 util.inherits(PalaceProp, EventDispatcher);//extends EventDispatcher
-function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
-{
+function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) {
     PalaceProp.super_.call(this);
     var that = this;
 
@@ -93,14 +92,13 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
     var loader/* :Loader */ = null;
 
 
-
-     this.__defineGetter__("bitmap", function(){
+    this.__defineGetter__("bitmap", function () {
         return _bitmap;
-     });
+    });
 
-     this.__defineSetter__("bitmap", function(val){
-         _bitmap = val;
-     });
+    this.__defineSetter__("bitmap", function (val) {
+        _bitmap = val;
+    });
 
 
 //    Object.defineProperty(this, "bitmap", {
@@ -121,7 +119,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         get: function ()/* :ByteArray */ {
             if (_bitmap != null) {
                 var encoder /*:PNGEncoder*/ = new PNGEncoder();
-                return encoder.encode(_bitmap,44,44);
+                return encoder.encode(_bitmap, 44, 44);
             }
             else {
                 return null;
@@ -148,8 +146,8 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 //
 //        loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleBitmapLoadedFromURLComplete);
 //        loader.load(request, context);
-         that.url = url;
-         dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, that));
+        that.url = url;
+        dispatchEvent(new PropEvent(PropEvent.PROP_LOADED, that));
     };
 
 //    function handleBitmapLoadedFromURLComplete(event/* :Event */)/* :void */ {
@@ -164,8 +162,9 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         console.log('renderbitmap');
         --itemsToRender;
         var asset = that.asset;
-        var flags = that.flags;
+        var flags;
 
+        // little/big endian
         if (asset.data[1] == 0) {
             that.width = asset.data[0] | asset.data[1] << 8;
             that.height = asset.data[2] | asset.data[3] << 8;
@@ -183,9 +182,10 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
             that.flags = asset.data[11] | asset.data[10] << 8;
         }
 
+        flags = that.flags;
         that.propFormat = flags & formatMask;
 
-            trace("Non-Standard flags: " +/* uint */(flags & mask).toString(16));
+        trace("Non-Standard flags: " + /* uint */(flags & mask).toString(16));
 
         that.head = Boolean(flags & HEAD_FLAG);
         that.ghost = Boolean(flags & GHOST_FLAG);
@@ -196,27 +196,27 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 
         if ((flags & mask) == 0xff80) {
             //WTF?!  Bizarre flags...
-            	trace("16bit prop");
+            trace("16bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_16_BIT;
             decode16BitProp();
         }
         else if (Boolean(that.propFormat & PROP_FORMAT_S20BIT)) {
-            	trace("s20bit prop");
+            trace("s20bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_S20_BIT;
             decodeS20BitProp();
         }
         else if (Boolean(that.propFormat & PROP_FORMAT_32BIT)) {
-            	trace("32bit prop");
+            trace("32bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_32_BIT;
             decode32BitProp();
         }
         else if (Boolean(that.propFormat & PROP_FORMAT_20BIT)) {
-            	trace("20bit prop");
+            trace("20bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_20_BIT;
             decode20BitProp();
         }
         else {
-            	trace("8bit prop");
+            trace("8bit prop");
             that.webServiceFormat = PalacePropFormat.FORMAT_8_BIT;
             decode8BitProp();
         }
@@ -383,30 +383,28 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
         // Implementation thanks to Phalanx team
         // Translated from VB6 implementation
 
-        var data/* :ByteArray */ = new ByteArray();
+        var data/* :ByteArray */ = new ByteArray(that.asset.data.length);
         for (var i/* :int */ = 12; i < that.asset.data.length; i++) {
             data.writeByte(that.asset.data[i]);
         }
         data.position = 0;
-        //trace("Computed CRC: " + computeCRC(data) + " - Given CRC: " + asset.crc);
-        data.uncompress();
+//        trace("Computed CRC: " + computeCRC(data) + " - Given CRC: " + that.asset.crc);
+        data.uncompress(function(err, data){
+            if (err) {
+                console.log('uncompress-error:');
+                console.log(data.toString('base64'));
+            }
 
-        var bd/* :BitmapData */ = new BitmapData(that.width, that.height);
-        var ba/* :Vector.<uint> */ = []; // new Vector.< uint > (width * height, true);
-        var C/* :uint */ = 0;
-        var x/* :int */ = 0;
-        var y/* :int */ = 0;
-        var ofst/* :int */ = 0;
-        var X/* :int */ = 0;
-        var A/* :uint */ = 0;
-        var R/* :uint */ = 0;
-        var G/* :uint */ = 0;
-        var B/* :uint */ = 0;
+            var C/* :uint */ = 0;
+            var ofst/* :int */ = 0;
+            var X/* :int */ = 0;
+            var A/* :uint */ = 0;
+            var R/* :uint */ = 0;
+            var G/* :uint */ = 0;
+            var B/* :uint */ = 0;
 
-        var pos/* :uint */ = 0;
-
-        for (X = 0; X
-            <= 967; X++) {
+            var rgba = [];
+            for (X = 0; X <= 967; X++) {
                 ofst = X * 5;
                 R = /* uint */((/*uint*/(data[ofst] >> 2) & 63) * dither20bit);
                 C = (data[ofst] << 8) | data[ofst + 1];
@@ -415,7 +413,10 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
                 B = /* uint */(((C >> 6) & 63) * dither20bit);
                 A = (((C >> 4) & 3) * 85);
 
-                ba[pos++] = (A << 24 | R << 16 | G << 8 | B);
+                rgba.push(R);
+                rgba.push(G);
+                rgba.push(B);
+                rgba.push(~A);
 
                 C = (data[ofst + 2] << 8) | data[ofst + 3];
                 R = /* uint */(((C >> 6) & 63) * dither20bit);
@@ -424,82 +425,89 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
                 B = /* uint */(((C >> 2) & 63) * dither20bit);
                 A = ((C & 3) * 85);
 
-                ba[pos++] = (A << 24 | R << 16 | G << 8 | B);
-                }
-            bd.setVector(rect, ba);
-            that.bitmap = bd.get();
+                rgba.push(R);
+                rgba.push(G);
+                rgba.push(B);
+                rgba.push(~A);
             }
 
+            var bitmapData/* :BitmapData */ = new BitmapData(that.width, that.height, true);
+            bitmapData.setVector(rect, rgba);
 
-            function encodeS20BitProp()/* :ByteArray */ {
-                // Implementation ported from REALBasic code provided by
-                // Jameson Heesen (Pa\/\/n), of PalaceChat
-                var ba/* :ByteArray */ = new ByteArray();
-                ba.endian = Endian.BIG_ENDIAN;
-                var bm/* :FlexBitmap */ = FlexBitmap(that.bitmap);
-                if (bm && bm instanceof FlexBitmap) {
-                var bitmapData/* :BitmapData */ = bm.bitmapData;
-                var propBit16/* :Number */ = 31 / 255;
-                var data/* :Vector.<uint> */ = bitmapData.getVector(new Rectangle(0, 0, 44, 44));
-                var pixelIndex/* :uint */ = 0;
-                var intComp/* :uint */ = 0;
-                var a/* :uint */, r/* :uint */, g/* :uint */, b/* :uint */;
-                for (var y/* :int */ = 0; y < 44; y++) {
+            that.bitmap = bitmapData.get();
+        });
+    }
+
+
+    function encodeS20BitProp()/* :ByteArray */ {
+        // Implementation ported from REALBasic code provided by
+        // Jameson Heesen (Pa\/\/n), of PalaceChat
+        var ba/* :ByteArray */ = new ByteArray();
+        ba.endian = Endian.BIG_ENDIAN;
+        var bm/* :FlexBitmap */ = FlexBitmap(that.bitmap);
+        if (bm && bm instanceof FlexBitmap) {
+            var bitmapData/* :BitmapData */ = bm.bitmapData;
+            var propBit16/* :Number */ = 31 / 255;
+            var data/* :Vector.<uint> */ = bitmapData.getVector(new Rectangle(0, 0, 44, 44));
+            var pixelIndex/* :uint */ = 0;
+            var intComp/* :uint */ = 0;
+            var a/* :uint */, r/* :uint */, g/* :uint */, b/* :uint */;
+            for (var y/* :int */ = 0; y < 44; y++) {
                 for (var x/* :int */ = 0; x < 44; x++) {
-                var color/* :uint */;
-                color = data[pixelIndex];
-                a = ((color & 0xFF000000) >> 24) & 0xFF;
-                r = ((color & 0x00FF0000) >> 16) & 0xFF;
-                g = ((color & 0x0000FF00) >> 8) & 0xFF;
-                b = (color & 0x000000FF);
-                intComp = /* uint */(Math.round(Number(r) * propBit16)) << 19;
-                intComp = intComp | (/*uint*/(Math.round(Number(g) * propBit16)) << 14);
-                intComp = intComp | (/*uint*/(Math.round(Number(b) * propBit16)) << 9);
-                intComp = intComp | (/*uint*/(Math.round(Number(a) * propBit16)) << 4);
+                    var color/* :uint */;
+                    color = data[pixelIndex];
+                    a = ((color & 0xFF000000) >> 24) & 0xFF;
+                    r = ((color & 0x00FF0000) >> 16) & 0xFF;
+                    g = ((color & 0x0000FF00) >> 8) & 0xFF;
+                    b = (color & 0x000000FF);
+                    intComp = /* uint */(Math.round(Number(r) * propBit16)) << 19;
+                    intComp = intComp | (/*uint*/(Math.round(Number(g) * propBit16)) << 14);
+                    intComp = intComp | (/*uint*/(Math.round(Number(b) * propBit16)) << 9);
+                    intComp = intComp | (/*uint*/(Math.round(Number(a) * propBit16)) << 4);
 
-                ba.writeByte((intComp & 0xFF0000) >> 16);
-                ba.writeByte((intComp & 0xFF00) >> 8);
-                // ba.writeByte(intComp & 0xF0);
+                    ba.writeByte((intComp & 0xFF0000) >> 16);
+                    ba.writeByte((intComp & 0xFF00) >> 8);
+                    // ba.writeByte(intComp & 0xF0);
 
-                pixelIndex++;
-                x++;
+                    pixelIndex++;
+                    x++;
 
-                intComp = (intComp & 0xF0) << 16;
+                    intComp = (intComp & 0xF0) << 16;
 
-                color = data[pixelIndex];
-                a = ((color & 0xFF000000) >> 24) & 0xFF;
-                r = ((color & 0x00FF0000) >> 16) & 0xFF;
-                g = ((color & 0x0000FF00) >> 8) & 0xFF;
-                b = (color & 0x000000FF);
+                    color = data[pixelIndex];
+                    a = ((color & 0xFF000000) >> 24) & 0xFF;
+                    r = ((color & 0x00FF0000) >> 16) & 0xFF;
+                    g = ((color & 0x0000FF00) >> 8) & 0xFF;
+                    b = (color & 0x000000FF);
 
-                intComp = intComp | (/* uint */(Math.round(Number(r) * propBit16)) << 15);
-                intComp = intComp | (/* uint */(Math.round(Number(g) * propBit16)) << 10);
-                intComp = intComp | (/* uint */(Math.round(Number(b) * propBit16)) << 5);
-                intComp = intComp | /* uint */(Math.round(Number(a) * propBit16));
+                    intComp = intComp | (/* uint */(Math.round(Number(r) * propBit16)) << 15);
+                    intComp = intComp | (/* uint */(Math.round(Number(g) * propBit16)) << 10);
+                    intComp = intComp | (/* uint */(Math.round(Number(b) * propBit16)) << 5);
+                    intComp = intComp | /* uint */(Math.round(Number(a) * propBit16));
 
-                ba.writeByte((intComp & 0xFF0000) >> 16);
-                ba.writeByte((intComp & 0x00FF00) >> 8);
-                ba.writeByte(intComp & 0x0000FF);
+                    ba.writeByte((intComp & 0xFF0000) >> 16);
+                    ba.writeByte((intComp & 0x00FF00) >> 8);
+                    ba.writeByte(intComp & 0x0000FF);
 
-                pixelIndex++;
+                    pixelIndex++;
                 }
             }
-            }
-            ba.compress();
-            ba.position = 0;
-            return ba;
-            }
+        }
+        ba.compress();
+        ba.position = 0;
+        return ba;
+    }
 
-            function decodeS20BitProp()/* :void */ {
-                // Implementation thanks to Phalanx team
-                // Translated from C++ implementation
+    function decodeS20BitProp()/* :void */ {
+        // Implementation thanks to Phalanx team
+        // Translated from C++ implementation
 
-                var data/* :ByteArray */ = new ByteArray();
-                for (var i/* :int */ = 12; i < that.asset.data.length; i++) {
-                data.writeByte(that.asset.data[i]);
-                }
-            data.position = 0;
-            //trace("Computed CRC: " + computeCRC(data) + " - Given CRC: " + asset.crc);
+        var data/* :ByteArray */ = new ByteArray();
+        for (var i/* :int */ = 12; i < that.asset.data.length; i++) {
+            data.writeByte(that.asset.data[i]);
+        }
+        data.position = 0;
+        //trace("Computed CRC: " + computeCRC(data) + " - Given CRC: " + asset.crc);
         data.uncompress();
 
         var bd/* :BitmapData */ = new BitmapData(that.width, that.height);
@@ -659,17 +667,17 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */)
 
         var rgba = [];
         var i;
-        for (i=0; i<bitmapBytes.length; i++) {
+        for (i = 0; i < bitmapBytes.length; i++) {
             rgba.push(bitmapBytes[i] >> 16 & 0xff);
             rgba.push(bitmapBytes[i] >> 8 & 0xff);
             rgba.push(bitmapBytes[i] & 0xff);
-            if(bitmapBytes[i] == undefined) {
+            if (bitmapBytes[i] == undefined) {
                 rgba.push(0xff);
             } else {
                 rgba.push(0x00);
             }
         }
-        for (i=bitmapBytes.length; i < 44*44;i++){
+        for (i = bitmapBytes.length; i < 44 * 44; i++) {
             rgba.push(0xff);
             rgba.push(0xff);
             rgba.push(0xff);

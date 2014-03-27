@@ -2304,7 +2304,7 @@ function PalaceClient() // extends EventDispatcher
         var propIds = [];
         var propCrcs = [];
         for (var i = 0; i < propCount; i++) {
-            propIds[i] = buffer.readUnsignedInt();
+            propIds[i] = buffer.readInt();
             propCrcs[i] = buffer.readUnsignedInt();
         }
         user.propCount = propCount;

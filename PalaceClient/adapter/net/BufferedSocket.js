@@ -242,10 +242,12 @@ function extendBuffer(socket) {
         return length;
     };
 
-    Buffer.prototype.uncompress = function () {
-        var uncompressed = zlib.unzip(this);
-        this.position = 0;
-        return uncompressed;
+    Buffer.prototype.uncompress = function (callback) {
+        var that = this;
+        zlib.inflate(this, function(err, buffer){
+            that.position = 0;
+            callback(err, buffer);
+        });
     };
 }
 
