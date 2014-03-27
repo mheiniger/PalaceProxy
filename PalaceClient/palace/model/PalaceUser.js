@@ -227,8 +227,8 @@ function PalaceUser(palaceClient, propStore)
 
     function checkFaceProps()/* :void */ {
         var showFace/* :Boolean */ = true;
-        for (var i/* :int */ = 0; i < that.props.length; i++) {
-            var prop/* :PalaceProp */ = PalaceProp(that.props.getItemAt(i));
+        for (var i/* :int */ = 0; i < that.props.size(); i++) {
+            var prop/* :PalaceProp */ = that.props.getItemAt(i);
             if (prop.head) {
                 showFace = false;
             }

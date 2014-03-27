@@ -38,7 +38,10 @@
 </div>
 
 <div id="room-list-window">
-    <div id="room-list" style="height: 100%; min-height: 200px"></div>
+    <div id="room-list" style="height: 100%; min-height: 200px; width: 100%"></div>
+</div>
+<div id="user-list-window">
+    <div id="user-list" style="height: 100%; min-height: 200px; width: 100%"></div>
 </div>
 
 <div id="log"></div>
@@ -53,6 +56,8 @@
     $(function () {
         var roomListWindow = $("#room-list-window");
         roomListWindow.dialog({ autoOpen: false, title: "Room List"});
+        var userListWindow = $("#user-list-window");
+        userListWindow.dialog({ autoOpen: false, title: "User List"});
         var logWindow = $("#log");
         logWindow.dialog({ autoOpen: true, title: "Log Window"});
 
@@ -87,6 +92,11 @@
                     roomListWindow.dialog( "option", "width", 350 );
                     w2ui['grid'].resize();
                 }
+                if (event.target == 'userlist') {
+                    userListWindow.dialog('open');
+                    userListWindow.dialog( "option", "width", 350 );
+                    w2ui['userGrid'].resize();
+                }
                 if (event.target == 'file' && event.subItem) {
                     if (event.subItem.id == 'login') {
                         $('#login-box').show(500);
@@ -107,6 +117,18 @@
             onClick: function(event) {
                 var record = (this.get(event.recid));
                 socket.emit('gotoRoom', { 'roomName': record.value, 'roomId': record.recid });
+            }
+        })
+        $('#user-list').w2grid({
+            name	: 'userGrid',
+            autoLoad: false,
+            columns	: [
+            		{ field: 'userName', caption: 'User', size: '50%' },
+                    { field: 'roomName', caption: 'Room', size: '50%' }
+            	],
+            onClick: function(event) {
+                var record = (this.get(event.recid));
+                socket.emit('gotoRoomByUser', { 'userId': record.recid });
             }
         })
     });

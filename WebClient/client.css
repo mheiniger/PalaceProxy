@@ -52,19 +52,22 @@ body {
     /*margin-right: 3px;*/
 }
 
-#room-list-window
+#room-list-window,
+#user-list-window
 #log-window {
     margin: 5px 0 0 5px;
     border: 1px solid silver;
 }
 
-#room-list {
+#room-list,
+#user-list {
     font-size: 13px;
     width: 300px;
     height: 100px;
     background-color: #eeeeee;
     overflow: scroll;
 }
+
 #log {
     font-size: 13px;
     width: 300px;

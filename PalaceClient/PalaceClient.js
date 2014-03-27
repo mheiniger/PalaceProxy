@@ -199,6 +199,11 @@ function PalaceClient() // extends EventDispatcher
         return roomList;
     }
 
+    this.getUserList = getUserList;
+    function getUserList() {
+        return userList;
+    }
+
     that.getUserName = function getUserName() {
         return _userName;
     };
@@ -649,6 +654,21 @@ function PalaceClient() // extends EventDispatcher
 
     var leaveEventHandlers;
     var requestedRoomId = 0;
+
+    this.gotoRoomByUser = gotoRoomByUser;
+    function gotoRoomByUser(userId) {
+        userListSize = userList.size();
+
+        for (var i = 0; i < userListSize; i++) {
+            var user = userList.getItemAt(i);
+            if (user instanceof PalaceUser) {
+                console.log("user.id" + user.id + " userId" + userId + " roomId " + user.roomID);
+                if (user.id == userId) {
+                    gotoRoom(user.roomID)
+                }
+            }
+        }
+    }
 
     this.gotoRoom = gotoRoom;
     function gotoRoom(roomId) {
@@ -1865,6 +1885,9 @@ function PalaceClient() // extends EventDispatcher
             //trace("User List - got user: " + user.name);
             userList.addItem(user);
         }
+
+        var userListEvent = new Event('userList');
+        dispatchEvent(userListEvent);
 //			trace("There are " + userList.length + " users in this palace.");
     }
 

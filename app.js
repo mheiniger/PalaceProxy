@@ -96,10 +96,13 @@ appPalace.sockets.on('connection', function (socket) {
             socket.emit(PalaceEvent.ROOM_CHANGED, palaceClient.currentRoom, palaceClient.get_mediaServer());
         });
         palaceClient.on('roomList', function (event) {
-            console.log(palaceClient.getRoomList());
+//            console.log(palaceClient.getRoomList());
             socket.emit('roomList', palaceClient.getRoomList());
         });
-
+        palaceClient.on('userList', function (event) {
+//            console.log(palaceClient.getUserList());
+            socket.emit('userList', palaceClient.getUserList());
+        });
         palaceClient.currentRoom.on(PalaceRoomEvent.USER_ENTERED, function (event) {
             event.user.face = event.user.get_face();
             users[event.user.palaceUrl + "/" + event.user.id] = event.user;
@@ -159,5 +162,8 @@ appPalace.sockets.on('connection', function (socket) {
     });
     socket.on("gotoRoom", function (data) {
         palaceClient.gotoRoom(data.roomId);
+    });
+    socket.on("gotoRoomByUser", function (data) {
+        palaceClient.gotoRoomByUser(data.userId);
     });
 });

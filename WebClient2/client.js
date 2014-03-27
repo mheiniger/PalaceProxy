@@ -22,6 +22,16 @@ function startSocket() {
         w2ui['grid'].add(gridData);
     });
 
+    socket.on('userList', function (data) {
+        var users = data.data;
+console.log(users);
+        var gridData = [];
+        for (var i = 0; i < users.length; i++) {
+            gridData.push({ recid: users[i].id, userName: users[i].name, roomName: users[i].roomName});
+        }
+        w2ui['userGrid'].add(gridData);
+    });
+
     socket.on('chat', function (data) {
         console.log(data);
         var logWindow = $('#log');
@@ -160,10 +170,14 @@ function setFace(userId, face, color) {
 function addProp(userId, userData) {
     var userDiv = $('#user-' + userId);
     userDiv.find('.prop').remove();
+    var userFace = $('#user-' + userId + ' .face');
+    if (userData.showFace) {
+        userFace.css('visibility', 'visible');
+    } else {
+        userFace.css('visibility', 'hidden');
+    }
     var i;
-    console.log('propcount: ' + userData.propCount);
     for (i=0;i<userData.propCount;i++) {
-        console.log('adding Prop' + i);
         var propDiv = document.createElement("div");
         propDiv.setAttribute("class", "prop");
         propDiv.style.top = (parseInt(userData.props.data[i].verticalOffset) + 1) + 'px';
