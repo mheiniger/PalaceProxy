@@ -342,41 +342,43 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
     function decode32BitProp()/* :void */ {
         // Implementation thanks to Phalanx team
         // Translated from VB6 implementation
-        var data/* :ByteArray */ = new ByteArray();
+        var data/* :ByteArray */ = new ByteArray(that.asset.data.length);
         for (var i/* :int */ = 12; i < that.asset.data.length; i++) {
             data.writeByte(that.asset.data[i]);
         }
         data.position = 0;
         //trace("Computed CRC: " + computeCRC(data) + " - Given CRC: " + asset.crc);
 
-        data.uncompress();
+        data.uncompress(function(err, data){
+            if (err) {
+                console.log('uncompress-error:');
+                console.log(data.toString('base64'));
+            }
 
-        var bd/* :BitmapData */ = new BitmapData(that.width, that.height);
-        var ba/* :Vector.<uint> */ = []; //new Vector. < uint > (width * height, true);
-        var C/* :uint */ = 0;
-        var x/* :int */ = 0;
-        var y/* :int */ = 0;
-        var ofst/* :int */ = 0;
-        var X/* :int */ = 0;
-        var A/* :uint */ = 0;
-        var R/* :uint */ = 0;
-        var G/* :uint */ = 0;
-        var B/* :uint */ = 0;
+            var bitmapData/* :BitmapData */ = new BitmapData(that.width, that.height);
+            var ofst/* :int */ = 0;
+            var X/* :int */ = 0;
+            var A/* :uint */ = 0;
+            var R/* :uint */ = 0;
+            var G/* :uint */ = 0;
+            var B/* :uint */ = 0;
 
-        var pos/* :uint */ = 0;
+            var rgba = [];
+            for (X = 0; X <= 1935; X++) {
+                ofst = X * 4;
+                R = data[ofst];
+                G = data[ofst + 1];
+                B = data[ofst + 2];
+                A = data[ofst + 3];
 
-        for (X = 0; X <= 1935; X++) {
-            ofst = X * 4;
-            R = data[ofst];
-            G = data[ofst + 1];
-            B = data[ofst + 2];
-            A = data[ofst + 3];
-
-            ba[pos++] = (A << 24 | R << 16 | G << 8 | B);
-
-        }
-        bd.setVector(rect, ba);
-        that.bitmap = bd.get();
+                rgba.push(R);
+                rgba.push(G);
+                rgba.push(B);
+                rgba.push(~A);
+            }
+            bitmapData.setVector(rect, rgba);
+            that.bitmap = bitmapData.get();
+        });
     }
 
     function decode20BitProp()/* :void */ {
