@@ -395,6 +395,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
                 console.log(data.toString('base64'));
             }
 
+            var bitmapData/* :BitmapData */ = new BitmapData(that.width, that.height, true);
             var C/* :uint */ = 0;
             var ofst/* :int */ = 0;
             var X/* :int */ = 0;
@@ -430,10 +431,7 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
                 rgba.push(B);
                 rgba.push(~A);
             }
-
-            var bitmapData/* :BitmapData */ = new BitmapData(that.width, that.height, true);
             bitmapData.setVector(rect, rgba);
-
             that.bitmap = bitmapData.get();
         });
     }
@@ -502,60 +500,69 @@ function PalaceProp(guid/* :String */, assetId/* :uint */, assetCrc/* :uint */) 
         // Implementation thanks to Phalanx team
         // Translated from C++ implementation
 
-        var data/* :ByteArray */ = new ByteArray();
+        var data/* :ByteArray */ = new ByteArray(that.asset.data.length);
         for (var i/* :int */ = 12; i < that.asset.data.length; i++) {
             data.writeByte(that.asset.data[i]);
         }
         data.position = 0;
         //trace("Computed CRC: " + computeCRC(data) + " - Given CRC: " + asset.crc);
-        data.uncompress();
-
-        var bd/* :BitmapData */ = new BitmapData(that.width, that.height);
-        var C/* :uint */;
-        var x/* :int */ = 0;
-        var y/* :int */ = 0;
-        var ofst/* :int */ = 0;
-        var X/* :int */ = 0;
-
-        var color/* :uint */;
-
-        var ba/* :Vector.<uint> */ = [];
-        /*new Vector.<uint>(width*height, true);*/
-
-        var A/* :uint */, R/* :uint */, G/* :uint */, B/* :uint */;
-
-        var pos/* :uint */ = 0;
-
-        for (X = 0; X < 968; X++) {
-            ofst = X * 5;
-
-            R = /* uint */(((data[ofst] >> 3) & 31) * ditherS20Bit) & 0xFF; // << 3; //red
-            C = (data[ofst] << 8) | data[ofst + 1];
-            G = /* uint */((C >> 6 & 31) * ditherS20Bit) & 0xFF; //<< 3; //green
-            B = /* uint */((C >> 1 & 31) * ditherS20Bit) & 0xFF; //<< 3; //blue
-            C = (data[ofst + 1] << 8) | data[ofst + 2];
-            A = /* uint */((C >> 4 & 31) * ditherS20Bit) & 0xFF; //<< 3; //alpha
-
-            ba[pos++] = (A << 24 | R << 16 | G << 8 | B);
-
-            x++;
-
-            C = (data[ofst + 2] << 8) | data[ofst + 3];
-            R = /* uint */((C >> 7 & 31) * ditherS20Bit) & 0xFF; // << 3; //red
-            G = /* uint */((C >> 2 & 31) * ditherS20Bit) & 0xFF; // << 3; //green
-            C = (data[ofst + 3] << 8) | data[ofst + 4];
-            B = /* uint */((C >> 5 & 31) * ditherS20Bit) & 0xFF; // << 3; //blue
-            A = /* uint */((C & 31) * ditherS20Bit) & 0xFF; // << 3; //alpha				
-
-            ba[pos++] = (A << 24 | R << 16 | G << 8 | B);
-
-            if (x > 43) {
-                x = 0;
-                y++;
+        data.uncompress(function(err, data){
+            if (err) {
+                console.log('uncompress-error:');
+                console.log(data.toString('base64'));
             }
-        }
-        bd.setVector(rect, ba);
-        that.bitmap = bd.get();
+
+            var bitmapData/* :BitmapData */ = new BitmapData(that.width, that.height);
+            var C/* :uint */;
+            var x/* :int */ = 0;
+            var y/* :int */ = 0;
+            var ofst/* :int */ = 0;
+            var X/* :int */ = 0;
+
+            var color/* :uint */;
+
+            var A/* :uint */, R/* :uint */, G/* :uint */, B/* :uint */;
+
+            var pos/* :uint */ = 0;
+
+            var rgba = [];
+            for (X = 0; X < 968; X++) {
+                ofst = X * 5;
+
+                R = /* uint */(((data[ofst] >> 3) & 31) * ditherS20Bit) & 0xFF; // << 3; //red
+                C = (data[ofst] << 8) | data[ofst + 1];
+                G = /* uint */((C >> 6 & 31) * ditherS20Bit) & 0xFF; //<< 3; //green
+                B = /* uint */((C >> 1 & 31) * ditherS20Bit) & 0xFF; //<< 3; //blue
+                C = (data[ofst + 1] << 8) | data[ofst + 2];
+                A = /* uint */((C >> 4 & 31) * ditherS20Bit) & 0xFF; //<< 3; //alpha
+
+                rgba.push(R);
+                rgba.push(G);
+                rgba.push(B);
+                rgba.push(~A);
+
+                x++;
+
+                C = (data[ofst + 2] << 8) | data[ofst + 3];
+                R = /* uint */((C >> 7 & 31) * ditherS20Bit) & 0xFF; // << 3; //red
+                G = /* uint */((C >> 2 & 31) * ditherS20Bit) & 0xFF; // << 3; //green
+                C = (data[ofst + 3] << 8) | data[ofst + 4];
+                B = /* uint */((C >> 5 & 31) * ditherS20Bit) & 0xFF; // << 3; //blue
+                A = /* uint */((C & 31) * ditherS20Bit) & 0xFF; // << 3; //alpha
+
+                rgba.push(R);
+                rgba.push(G);
+                rgba.push(B);
+                rgba.push(~A);
+
+                if (x > 43) {
+                    x = 0;
+                    y++;
+                }
+            }
+            bitmapData.setVector(rect, rgba);
+            that.bitmap = bitmapData.get();
+        });
     }
 
     function decode16BitProp()/* :void */ {
