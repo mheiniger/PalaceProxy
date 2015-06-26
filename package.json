@@ -1,27 +1,28 @@
 {
-    "name": "PalaceProxy",
-    "version": "0.0.0",
-    "description": "A nodeJs proxy between palaceclient and server",
-    "main": "app.js",
-    "dependencies": {
-        "socket.io": "*",
-        "encoding": "*",
-        "follow-redirects": "*",
-        "png" : "*"
-    },
-    "devDependencies": {},
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/mheiniger/PalaceProxy.git"
-    },
-    "keywords": [
-        "palace",
-        "proxy"
-    ],
-    "author": "Michael Heiniger",
-    "license": "BSD",
-    "readmeFilename": "README.md"
+  "name": "PalaceProxy",
+  "version": "0.0.0",
+  "description": "A nodeJs proxy between palaceclient and server",
+  "main": "app.js",
+  "dependencies": {
+    "encoding": "*",
+    "follow-redirects": "*",
+    "png": "*",
+    "request": "^2.58.0",
+    "socket.io": "^0.9.14"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mheiniger/PalaceProxy.git"
+  },
+  "keywords": [
+    "palace",
+    "proxy"
+  ],
+  "author": "Michael Heiniger",
+  "license": "BSD",
+  "readmeFilename": "README.md"
 }
