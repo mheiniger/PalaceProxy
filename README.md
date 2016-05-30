@@ -6,22 +6,39 @@ Having a proxy which deals with the (ugly) palace protocol on the server side, w
 
 Getting started
 ---------------
-You will need nodejs and npm.
-* how to install most actual nodejs version - http://stackoverflow.com/questions/5123533/how-can-i-uninstall-or-upgrade-my-old-node-js-version
+You will need nodejs version 0.10
 
-First install libpng-dev:
-´´´sudo apt-get install libpng12-dev´´´
+Install https://github.com/creationix/nvm
+```
+nvm install 0.10
+nvm use 0.10
+```
+
+
+Install libpng-dev:
 (its not automatically installed by npm)
+
+Linux:
+```sudo apt-get install libpng12-dev```
+
+Mac OSX:
+```
+Download and unpack https://sourceforge.net/projects/libpng/files/ , cd into the folder
+export LDFLAGS='-L/usr/local/opt/libpng/lib'
+export CPPFLAGS='-I/usr/local/opt/libpng/include'
+./configure && make && make install
+brew install pkg-config
+```
 
 Clone the project and install dependecies with
 ```
 git clone git://github.com/mheiniger/PalaceProxy.git
-npm install -l
+npm install
 ```
 
 There is also a little protoype of a web-chat-client, to try out sending commands to the server:
 ```
-nodejs app.js
+node app.js
 ```
 Afterwards open http://localhost:3000 in your Browser to connect.
 
